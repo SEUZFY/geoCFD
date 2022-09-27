@@ -1,10 +1,9 @@
 # geoCFD
 
 It's a x64-windows10 version of [geocfd](https://github.com/SEUZFY/geocfd). Further development may be performed in this project since a discovery has been found 
-
 that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
 
-Purpose: Process geometry for cfd simulation.
+**Purpose**: Process geometry for cfd simulation.
 
 `Now`:
 
