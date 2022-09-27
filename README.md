@@ -48,11 +48,11 @@ The files are built and executed on `x64-windows10` platform.
 
 Clone this project and open it in `Visual Studio 2019` or newer version, you should be able to directly build and run.
 
-## Compile & run
+## Compile info
 
-Compiler: `cl.exe`
+Compiler: `MSVC`
 
-Builder: `ninja.exe`
+Generator: `Ninja`
 
 ## Other platforms
 
