@@ -1,8 +1,13 @@
-﻿
+﻿/*
+* process geometry for cfd simulation
+* main.cpp
+*/
+
 #include <CGAL/Polyhedron_3.h>
 #include "JsonWriter.hpp"
 
-#define DATA_PATH "D:\\SP\\geoCFD\\data"
+#define DATA_PATH "D:\\SP\\geoCFD\\data" // data path
+//#define _ENABLE_CONVEX_HULL_ // turn on/off convex hull method
 
 int main(int argc, const char** argv)
 {
@@ -107,32 +112,14 @@ int main(int argc, const char** argv)
 
 
 
-	// extract geometries and store in shell_explorers
+	// extract geometries of the bignef and store in shell_explorers
 	std::vector<Shell_explorer> shell_explorers;
 	NefProcessing::extract_nef_geometries(big_nef, shell_explorers);
 
-	/* process indices for writing to json file */
-	// first store all the vertices in a vector
-	std::vector<Point_3> all_vertices; // contains repeated vertices - for all shells
-	for (auto const& se : shell_explorers) {
-		for (auto const& v : se.vertices) {
-			all_vertices.push_back(v);
-		}
-	}
-
-	// next store the face indexes(accumulated from 0)	
-	unsigned long index_in_all_vertices = 0;
-	for (auto& se : shell_explorers) {
-		for (auto& face : se.faces) {
-			for (auto& index : face) {
-				index = index_in_all_vertices++;
-			}
-		}
-	}
-	// now we have the all_vertices and shell_explorers to write to cityjson -----------------------------
-
-   // test cleaned_vertices and cleaned_faces
+    // process shells for writing to cityjson
 	NefProcessing::process_shells_for_cityjson(shell_explorers);
+
+
 	// std::cout<<"test cleaned vertices and cleaned faces\n";
 	// // prompt some info
 	// std::cout << "after processing for cityjson: " << '\n';
@@ -146,7 +133,7 @@ int main(int argc, const char** argv)
 	// }
 	/* process indices for writing to json file */
 
-
+#ifdef _ENABLE_CONVEX_HULL_
 	/* get the convex hull of the big_nef, use all_vertices of all shells */
 	Polyhedron convex_polyhedron; // define polyhedron to hold convex hull
 	Nef_polyhedron big_nef_convexhull;
@@ -199,6 +186,7 @@ int main(int argc, const char** argv)
 	}
 	// now we have the all_vertices and shell_explorers to write to cityjson -----------------------------
    /* process indices for writing to json file */
+#endif
 
 
    /* test geometries for test_nef */
