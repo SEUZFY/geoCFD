@@ -6,7 +6,7 @@
 #include <CGAL/Polyhedron_3.h>
 #include "JsonWriter.hpp"
 
-#define DATA_PATH "D:\\SP\\geoCFD\\data" // data path
+#define DATA_PATH "D:\\SP\\geoCFD\\data" // specify the data path
 #define _ENABLE_CONVEX_HULL_ // turn on/off convex hull method
 
 int main(int argc, const char** argv)
@@ -27,7 +27,7 @@ int main(int argc, const char** argv)
 	//  }
 
 	//-- reading the (original)file with nlohmann json: https://github.com/nlohmann/json  
-	std::string filename = "/3dbag_v210908_fd2cee53_5907.json";
+	std::string filename = "\\3dbag_v210908_fd2cee53_5907.json";
 	std::cout << "current reading file is: " << DATA_PATH + filename << '\n';
 	std::ifstream input(DATA_PATH + filename);
 	json j;
