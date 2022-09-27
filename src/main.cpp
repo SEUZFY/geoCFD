@@ -7,7 +7,7 @@
 #include "JsonWriter.hpp"
 
 #define DATA_PATH "D:\\SP\\geoCFD\\data" // data path
-//#define _ENABLE_CONVEX_HULL_ // turn on/off convex hull method
+#define _ENABLE_CONVEX_HULL_ // turn on/off convex hull method
 
 int main(int argc, const char** argv)
 {
@@ -46,19 +46,6 @@ int main(int argc, const char** argv)
 	jhandle2.read_certain_building(j, building2_id);
 	jhandle2.message();
 
-	// // test output
-	//
-	// std::cout << "vertices number: " << '\n';
-	// for (const auto& so : jhandle.solids)
-	//    for (const auto& se : so.shells)
-	//       for (const auto& f : se.faces)
-	//          for (const auto& r : f.rings) // for most cases, each face only contains one ring -> i.e. face [[0,1,2,3]] only has one ring
-	//             {
-	//                std::cout << "--------" << '\n';
-	//                for (const auto& indice : r.indices)
-	//                   std::cout << indice << '\n';
-	//             }
-
 
 	// build a vector to store the nef polyhedra(if built successfully)
 	std::vector<Nef_polyhedron> Nefs;
@@ -95,135 +82,49 @@ int main(int argc, const char** argv)
 	// check if big Nef is simple - simple: no internal rooms, not simple: multiple rooms?
 	std::cout << "is bigNef simple? " << big_nef.is_simple() << '\n';
 
-	/* test extracting geometries of a nef: use a simple polyhedron */
-	// Point_3 p( 1.0, 0.0, 0.0);
-	// Point_3 q( 0.0, 1.0, 0.0);
-	// Point_3 r( 0.0, 0.0, 1.0);
-	// Point_3 s( 0.0, 0.0, 0.0);
-	// Polyhedron P;
-	// P.make_tetrahedron( p, q, r, s);
-	// std::cout<<"testing polyhedron\n";
-	// std::cout<<P;
+	// process the big nef to make it available for output
+	std::vector<Shell_explorer> shell_explorers; // store the extracted geometries
+	NefProcessing::extract_nef_geometries(big_nef, shell_explorers); // extract geometries of the bignef
+	NefProcessing::process_shells_for_cityjson(shell_explorers); // process shells for writing to cityjson
 
-	// Nef_polyhedron test_nef(P);
-	// std::cout<<"build test nef"<<'\n';
-
-	/* test extracting geometries of a nef: use a simple polyhedron */
-
-
-
-	// extract geometries of the bignef and store in shell_explorers
-	std::vector<Shell_explorer> shell_explorers;
-	NefProcessing::extract_nef_geometries(big_nef, shell_explorers);
-
-    // process shells for writing to cityjson
-	NefProcessing::process_shells_for_cityjson(shell_explorers);
-
-
-	// std::cout<<"test cleaned vertices and cleaned faces\n";
-	// // prompt some info
-	// std::cout << "after processing for cityjson: " << '\n';
-	// std::cout << "shell explorers size: " << shell_explorers.size() << '\n';
-	// std::cout << "info for each shell\n";
-	// for (const auto &se : shell_explorers)
-	// {
-	//    std::cout << "vertices size of this shell: " << se.cleaned_vertices.size() << '\n';
-	//    std::cout << "faces size of this shell: " << se.cleaned_faces.size() << '\n';
-	//    std::cout << '\n';
-	// }
-	/* process indices for writing to json file */
-
-#ifdef _ENABLE_CONVEX_HULL_
-	/* get the convex hull of the big_nef, use all_vertices of all shells */
-	Polyhedron convex_polyhedron; // define polyhedron to hold convex hull
-	Nef_polyhedron big_nef_convexhull;
-	CGAL::convex_hull_3(all_vertices.begin(), all_vertices.end(), convex_polyhedron);
-	if (convex_polyhedron.is_closed()) {
-		std::cout << " build convex hull " << '\n';
-		Nef_polyhedron convex_nef(convex_polyhedron);
-		big_nef_convexhull = convex_nef;
-	}
-	// extract geometries of big_nef_convexhull
-	std::vector<Shell_explorer> shell_explorers_bignef_convexhull;
-	Nef_polyhedron::Volume_const_iterator current_volume_bignef_convexhull;
-	CGAL_forall_volumes(current_volume_bignef_convexhull, big_nef_convexhull) { // use big_nef_convexhull to replace the big_nef
-		Nef_polyhedron::Shell_entry_const_iterator current_shell_bignef_convexhull;
-		CGAL_forall_shells_of(current_shell_bignef_convexhull, current_volume_bignef_convexhull) {
-			Shell_explorer se;
-			Nef_polyhedron::SFace_const_handle sface_in_shell(current_shell_bignef_convexhull);
-			big_nef_convexhull.visit_shell_objects(sface_in_shell, se); // use test_nef to replace the big_nef
-
-			//add the se to shell_explorers_bignef_convexhull
-			shell_explorers_bignef_convexhull.push_back(se);
-		}
-	}
-	std::cout << "after extracting geometries of big nef convexhull: " << '\n';
-	std::cout << "shell explorers big nef ocnvex hull size: " << shell_explorers.size() << '\n';
+	// prompt some info after cleaning operation
+	std::cout << "info about shells after cleaning operations\n";
+	std::cout << "shell explorers size: " << shell_explorers.size() << '\n';
 	std::cout << "info for each shell\n";
-	for (const auto& se : shell_explorers_bignef_convexhull) {
-		std::cout << "vertices size of this shell: " << se.vertices.size() << '\n';
-		std::cout << "faces size of this shell: " << se.faces.size() << '\n';
+	for (const auto& se : shell_explorers)
+	{
+		std::cout << "cleaned vertices size of this shell: " << se.cleaned_vertices.size() << '\n';
+		std::cout << "cleaned faces size of this shell: " << se.cleaned_faces.size() << '\n';
 		std::cout << '\n';
 	}
 
-	/* process indices for writing to json file */
-	// first store all the vertices in a vector
-	std::vector<Point_3> all_vertices_convex; // contains repeated vertices - for all shells
-	for (auto const& se : shell_explorers_bignef_convexhull) {
-		for (auto const& v : se.vertices) {
-			all_vertices_convex.push_back(v);
-		}
+
+	/* get the convex hull of the big_nef, use all cleaned vertices of all shells */
+	// get cleaned vertices of shell_explorers[0] - the shell indicating the exterior of the big nef
+	std::vector<Point_3>& convex_vertices = shell_explorers[0].cleaned_vertices;
+	std::cout << "convex vertices size: " << convex_vertices.size() << '\n';
+
+	// build convex hull of the big nef
+	Polyhedron convex_polyhedron; // define polyhedron to hold convex hull
+	Nef_polyhedron convex_big_nef;
+	CGAL::convex_hull_3(convex_vertices.begin(), convex_vertices.end(), convex_polyhedron);
+	std::cout << "is convex closed?" << convex_polyhedron.is_closed() << '\n';
+	if (convex_polyhedron.is_closed()) {
+		std::cout << "build convex hull for the big nef\n";
+		Nef_polyhedron convex_nef(convex_polyhedron);
+		convex_big_nef = convex_nef;
 	}
 
-	// next store the face indexes(accumulated from 0)	
-	unsigned long index_in_all_vertices_convex = 0;
-	for (auto& se : shell_explorers_bignef_convexhull) {
-		for (auto& face : se.faces) {
-			for (auto& index : face) {
-				index = index_in_all_vertices_convex++;
-			}
-		}
-	}
-	// now we have the all_vertices and shell_explorers to write to cityjson -----------------------------
-   /* process indices for writing to json file */
-#endif
+	// process the convex big nef to make it available for output
+	std::vector<Shell_explorer> convex_shell_explorers;
+	NefProcessing::extract_nef_geometries(convex_big_nef, convex_shell_explorers);
+	NefProcessing::process_shells_for_cityjson(convex_shell_explorers);
 
-
-   /* test geometries for test_nef */
-   // std::cout<<"output geometries of cleaned shell[0]"<<'\n';
-   // const auto& test_se = shell_explorers[0];
-   // std::cout<<"cleaned vertices size: "<<test_se.cleaned_vertices.size()<<'\n';
-   // for(const auto& face : test_se.cleaned_faces)
-   //    for(const auto& index : face)
-   //       std::cout<<index<<" ";
-   //    std::cout<<'\n';
-
-   /* the problem is located in extracting geometries */
-
-
-   /* get a test shell and test if there's any problem in outputing function */
-   // Shell_explorer my_se;
-   // my_se.vertices.emplace_back(Point_3(0,0,0));
-   // my_se.vertices.emplace_back(Point_3(0,0,1));
-   // my_se.vertices.emplace_back(Point_3(0,1,0));
-   // my_se.vertices.emplace_back(Point_3(1,0,0));
-
-   // my_se.faces.emplace_back();
-   // my_se.faces.back() = {3,2,1};
-   // my_se.faces.emplace_back();
-   // my_se.faces.back() = {0,3,1};
-   // my_se.faces.emplace_back();
-   // my_se.faces.back() = {0,2,3};
-   // my_se.faces.emplace_back();
-   // my_se.faces.back() = {0,1,2};
-   /* get a test shell and test if there's any problem in outputing function */
-
-   // write file
+    // write file
 	JsonWriter jwrite;
-	std::string writeFilename = "/bignefpolyhedron.json";
-	const Shell_explorer& shell = shell_explorers[1]; // which shell is going to be written to the file
+	std::string writeFilename = "\\bignefpolyhedron_convex.json";
+	const Shell_explorer& shell = convex_shell_explorers[1]; // which shell is going to be written to the file
 	jwrite.write_json_file(DATA_PATH + writeFilename, shell);
-	//jwrite.write_json_file(DATA_PATH + writeFilename, all_vertices, shell);
 
 	return 0;
 }
