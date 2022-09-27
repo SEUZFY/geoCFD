@@ -52,6 +52,8 @@ Clone this project and open it in `Visual Studio 2019` or newer version, you sho
 
 Compiler: `cl.exe`
 
+Builder: `ninja.exe`
+
 ## Other platforms
 
 If you use other platforms (such as `Linux` or `MacOS`), you can refer to `CMakeLists.txt` file and use it to build a `CMake` project using `src`, `include` and `data` folder.
