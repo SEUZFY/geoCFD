@@ -123,7 +123,7 @@ int main(int argc, const char** argv)
     // write file
 	JsonWriter jwrite;
 	std::string writeFilename = "\\bignefpolyhedron_convex.json";
-	const Shell_explorer& shell = convex_shell_explorers[1]; // which shell is going to be written to the file
+	const Shell_explorer& shell = shell_explorers[0]; // which shell is going to be written to the file
 	jwrite.write_json_file(DATA_PATH + writeFilename, shell);
 
 	return 0;
