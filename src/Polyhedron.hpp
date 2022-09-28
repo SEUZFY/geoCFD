@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma once
-
 // JsonHandler
 #include "JsonHandler.hpp"
 
@@ -165,7 +163,10 @@ struct Shell_explorer {
 
 
 /*
-* class to extract geometries of a nef polyhedron
+* class to process Nef
+* (1)extract geometries of a nef polyhedron
+* (2)process extracted geometries for writing to cityjson
+* (3)3D Minkowski sum
 */
 class NefProcessing
 {
@@ -272,6 +273,21 @@ public:
             }
         }
         // now we have cleaned_vertices and cleaned_faces to write to cityjson ------------------------------
+    }
+
+
+
+    /*
+    * 3D Minkowski sum
+    * details: https://doc.cgal.org/latest/Minkowski_sum_3/index.html#Chapter_3D_Minkowski_Sum_of_Polyhedra
+    * 
+    * @param
+    * nef : the nef polyhedron which needs to be merged
+    * size: a cube's side length
+    */
+    static void minkowski_sum(Nef_polyhedron& nef, int size)
+    {
+
     }
 
 
