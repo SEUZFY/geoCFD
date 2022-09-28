@@ -1,5 +1,7 @@
 # geoCFD
 
+<img src="https://user-images.githubusercontent.com/72781910/192777906-37361ee5-a656-4a9a-8784-5c9302c6b2e9.PNG" width="410" height="260">  <img src="https://user-images.githubusercontent.com/72781910/192778310-c14abb50-e899-42e2-8acc-d7f76a0e31e2.PNG" width="410" height="260">
+
 It's a `x64-windows10` version of [geocfd-Ubuntu](https://github.com/SEUZFY/geocfd-Ubuntu). Further development may be performed in this project since a discovery has been found 
 that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
 
@@ -13,7 +15,11 @@ that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
 
 - Export the `big nef polyhedron` as `.cityjson` file(with no repeated vertices) and visualise it in [ninja](https://ninja.cityjson.org/), observe its `exterior` and `interior`
 
+  <img src="https://user-images.githubusercontent.com/72781910/192778523-577a7e85-21a1-4729-aa1f-a55e310e317f.PNG" width="410" height="260">  <img src="https://user-images.githubusercontent.com/72781910/192778715-af57768e-08d0-467c-8247-53708fa147b8.PNG" width="410" height="260">
+
 - Get the `convex hull` of the `big nef polyhedron` and visualise it in [ninja](https://ninja.cityjson.org/), observe its `exterior` and `interior`
+
+  <img src="https://user-images.githubusercontent.com/72781910/192779009-1fd55a91-ff85-4035-931b-347568eb1f3d.PNG" width="410" height="260">  <img src="https://user-images.githubusercontent.com/72781910/192779087-387b8762-cf13-4bed-a636-45b1e362d241.PNG" width="410" height="260">
 
 `To do`:
 
@@ -22,7 +28,7 @@ that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
   - how much will the shape change?
   
   - [3D Minkowski Sum](https://doc.cgal.org/latest/Minkowski_sum_3/index.html#Chapter_3D_Minkowski_Sum_of_Polyhedra) - can we do sum in some specific direction?
- 
+
  `long term`
  
   - `robust`
