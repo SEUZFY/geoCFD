@@ -20,6 +20,10 @@ that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
 - Get the `convex hull` of the `big nef polyhedron` and visualise it in [ninja](https://ninja.cityjson.org/), observe its `exterior` and `interior`
 
   <img src="https://user-images.githubusercontent.com/72781910/192779009-1fd55a91-ff85-4035-931b-347568eb1f3d.PNG" width="310" height="200">  <img src="https://user-images.githubusercontent.com/72781910/192779087-387b8762-cf13-4bed-a636-45b1e362d241.PNG" width="310" height="200">
+  
+- Perform [3D Minkowski Sum](https://doc.cgal.org/latest/Minkowski_sum_3/index.html#Chapter_3D_Minkowski_Sum_of_Polyhedra) and visualize the result in [ninja](https://ninja.cityjson.org/).
+
+  <img src="https://user-images.githubusercontent.com/72781910/193134598-386e8a58-372b-4831-ae03-1005d882a514.PNG" width="310" height="230">  <img src="https://user-images.githubusercontent.com/72781910/193134833-f4fa5db0-2e30-4cea-83b1-255566c20399.PNG" width="310" height="230">
 
 `To do`:
 
