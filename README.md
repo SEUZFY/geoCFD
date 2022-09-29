@@ -63,8 +63,7 @@ Generator: `Ninja`
 
 Using `CGAL::Polyhedron_3` can be tricky, since `Polyhedron_builder` doesn't like repeated vertices, and even if it works
 with repeatness, the created `Polyhedron_3` is NOT closed(and thus can not be converted to `Nef_polyhedron`).
-
-Thus extra care needs to be taken when creatiing `Polyhedron_3`.
+Thus extra care needs to be taken when creating `Polyhedron_3`.
 
 ## Other platforms
 
