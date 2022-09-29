@@ -284,7 +284,7 @@ public:
     * @return:
     * Nef_polyhedron
     */
-    static Nef_polyhedron make_cube(double size = 1)
+    static Nef_polyhedron make_cube(double size = 1.0)
     {
         Polyhedron_builder<Polyhedron::HalfedgeDS> polyhedron_builder;; // used for create a cube
 
@@ -353,17 +353,26 @@ public:
         // now build the Polyhedron
         Polyhedron cube;
         cube.delegate(polyhedron_builder);
+        std::cout << "is cube closed? " << cube.is_closed() << '\n';
+        std::cout << "cout cube\n";
+        std::cout << cube;
 
         // check whether the cube is correctly created
         if (cube.is_empty()) { // if the cube is empty  
-            std::cout << "warning: created an empty cube, please check make_cube() function in Polyhedron.hpp\n";
+            std::cerr << "warning: created an empty cube, please check make_cube() function in Polyhedron.hpp\n";
             return Nef_polyhedron::EMPTY; // return an empty nef polyhedron
         }
            
         if (!cube.is_closed()) { // if the cube is NOT closed
-            std::cout << "warning: cube(Polyhedron) is not closed, please check make_cube() function in Polyhedron.hpp\n";
+            std::cerr << "warning: cube(Polyhedron) is not closed, please check make_cube() function in Polyhedron.hpp\n";
             return Nef_polyhedron::EMPTY; // return an empty nef polyhedron
         }
+
+        /*
+        * why cube is not closed?
+        * there are repeated vertices in it
+        * 6 faces should not be using 24 vertices
+        */
                   
         // cube is correctly created(not empty && closed) -> convert it to a Nef_polyhedron
         Nef_polyhedron nef_cube(cube);
