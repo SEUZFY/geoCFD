@@ -293,69 +293,69 @@ public:
         // (1) the front surface, vertices in CCW order(observing from outside):
         polyhedron_builder.faces.emplace_back();
 
-        polyhedron_builder.vertices.emplace_back(Point_3(1, 0, 0)); // vertex index: 0
-        polyhedron_builder.vertices.emplace_back(Point_3(1, 1, 0)); // vertex index: 1
-        polyhedron_builder.vertices.emplace_back(Point_3(1, 1, 1)); // vertex index: 2
-        polyhedron_builder.vertices.emplace_back(Point_3(1, 0, 1)); // vertex index: 3
+        polyhedron_builder.vertices.emplace_back(Point_3(size, 0, 0)); // vertex index: 0
+        polyhedron_builder.vertices.emplace_back(Point_3(size, size, 0)); // vertex index: 1
+        polyhedron_builder.vertices.emplace_back(Point_3(size, size, size)); // vertex index: 2
+        polyhedron_builder.vertices.emplace_back(Point_3(size, 0, size)); // vertex index: 3
 
         polyhedron_builder.faces.back() = { 0, 1, 2, 3 };
 
         // (2) the back surface, vertices in CCW order(observing from outside):
         polyhedron_builder.faces.emplace_back();
 
-        polyhedron_builder.vertices.emplace_back(Point_3(0, 1, 0)); // vertex index: 4
+        polyhedron_builder.vertices.emplace_back(Point_3(0, size, 0)); // vertex index: 4
         polyhedron_builder.vertices.emplace_back(Point_3(0, 0, 0)); // vertex index: 5
-        polyhedron_builder.vertices.emplace_back(Point_3(0, 0, 1)); // vertex index: 6
-        polyhedron_builder.vertices.emplace_back(Point_3(0, 1, 1)); // vertex index: 7
+        polyhedron_builder.vertices.emplace_back(Point_3(0, 0, size)); // vertex index: 6
+        polyhedron_builder.vertices.emplace_back(Point_3(0, size, size)); // vertex index: 7
 
         polyhedron_builder.faces.back() = { 4, 5, 6, 7 };
+
+        // after front and back surface, we now have all 8 vertices of a cube
+        // repeatness should be avoided when adding vertices and faces to a polyhedron_builder
 
         // (3) the top surface, vertices in CCW order(observing from outside):
         polyhedron_builder.faces.emplace_back();
 
-        polyhedron_builder.vertices.emplace_back(Point_3(1, 0, 1)); // vertex index: 8
-        polyhedron_builder.vertices.emplace_back(Point_3(1, 1, 1)); // vertex index: 9
-        polyhedron_builder.vertices.emplace_back(Point_3(0, 1, 1)); // vertex index: 10
-        polyhedron_builder.vertices.emplace_back(Point_3(0, 0, 1)); // vertex index: 11
+        //Point_3(1, 0, 1); // vertex index: 3
+        //Point_3(1, 1, 1); // vertex index: 2
+        //Point_3(0, 1, 1); // vertex index: 7
+        //Point_3(0, 0, 1); // vertex index: 6
 
-        polyhedron_builder.faces.back() = { 8, 9, 10, 11 };
+        polyhedron_builder.faces.back() = { 3, 2, 7, 6 };
 
         // (4) the down surface, vertices in CCW order(observing from outside):
         polyhedron_builder.faces.emplace_back();
 
-        polyhedron_builder.vertices.emplace_back(Point_3(0, 0, 0)); // vertex index: 12
-        polyhedron_builder.vertices.emplace_back(Point_3(0, 1, 0)); // vertex index: 13
-        polyhedron_builder.vertices.emplace_back(Point_3(1, 1, 0)); // vertex index: 14
-        polyhedron_builder.vertices.emplace_back(Point_3(1, 0, 0)); // vertex index: 15
+        //Point_3(0, 0, 0); // vertex index: 5
+        //Point_3(0, 1, 0); // vertex index: 4
+        //Point_3(1, 1, 0); // vertex index: 1
+        //Point_3(1, 0, 0); // vertex index: 0
 
-        polyhedron_builder.faces.back() = { 12, 13, 14, 15 };
+        polyhedron_builder.faces.back() = { 5, 4, 1, 0 };
 
         // (5) the left surface, vertices in CCW order(observing from outside):
         polyhedron_builder.faces.emplace_back();
 
-        polyhedron_builder.vertices.emplace_back(Point_3(0, 0, 0)); // vertex index: 16
-        polyhedron_builder.vertices.emplace_back(Point_3(1, 0, 0)); // vertex index: 17
-        polyhedron_builder.vertices.emplace_back(Point_3(1, 0, 1)); // vertex index: 18
-        polyhedron_builder.vertices.emplace_back(Point_3(0, 0, 1)); // vertex index: 19
+        //Point_3(0, 0, 0); // vertex index: 5
+        //Point_3(1, 0, 0); // vertex index: 0
+        //Point_3(1, 0, 1); // vertex index: 3
+        //Point_3(0, 0, 1)); // vertex index: 6
 
-        polyhedron_builder.faces.back() = { 16, 17, 18, 19 };
+        polyhedron_builder.faces.back() = { 5, 0, 3, 6 };
 
         // (6) the right surface, vertices in CCW order(observing from outside):
         polyhedron_builder.faces.emplace_back();
 
-        polyhedron_builder.vertices.emplace_back(Point_3(1, 1, 0)); // vertex index: 20
-        polyhedron_builder.vertices.emplace_back(Point_3(0, 1, 0)); // vertex index: 21
-        polyhedron_builder.vertices.emplace_back(Point_3(0, 1, 1)); // vertex index: 22
-        polyhedron_builder.vertices.emplace_back(Point_3(1, 1, 1)); // vertex index: 23
+        //Point_3(1, 1, 0); // vertex index: 1
+        //Point_3(0, 1, 0); // vertex index: 4
+        //Point_3(0, 1, 1); // vertex index: 7
+        //Point_3(1, 1, 1); // vertex index: 2
 
-        polyhedron_builder.faces.back() = { 20, 21, 22, 23 };
+        polyhedron_builder.faces.back() = { 1, 4, 7, 2 };
 
         // now build the Polyhedron
         Polyhedron cube;
         cube.delegate(polyhedron_builder);
-        std::cout << "is cube closed? " << cube.is_closed() << '\n';
-        std::cout << "cout cube\n";
-        std::cout << cube;
 
         // check whether the cube is correctly created
         if (cube.is_empty()) { // if the cube is empty  
@@ -367,20 +367,9 @@ public:
             std::cerr << "warning: cube(Polyhedron) is not closed, please check make_cube() function in Polyhedron.hpp\n";
             return Nef_polyhedron::EMPTY; // return an empty nef polyhedron
         }
-
-        /*
-        * why cube is not closed?
-        * there are repeated vertices in it
-        * 6 faces should not be using 24 vertices
-        */
                   
         // cube is correctly created(not empty && closed) -> convert it to a Nef_polyhedron
         Nef_polyhedron nef_cube(cube);
-
-        // test
-        std::cout << "is nef cube empty? " << nef_cube.is_empty() << '\n';
-        Nef_polyhedron empty_nef(Nef_polyhedron::EMPTY);
-        std::cout << "is nef EMPTY empty? " << empty_nef.is_empty() << '\n';
         
         return nef_cube;
 
@@ -396,10 +385,10 @@ public:
     * nef : the nef polyhedron which needs to be merged
     * size: a cube's side length
     */
-    static void minkowski_sum(Nef_polyhedron& nef, Nef_polyhedron& cube)
+    static Nef_polyhedron minkowski_sum(Nef_polyhedron& nef, double size = 1.0)
     {
-        
-        
+        Nef_polyhedron cube = make_cube(size);
+        return CGAL::minkowski_sum_3(nef, cube);     
     }
 
 

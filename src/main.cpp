@@ -120,14 +120,25 @@ int main(int argc, const char** argv)
 	NefProcessing::extract_nef_geometries(convex_big_nef, convex_shell_explorers);
 	NefProcessing::process_shells_for_cityjson(convex_shell_explorers);
 
-	// test make cube:
-	NefProcessing::make_cube();
+	// test minkowski_sum_3 -> add a "buffer" for each nef in Nefs
+	Nef_polyhedron merged_big_nef; 
+	for (auto& nef : Nefs)
+	{
+		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 1.0); // cube size is 1.0 by default
+		merged_big_nef += merged_nef;
+	}
+	
+	// process the merged big nef to make it available for output
+	std::vector<Shell_explorer> merged_shell_explorers;
+	NefProcessing::extract_nef_geometries(merged_big_nef, merged_shell_explorers);
+	NefProcessing::process_shells_for_cityjson(merged_shell_explorers);
+
 
     // write file
-	//JsonWriter jwrite;
-	//std::string writeFilename = "\\bignefpolyhedron_convex.json";
-	//const Shell_explorer& shell = convex_shell_explorers[0]; // which shell is going to be written to the file
-	//jwrite.write_json_file(DATA_PATH + writeFilename, shell);
+	JsonWriter jwrite;
+	std::string writeFilename = "\\bignefpolyhedron_merged.json";
+	const Shell_explorer& shell = merged_shell_explorers[1]; // which shell is going to be written to the file
+	jwrite.write_json_file(DATA_PATH + writeFilename, shell);
 
 	return 0;
 }
