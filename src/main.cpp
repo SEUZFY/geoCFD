@@ -120,6 +120,9 @@ int main(int argc, const char** argv)
 	NefProcessing::extract_nef_geometries(convex_big_nef, convex_shell_explorers);
 	NefProcessing::process_shells_for_cityjson(convex_shell_explorers);
 
+	// test make cube:
+	NefProcessing::make_cube();
+
     // write file
 	//JsonWriter jwrite;
 	//std::string writeFilename = "\\bignefpolyhedron_convex.json";
