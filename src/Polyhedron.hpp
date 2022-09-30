@@ -29,7 +29,7 @@ struct Polyhedron_builder : public CGAL::Modifier_base<HDS> {
     Polyhedron_builder() {}
     void operator()(HDS& hds) {
         CGAL::Polyhedron_incremental_builder_3<HDS> builder(hds, true);
-        std::cout << "building surface with " << vertices.size() << " vertices and " << faces.size() << " faces" << '\n';
+        //std::cout << "building surface with " << vertices.size() << " vertices and " << faces.size() << " faces" << '\n';
 
         builder.begin_surface(vertices.size(), faces.size());
         for (auto const& vertex : vertices) builder.add_vertex(vertex);
@@ -49,7 +49,7 @@ public:
     // build one polyhedron using vertices and faces from one shell (one building)
     // jhandle: A JsonHandler instance, contains all vertices and solids
     // index  : index of solids vector, indicating which solid is going to be built - ideally one building just contains one solid
-    static void build_one_polyhedron(const JsonHandler& jhandle, std::vector<Nef_polyhedron>& Nefs, unsigned long index = 0)
+    static void build_nef_polyhedron(const JsonHandler& jhandle, std::vector<Nef_polyhedron>& Nefs, unsigned long index = 0)
     {
         const auto& solid = jhandle.solids[index]; // get the solid
         if (solid.shells.size() != 1) {
@@ -179,12 +179,14 @@ public:
     */
     static void extract_nef_geometries(const Nef_polyhedron& nef, std::vector<Shell_explorer>& shell_explorers)
     {
+        std::cout << "extracting nef geometries ...\n";
+        
         int volume_count = 0; // for counting volumes
         Nef_polyhedron::Volume_const_iterator current_volume;
         CGAL_forall_volumes(current_volume, nef)
         {
-            std::cout << "volume: " << volume_count++ << " ";
-            std::cout << "volume mark: " << current_volume->mark() << '\n';
+            //std::cout << "volume: " << volume_count++ << " ";
+            //std::cout << "volume mark: " << current_volume->mark() << '\n';
             Nef_polyhedron::Shell_entry_const_iterator current_shell;
             CGAL_forall_shells_of(current_shell, current_volume)
             {
@@ -198,7 +200,7 @@ public:
         }
 
         // prompt some info
-        std::cout << "after extracting geometries: " << '\n';
+        /*std::cout << "after extracting geometries: " << '\n';
         std::cout << "shell explorers size: " << shell_explorers.size() << '\n';
         std::cout << "info for each shell\n";
         for (const auto& se : shell_explorers)
@@ -206,7 +208,9 @@ public:
             std::cout << "vertices size of this shell: " << se.vertices.size() << '\n';
             std::cout << "faces size of this shell: " << se.faces.size() << '\n';
             std::cout << '\n';
-        }
+        }*/
+
+        std::cout << "extracting nef geometries done\n";
     }
 
 

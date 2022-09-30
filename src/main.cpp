@@ -46,14 +46,20 @@ int main(int argc, const char** argv)
 	jhandle2.read_certain_building(j, building2_id);
 	jhandle2.message();
 
+	JsonHandler jhandle3;
+	std::string building3_id = "NL.IMBAG.Pand.0503100000018423-0"; // adjacent to building1
+	jhandle3.read_certain_building(j, building3_id);
+	jhandle3.message();
+
 
 	// build a vector to store the nef polyhedra(if built successfully)
 	std::vector<Nef_polyhedron> Nefs;
 
 
-	// build polyhedron test
-	BuildPolyhedron::build_one_polyhedron(jhandle1, Nefs);
-	BuildPolyhedron::build_one_polyhedron(jhandle2, Nefs);
+	// build Nef_polyhedron and sotres in Nefs vector
+	BuildPolyhedron::build_nef_polyhedron(jhandle1, Nefs);
+	BuildPolyhedron::build_nef_polyhedron(jhandle2, Nefs);
+	BuildPolyhedron::build_nef_polyhedron(jhandle3, Nefs);
 
 
 	// prompt Nefs
@@ -88,7 +94,7 @@ int main(int argc, const char** argv)
 	NefProcessing::process_shells_for_cityjson(shell_explorers); // process shells for writing to cityjson
 
 	// prompt some info after cleaning operation
-	std::cout << "info about shells after cleaning operations\n";
+	/*std::cout << "info about shells after cleaning operations\n";
 	std::cout << "shell explorers size: " << shell_explorers.size() << '\n';
 	std::cout << "info for each shell\n";
 	for (const auto& se : shell_explorers)
@@ -96,23 +102,24 @@ int main(int argc, const char** argv)
 		std::cout << "cleaned vertices size of this shell: " << se.cleaned_vertices.size() << '\n';
 		std::cout << "cleaned faces size of this shell: " << se.cleaned_faces.size() << '\n';
 		std::cout << '\n';
-	}
+	}*/
 
 
 	/* get the convex hull of the big_nef, use all cleaned vertices of all shells */
 	// get cleaned vertices of shell_explorers[0] - the shell indicating the exterior of the big nef
 	std::vector<Point_3>& convex_vertices = shell_explorers[0].cleaned_vertices;
-	std::cout << "convex vertices size: " << convex_vertices.size() << '\n';
+	//std::cout << "convex vertices size: " << convex_vertices.size() << '\n';
 
 	// build convex hull of the big nef
 	Polyhedron convex_polyhedron; // define polyhedron to hold convex hull
 	Nef_polyhedron convex_big_nef;
 	CGAL::convex_hull_3(convex_vertices.begin(), convex_vertices.end(), convex_polyhedron);
-	std::cout << "is convex closed?" << convex_polyhedron.is_closed() << '\n';
+	std::cout << "is convex closed? " << convex_polyhedron.is_closed() << '\n';
 	if (convex_polyhedron.is_closed()) {
-		std::cout << "build convex hull for the big nef\n";
+		std::cout << "build convex hull for the big nef...\n";
 		Nef_polyhedron convex_nef(convex_polyhedron);
 		convex_big_nef = convex_nef;
+		std::cout << "build convex hull for the big nef done\n";
 	}
 
 	// process the convex big nef to make it available for output
@@ -121,12 +128,14 @@ int main(int argc, const char** argv)
 	NefProcessing::process_shells_for_cityjson(convex_shell_explorers);
 
 	// test minkowski_sum_3 -> add a "buffer" for each nef in Nefs
+	std::cout << "performing minkowski sum...\n";
 	Nef_polyhedron merged_big_nef; 
 	for (auto& nef : Nefs)
 	{
 		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 1.0); // cube size is 1.0 by default
 		merged_big_nef += merged_nef;
 	}
+	std::cout << "performing minkowski sum done\n";
 	
 	// process the merged big nef to make it available for output
 	std::vector<Shell_explorer> merged_shell_explorers;
@@ -136,8 +145,9 @@ int main(int argc, const char** argv)
 
     // write file
 	JsonWriter jwrite;
-	std::string writeFilename = "\\bignefpolyhedron_merged.json";
+	std::string writeFilename = "\\bignefpolyhedron_3buildings_interior.json";
 	const Shell_explorer& shell = merged_shell_explorers[1]; // which shell is going to be written to the file
+	std::cout << "writing the result to cityjson file...\n";
 	jwrite.write_json_file(DATA_PATH + writeFilename, shell);
 
 	return 0;
