@@ -43,6 +43,9 @@ that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
   
   - `#include` - include multiple files, how to avoid possibly messy includings?
 
+  - `precompiled headers` - add `pch.h` file and use [cmake command for precompiled headers](https://cmake.org/cmake/help/latest/command/target_precompile_headers.html)
+ 
+
 ## Prerequisite
 
 [CGAL](https://www.cgal.org/) - The version should be above `5.0` since we can use the `header-only`, which means we don't have to manually compile `CGAL`.
