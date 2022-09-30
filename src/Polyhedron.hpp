@@ -195,7 +195,7 @@ public:
                 nef.visit_shell_objects(sface_in_shell, se);
 
                 // add the se to shell_explorers
-                shell_explorers.push_back(se);
+                shell_explorers.emplace_back(se);
             }
         }
 

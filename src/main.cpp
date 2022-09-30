@@ -3,15 +3,46 @@
 * main.cpp
 */
 
+
 #include <CGAL/Polyhedron_3.h>
 #include "JsonWriter.hpp"
 
+#include<chrono> //Timer
+
+
 #define DATA_PATH "D:\\SP\\geoCFD\\data" // specify the data path
-#define _ENABLE_CONVEX_HULL_ // turn on/off convex hull method
+//#define _ENABLE_CONVEX_HULL_ // switch on/off convex hull method
+#define _ENABLE_MINKOWSKI_SUM_ // switch on/off minkowski sum method -> active by default
+
+
+
+// Timer class -> used for tracking the run time
+struct Timer //for counting the time
+{
+	std::chrono::time_point<std::chrono::steady_clock>start, end;
+	std::chrono::duration<float>duration;
+
+	Timer() //set default value
+	{
+		start = end = std::chrono::high_resolution_clock::now();
+		duration = end - start;
+	}
+
+	~Timer() // get the end value and print the duration time
+	{
+		end = std::chrono::high_resolution_clock::now();
+		duration = end - start;
+
+		std::cout << "Time: " << duration.count() << "s\n";
+	}
+};
+
+
 
 int main(int argc, const char** argv)
 {
-
+	Timer timer; // count the run time
+	
 	std::cout << "-- activated data folder: " << DATA_PATH << '\n';
 	std::cout << "This is: " << argv[0] << '\n';
 
@@ -35,11 +66,29 @@ int main(int argc, const char** argv)
 	input.close();
 
 	// get ids of adjacent buildings
-	const char* adjacency[] = { "NL.IMBAG.Pand.0503100000019695-0" ,
-								"NL.IMBAG.Pand.0503100000018413-0" ,
-								"NL.IMBAG.Pand.0503100000018423-0" ,
-								"NL.IMBAG.Pand.0503100000018419-0" ,
-								"NL.IMBAG.Pand.0503100000018408-0" };
+	const char* adjacency[] = { "NL.IMBAG.Pand.0503100000019695-0",
+								"NL.IMBAG.Pand.0503100000018413-0",
+								"NL.IMBAG.Pand.0503100000018423-0",
+								"NL.IMBAG.Pand.0503100000018419-0",
+								"NL.IMBAG.Pand.0503100000018408-0",
+								"NL.IMBAG.Pand.0503100000018412-0",
+								"NL.IMBAG.Pand.0503100000018407-0",
+								"NL.IMBAG.Pand.0503100000018411-0", 
+								"NL.IMBAG.Pand.0503100000018425-0",
+								"NL.IMBAG.Pand.0503100000018422-0",
+								"NL.IMBAG.Pand.0503100000018427-0",
+								"NL.IMBAG.Pand.0503100000018409-0",
+								"NL.IMBAG.Pand.0503100000004564-0",
+								"NL.IMBAG.Pand.0503100000032517-0",
+								"NL.IMBAG.Pand.0503100000019797-0",
+								"NL.IMBAG.Pand.0503100000019796-0",
+								"NL.IMBAG.Pand.0503100000004566-0",
+								"NL.IMBAG.Pand.0503100000004565-0",
+								"NL.IMBAG.Pand.0503100000031928-0",
+								"NL.IMBAG.Pand.0503100000017031-0",
+								"NL.IMBAG.Pand.0503100000027802-0",
+								"NL.IMBAG.Pand.0503100000027801-0",
+								"NL.IMBAG.Pand.0503100000018586-0" };
 
 
 	//read certain building, stores in jhandlers vector
@@ -109,10 +158,10 @@ int main(int argc, const char** argv)
 	}*/
 
 
+#ifdef _ENABLE_CONVEX_HULL_
 	/* get the convex hull of the big_nef, use all cleaned vertices of all shells */
 	// get cleaned vertices of shell_explorers[0] - the shell indicating the exterior of the big nef
 	std::vector<Point_3>& convex_vertices = shell_explorers[0].cleaned_vertices;
-	//std::cout << "convex vertices size: " << convex_vertices.size() << '\n';
 
 	// build convex hull of the big nef
 	Polyhedron convex_polyhedron; // define polyhedron to hold convex hull
@@ -130,13 +179,16 @@ int main(int argc, const char** argv)
 	std::vector<Shell_explorer> convex_shell_explorers;
 	NefProcessing::extract_nef_geometries(convex_big_nef, convex_shell_explorers);
 	NefProcessing::process_shells_for_cityjson(convex_shell_explorers);
+#endif
 
-	// test minkowski_sum_3 -> add a "buffer" for each nef in Nefs
+
+#ifdef _ENABLE_MINKOWSKI_SUM_
+	// minkowski_sum_3 -> add a "buffer" for each nef in Nefs
 	std::cout << "performing minkowski sum...\n";
 	Nef_polyhedron merged_big_nef; 
 	for (auto& nef : Nefs)
 	{
-		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 1.0); // cube size is 1.0 by default
+		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 1.0); // cube size is 1.0 by default, can be altered
 		merged_big_nef += merged_nef;
 	}
 	std::cout << "performing minkowski sum done\n";
@@ -145,12 +197,13 @@ int main(int argc, const char** argv)
 	std::vector<Shell_explorer> merged_shell_explorers;
 	NefProcessing::extract_nef_geometries(merged_big_nef, merged_shell_explorers);
 	NefProcessing::process_shells_for_cityjson(merged_shell_explorers);
+#endif
 
 
     // write file
 	JsonWriter jwrite;
-	std::string writeFilename = "\\bignef_merged_interior_5.json";
-	const Shell_explorer& shell = merged_shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
+	std::string writeFilename = "\\buildingset_1_exterior_m=1.0.json";
+	const Shell_explorer& shell = merged_shell_explorers[0]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
 	std::cout << "writing the result to cityjson file...\n";
 	jwrite.write_json_file(DATA_PATH + writeFilename, shell);
 
