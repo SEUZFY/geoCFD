@@ -34,22 +34,31 @@ int main(int argc, const char** argv)
 	input >> j;
 	input.close();
 
+	// get ids of adjacent buildings
+	const char* adjacency[] = { "NL.IMBAG.Pand.0503100000019695-0" ,
+								"NL.IMBAG.Pand.0503100000018413-0" ,
+								"NL.IMBAG.Pand.0503100000018423-0" };
+
 
 	//read certain building
+	std::cout << "------------------------ building(part) info ------------------------\n";
+
 	JsonHandler jhandle1;
-	std::string building1_id = "NL.IMBAG.Pand.0503100000019695-0";
-	jhandle1.read_certain_building(j, building1_id);
+	//std::string building1_id = "NL.IMBAG.Pand.0503100000019695-0";
+	jhandle1.read_certain_building(j, adjacency[0]);
 	jhandle1.message();
 
 	JsonHandler jhandle2;
-	std::string building2_id = "NL.IMBAG.Pand.0503100000018413-0"; // adjacent to building1
-	jhandle2.read_certain_building(j, building2_id);
+	//std::string building2_id = "NL.IMBAG.Pand.0503100000018413-0"; // adjacent to building1
+	jhandle2.read_certain_building(j, adjacency[1]);
 	jhandle2.message();
 
 	JsonHandler jhandle3;
-	std::string building3_id = "NL.IMBAG.Pand.0503100000018423-0"; // adjacent to building1
-	jhandle3.read_certain_building(j, building3_id);
+	//std::string building3_id = "NL.IMBAG.Pand.0503100000018423-0"; // adjacent to building1
+	jhandle3.read_certain_building(j, adjacency[2]);
 	jhandle3.message();
+
+	std::cout << "---------------------------------------------------------------------\n";
 
 
 	// build a vector to store the nef polyhedra(if built successfully)

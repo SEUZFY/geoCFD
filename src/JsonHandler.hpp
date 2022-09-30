@@ -117,7 +117,7 @@ public:
 	* and print the (x,y,z) coordinates of each vertex encountered
 	* lod specified: 1.3
 	*/
-	void read_certain_building(const json& j, const std::string& building_id) {
+	void read_certain_building(const json& j, const char* building_id) {
 		for (auto& co : j["CityObjects"].items()) {
 			if (co.key() == building_id)
 			{
@@ -183,12 +183,11 @@ public:
 	* prompt basic information of the current building
 	*/
 	void message()
-	{
-		std::cout << "---------building(part) info----------\n";
+	{		
 		std::cout << "building(part) name: " << solids[0].id << '\n';
 		std::cout << "lod level: " << solids[0].lod << '\n';
 		std::cout << "number of vertices: " << vertices.size() << '\n';
-		std::cout << "--------------------------------------\n";
+		std::cout << '\n';		
 	}
 
 
