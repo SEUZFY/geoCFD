@@ -37,7 +37,9 @@ int main(int argc, const char** argv)
 	// get ids of adjacent buildings
 	const char* adjacency[] = { "NL.IMBAG.Pand.0503100000019695-0" ,
 								"NL.IMBAG.Pand.0503100000018413-0" ,
-								"NL.IMBAG.Pand.0503100000018423-0" };
+								"NL.IMBAG.Pand.0503100000018423-0" ,
+								"NL.IMBAG.Pand.0503100000018419-0" ,
+								"NL.IMBAG.Pand.0503100000018408-0" };
 
 
 	//read certain building, stores in jhandlers vector
@@ -147,8 +149,8 @@ int main(int argc, const char** argv)
 
     // write file
 	JsonWriter jwrite;
-	std::string writeFilename = "\\bignefpolyhedron_3buildings_interior.json";
-	const Shell_explorer& shell = merged_shell_explorers[1]; // which shell is going to be written to the file
+	std::string writeFilename = "\\bignef_merged_interior_5.json";
+	const Shell_explorer& shell = merged_shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
 	std::cout << "writing the result to cityjson file...\n";
 	jwrite.write_json_file(DATA_PATH + writeFilename, shell);
 
