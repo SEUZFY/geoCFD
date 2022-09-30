@@ -57,9 +57,9 @@ check this ->
 
 ## How to use?
 
-The files are built and executed on `x64-windows10` platform.
+This project is built and executed on a `windows10(64 bit)` platform.
 
-Clone this project and open it in [Visual Studio 2019](https://visualstudio.microsoft.com/) or newer version, you should be able to directly build and run.
+Clone this project and open it in [Visual Studio](https://visualstudio.microsoft.com/) **2019** or newer version, you should be able to directly build and run.
 
 ## Compile info
 
