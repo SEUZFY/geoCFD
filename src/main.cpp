@@ -40,8 +40,18 @@ int main(int argc, const char** argv)
 								"NL.IMBAG.Pand.0503100000018423-0" };
 
 
-	//read certain building
+	//read certain building, stores in jhandlers vector
+	std::vector<JsonHandler> jhandlers;
+	//jhandlers.reserve(size); -> if we know the length of adjacency lsit, we can use reserve()
 	std::cout << "------------------------ building(part) info ------------------------\n";
+
+	//JsonHandler jhandler;
+	//for (auto const& building_name : adjacency) // get each building
+	//{
+	//	jhandler.read_certain_building(j, building_name); // read in 
+	//	jhandler.message();
+	//	jhandlers.emplace_back(jhandler); // add to the jhandlers vector
+	//}
 
 	JsonHandler jhandle1;
 	//std::string building1_id = "NL.IMBAG.Pand.0503100000019695-0";
@@ -64,11 +74,16 @@ int main(int argc, const char** argv)
 	// build a vector to store the nef polyhedra(if built successfully)
 	std::vector<Nef_polyhedron> Nefs;
 
-
-	// build Nef_polyhedron and sotres in Nefs vector
 	BuildPolyhedron::build_nef_polyhedron(jhandle1, Nefs);
 	BuildPolyhedron::build_nef_polyhedron(jhandle2, Nefs);
 	BuildPolyhedron::build_nef_polyhedron(jhandle3, Nefs);
+
+
+	// build Nef_polyhedron and sotres in Nefs vector
+	/*for (auto const& jhdl : jhandlers)
+	{
+		BuildPolyhedron::build_nef_polyhedron(jhdl, Nefs);
+	}*/
 
 
 	// prompt Nefs
