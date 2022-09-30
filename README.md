@@ -47,7 +47,7 @@ that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
 
 [CGAL](https://www.cgal.org/) - The version should be above `5.0` since we can use the `header-only`, which means we don't have to manually compile `CGAL`.
 
-install `CGAL` via `vcpkg`:
+install `CGAL` via [vcpkg](https://vcpkg.io/en/index.html):
 
 check this -> 
 
