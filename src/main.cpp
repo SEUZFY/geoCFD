@@ -57,16 +57,19 @@ int main(int argc, const char** argv)
 	//std::string building1_id = "NL.IMBAG.Pand.0503100000019695-0";
 	jhandle1.read_certain_building(j, adjacency[0]);
 	jhandle1.message();
+	jhandlers.emplace_back(jhandle1);
 
 	JsonHandler jhandle2;
 	//std::string building2_id = "NL.IMBAG.Pand.0503100000018413-0"; // adjacent to building1
 	jhandle2.read_certain_building(j, adjacency[1]);
 	jhandle2.message();
+	jhandlers.emplace_back(jhandle2);
 
 	JsonHandler jhandle3;
 	//std::string building3_id = "NL.IMBAG.Pand.0503100000018423-0"; // adjacent to building1
 	jhandle3.read_certain_building(j, adjacency[2]);
 	jhandle3.message();
+	jhandlers.emplace_back(jhandle3);
 
 	std::cout << "---------------------------------------------------------------------\n";
 
@@ -74,16 +77,12 @@ int main(int argc, const char** argv)
 	// build a vector to store the nef polyhedra(if built successfully)
 	std::vector<Nef_polyhedron> Nefs;
 
-	BuildPolyhedron::build_nef_polyhedron(jhandle1, Nefs);
-	BuildPolyhedron::build_nef_polyhedron(jhandle2, Nefs);
-	BuildPolyhedron::build_nef_polyhedron(jhandle3, Nefs);
-
 
 	// build Nef_polyhedron and sotres in Nefs vector
-	/*for (auto const& jhdl : jhandlers)
+	for (auto const& jhdl : jhandlers)
 	{
 		BuildPolyhedron::build_nef_polyhedron(jhdl, Nefs);
-	}*/
+	}
 
 
 	// prompt Nefs
