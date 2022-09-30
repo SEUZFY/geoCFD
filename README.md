@@ -1,6 +1,6 @@
 # geoCFD
 
-<img src="https://user-images.githubusercontent.com/72781910/193364989-1d4eb5cb-a4a0-40b5-8af3-9b4405ca88f2.PNG">
+<img src="https://user-images.githubusercontent.com/72781910/193364989-1d4eb5cb-a4a0-40b5-8af3-9b4405ca88f2.PNG" width=600>
 
 Process geometry for cfd simulation.
 
@@ -19,9 +19,9 @@ that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
 
 - Export the `big nef polyhedron` as `.cityjson` file(with no repeated vertices) and visualise it in [ninja](https://ninja.cityjson.org/), observe its `exterior` and `interior`.
 
-  ![set_1_exterior_m=1 0](https://user-images.githubusercontent.com/72781910/193365248-fdf5899d-93ea-42e0-8d4e-84186ebc9ba2.PNG)
+  <img src="https://user-images.githubusercontent.com/72781910/193365248-fdf5899d-93ea-42e0-8d4e-84186ebc9ba2.PNG" width=600>
   
-  ![set_1_interior_1 0](https://user-images.githubusercontent.com/72781910/193365272-2d96000f-ca59-42a4-9801-111f28d7460b.PNG)
+  <img src="https://user-images.githubusercontent.com/72781910/193365272-2d96000f-ca59-42a4-9801-111f28d7460b.PNG" width=600>
 
 `To do`:
 
