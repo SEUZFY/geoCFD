@@ -49,15 +49,21 @@ that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
 
 install `CGAL` via `vcpkg`:
 
-check this -> [vcpkg Crash Course | C++ libraries simplified! A Visual Studio must-have!](https://www.youtube.com/watch?v=b7SdgK7Y510)
+check this -> 
+
+[Download CGAL for Windows](https://www.cgal.org/download/windows.html)
+
+[vcpkg Crash Course | C++ libraries simplified! A Visual Studio must-have!](https://www.youtube.com/watch?v=b7SdgK7Y510)
 
 ## How to use?
 
 The files are built and executed on `x64-windows10` platform.
 
-Clone this project and open it in `Visual Studio 2019` or newer version, you should be able to directly build and run.
+Clone this project and open it in [Visual Studio 2019](https://visualstudio.microsoft.com/) or newer version, you should be able to directly build and run.
 
 ## Compile info
+
+C++ Standard: `C++ 11`
 
 Compiler: `MSVC`
 
