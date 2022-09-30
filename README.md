@@ -1,29 +1,27 @@
 # geoCFD
 
-<img src="https://user-images.githubusercontent.com/72781910/192777906-37361ee5-a656-4a9a-8784-5c9302c6b2e9.PNG" width="310" height="200">  <img src="https://user-images.githubusercontent.com/72781910/192778310-c14abb50-e899-42e2-8acc-d7f76a0e31e2.PNG" width="310" height="200">
+<img src="https://user-images.githubusercontent.com/72781910/193364989-1d4eb5cb-a4a0-40b5-8af3-9b4405ca88f2.PNG">
+
+Process geometry for cfd simulation.
 
 It's a `x64-windows10` version of [geocfd-Ubuntu](https://github.com/SEUZFY/geocfd-Ubuntu). Further development may be performed in this project since a discovery has been found 
 that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
 
-**Purpose**: Process geometry for cfd simulation.
-
 `Now`:
 
-- Read two adjacent buildings, process repeated vertices and build two `nef polyhedra`.
+- Read a building set(containing 23 buildings(buildingparts)), process repeated vertices and build `nef polyhedra`.
 
-- Union two `nef polyhedra` into one `big nef polyhedron`.
+- Union `nef polyhedra` into one `big nef polyhedron`.
 
-- Export the `big nef polyhedron` as `.cityjson` file(with no repeated vertices) and visualise it in [ninja](https://ninja.cityjson.org/), observe its `exterior` and `interior`
+- Perform [3D Minkowski Sum](https://doc.cgal.org/latest/Minkowski_sum_3/index.html#Chapter_3D_Minkowski_Sum_of_Polyhedra).
 
-  <img src="https://user-images.githubusercontent.com/72781910/192778523-577a7e85-21a1-4729-aa1f-a55e310e317f.PNG" width="310" height="200">  <img src="https://user-images.githubusercontent.com/72781910/192778715-af57768e-08d0-467c-8247-53708fa147b8.PNG" width="310" height="200">
+- Get the [convex hull](https://en.wikipedia.org/wiki/Convex_hull) of the `big nef polyhedron` and visualise it in [ninja](https://ninja.cityjson.org/), observe its exterior and interior.
 
-- Get the `convex hull` of the `big nef polyhedron` and visualise it in [ninja](https://ninja.cityjson.org/), observe its `exterior` and `interior`
+- Export the `big nef polyhedron` as `.cityjson` file(with no repeated vertices) and visualise it in [ninja](https://ninja.cityjson.org/), observe its `exterior` and `interior`.
 
-  <img src="https://user-images.githubusercontent.com/72781910/192779009-1fd55a91-ff85-4035-931b-347568eb1f3d.PNG" width="310" height="200">  <img src="https://user-images.githubusercontent.com/72781910/192779087-387b8762-cf13-4bed-a636-45b1e362d241.PNG" width="310" height="200">
+  ![set_1_exterior_m=1 0](https://user-images.githubusercontent.com/72781910/193365248-fdf5899d-93ea-42e0-8d4e-84186ebc9ba2.PNG)
   
-- Perform [3D Minkowski Sum](https://doc.cgal.org/latest/Minkowski_sum_3/index.html#Chapter_3D_Minkowski_Sum_of_Polyhedra) and visualize the result in [ninja](https://ninja.cityjson.org/).
-
-  <img src="https://user-images.githubusercontent.com/72781910/193134598-386e8a58-372b-4831-ae03-1005d882a514.PNG" width="310" height="240">  <img src="https://user-images.githubusercontent.com/72781910/193134833-f4fa5db0-2e30-4cea-83b1-255566c20399.PNG" width="310" height="240">
+  ![set_1_interior_1 0](https://user-images.githubusercontent.com/72781910/193365272-2d96000f-ca59-42a4-9801-111f28d7460b.PNG)
 
 `To do`:
 
@@ -45,7 +43,6 @@ that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
 
   - `precompiled headers` - add `pch.h` file and use [cmake command for precompiled headers](https://cmake.org/cmake/help/latest/command/target_precompile_headers.html)
  
-
 ## Prerequisite
 
 [CGAL](https://www.cgal.org/) - The version should be above `5.0` since we can use the `header-only`, which means we don't have to manually compile `CGAL`.
