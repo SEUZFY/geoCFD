@@ -19,7 +19,7 @@ that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
 
 - Export the `big nef polyhedron` as `.cityjson` file(with no repeated vertices) and visualise it in [ninja](https://ninja.cityjson.org/), observe its `exterior` and `interior`.
 
-  <img width="361" alt="set_1_exterior_m=0 1" src="https://user-images.githubusercontent.com/72781910/193407856-042f6d65-5655-44df-bd39-969bf369b5c1.PNG">   <img width="361" alt="set_1_interior_m=0 1" src="https://user-images.githubusercontent.com/72781910/193407873-95722885-5144-4bc0-bce7-cfbb5fa8dbf4.PNG">
+  <img width="361" alt="set_1_exterior_m=0 1" src="https://user-images.githubusercontent.com/72781910/193407856-042f6d65-5655-44df-bd39-969bf369b5c1.PNG">   <img width="361" alt="set_1_interior_m=0 1" src="https://user-images.githubusercontent.com/72781910/193408048-7be363a3-4067-4819-ae5b-076114c8478f.PNG">
 
 `To do`:
 
