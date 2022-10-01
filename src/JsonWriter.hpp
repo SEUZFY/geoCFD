@@ -1,6 +1,5 @@
 #pragma once
 
-#pragma once
 
 #include "JsonHandler.hpp"
 #include "Polyhedron.hpp"

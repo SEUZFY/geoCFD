@@ -80,6 +80,7 @@ Thus extra care needs to be taken when creating `Polyhedron_3`.
 | building set| number of buildings | minkowski param | run time |
 | ----------- | ------------------- | --------------- | -------- |
 | 1           | 23                  | 1.0             | 29.7634s |
+| 1           | 23                  | 0.5             | 29.9599s |
 
 ## Other platforms
 
