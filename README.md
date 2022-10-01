@@ -29,6 +29,8 @@ that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
   
   - [3D Minkowski Sum](https://doc.cgal.org/latest/Minkowski_sum_3/index.html#Chapter_3D_Minkowski_Sum_of_Polyhedra) - can we do sum in some specific direction?
 
+  - test different LoD levels - for example `LoD 2.2`
+
  `long term`
  
   - `robust`
