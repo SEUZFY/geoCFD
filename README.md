@@ -1,6 +1,6 @@
 # geoCFD
 
-<img src="https://user-images.githubusercontent.com/72781910/193364989-1d4eb5cb-a4a0-40b5-8af3-9b4405ca88f2.PNG" width=600>
+<img width="558" alt="building_set_1_angle1" src="https://user-images.githubusercontent.com/72781910/193407829-c08d1cbf-7cc6-4a71-8a62-010c2e9d73e7.PNG">
 
 Process geometry for cfd simulation.
 
@@ -13,15 +13,13 @@ that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
 
 - Union `nef polyhedra` into one `big nef polyhedron`.
 
-- Perform [3D Minkowski Sum](https://doc.cgal.org/latest/Minkowski_sum_3/index.html#Chapter_3D_Minkowski_Sum_of_Polyhedra).
+- Perform [3D Minkowski Sum](https://doc.cgal.org/latest/Minkowski_sum_3/index.html#Chapter_3D_Minkowski_Sum_of_Polyhedra) with different parameters.
 
 - Get the [convex hull](https://en.wikipedia.org/wiki/Convex_hull) of the `big nef polyhedron` and visualise it in [ninja](https://ninja.cityjson.org/), observe its exterior and interior.
 
 - Export the `big nef polyhedron` as `.cityjson` file(with no repeated vertices) and visualise it in [ninja](https://ninja.cityjson.org/), observe its `exterior` and `interior`.
 
-  <img src="https://user-images.githubusercontent.com/72781910/193365248-fdf5899d-93ea-42e0-8d4e-84186ebc9ba2.PNG" width=600>
-  
-  <img src="https://user-images.githubusercontent.com/72781910/193365272-2d96000f-ca59-42a4-9801-111f28d7460b.PNG" width=600>
+  <img width="461" alt="set_1_exterior_m=0 1" src="https://user-images.githubusercontent.com/72781910/193407856-042f6d65-5655-44df-bd39-969bf369b5c1.PNG">   <img width="461" alt="set_1_interior_m=0 1" src="https://user-images.githubusercontent.com/72781910/193407873-95722885-5144-4bc0-bce7-cfbb5fa8dbf4.PNG">
 
 `To do`:
 
