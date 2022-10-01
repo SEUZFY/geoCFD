@@ -7,6 +7,8 @@
 
 /*
 * class for writing big nef_polyhedron to cityjson file
+* 
+* add different LoDs?
 */
 class JsonWriter : public JsonHandler
 {

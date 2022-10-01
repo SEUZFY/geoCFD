@@ -188,7 +188,7 @@ int main(int argc, const char** argv)
 	Nef_polyhedron merged_big_nef; 
 	for (auto& nef : Nefs)
 	{
-		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 0.5); // cube size is 1.0 by default, can be altered
+		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 0.1); // cube size is 1.0 by default, can be altered
 		merged_big_nef += merged_nef;
 	}
 	std::cout << "performing minkowski sum done\n";
@@ -202,7 +202,7 @@ int main(int argc, const char** argv)
 
     // write file
 	JsonWriter jwrite;
-	std::string writeFilename = "\\buildingset_1_interior_m=0.5.json";
+	std::string writeFilename = "\\buildingset_1_interior_m=0.1.json";
 	const Shell_explorer& shell = merged_shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
 	std::cout << "writing the result to cityjson file...\n";
 	jwrite.write_json_file(DATA_PATH + writeFilename, shell);
