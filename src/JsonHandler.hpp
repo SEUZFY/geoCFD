@@ -56,7 +56,7 @@ struct Solid
 {
 	std::vector<Shell> shells; // store the shells
 	std::string id; // store the building id, if needed
-	double lod; // store the lod level, if needed - lod must be converted to string(i.e. "1.3") when writing to file
+	double lod; // store the lod level, if needed - lod must be string(i.e. "1.3") when writing to file (otherwise invalid file)
 
 	// ... may add other attributes
 	// principally one solid can contain multiple shells
@@ -77,7 +77,9 @@ class JsonHandler
 protected:
 	/*
 	* check if a vertex already exists in a vertices vector
-	* use coordinates to compare whether two vertices are the same
+	* it's important to convert Point_3's coordinates(x, y, z) to double first
+	* since we are using Exact_predicates_exact_constructions_kernel
+	* use double coordinates to compare whether two vertices are the same
 	* return: False - not exist, True - already exist
 	*/
 	bool vertex_exist_check(std::vector<Point_3>& vertices, const Point_3& vertex) {
@@ -96,6 +98,8 @@ protected:
 
 	/*
 	* if a vertex is repeated, find the index in vertices vector and return the index
+	* it's important to convert Point_3's coordinates(x, y, z) to double first
+	* since we are using Exact_predicates_exact_constructions_kernel
 	*/
 	unsigned long find_vertex_index(std::vector<Point_3>& vertices, Point_3& vertex) {
 		for (std::size_t i = 0; i != vertices.size(); ++i) {
@@ -115,19 +119,19 @@ public:
 	* CityJSON files have their vertices compressed : https://www.cityjson.org/specs/1.1.1/#transform-object
 	* this function visits all the surfaces of a certain building
 	* and print the (x,y,z) coordinates of each vertex encountered
-	* lod specified: 1.3
+	* lod specified: 1.2 & 1.3 & 2.2
 	*/
-	void read_certain_building(const json& j, const char* building_id) {
+	void read_certain_building(const json& j, const char* building_id, double lod) {
 		for (auto& co : j["CityObjects"].items()) {
 			if (co.key() == building_id)
 			{
 				std::cout << "CityObject: " << co.key() << std::endl;
 				for (auto& g : co.value()["geometry"]) {
-					if (g["type"] == "Solid" && (abs(g["lod"].get<double>() - 1.3)) < epsilon) { // geometry type: Solid, use lod1.3
+					if (g["type"] == "Solid" && (abs(g["lod"].get<double>() - lod)) < epsilon) { // geometry type: Solid, use lod1.3
 						std::cout << "current lod level: " << g["lod"].get<double>() << '\n';
 						Solid so; // create a solid to store the information
 						so.id = co.key(); // store id
-						so.lod = g["lod"].get<double>(); // store lod info
+						so.lod = g["lod"].get<double>(); // store lod info as std::string type
 						for (auto& shell : g["boundaries"]) {
 							Shell se;
 							for (auto& surface : shell) {

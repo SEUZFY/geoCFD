@@ -65,6 +65,8 @@ int main(int argc, const char** argv)
 	input >> j;
 	input.close();
 
+	double lod = 1.3; // specify the lod level
+
 	// get ids of adjacent buildings
 	const char* adjacency[] = { "NL.IMBAG.Pand.0503100000019695-0",
 								"NL.IMBAG.Pand.0503100000018413-0",
@@ -99,7 +101,7 @@ int main(int argc, const char** argv)
 	for (auto const& building_name : adjacency) // get each building
 	{
 		JsonHandler jhandler;
-		jhandler.read_certain_building(j, building_name); // read in 
+		jhandler.read_certain_building(j, building_name, lod); // read in the building
 		jhandler.message();
 		jhandlers.emplace_back(jhandler); // add to the jhandlers vector
 	}
@@ -205,7 +207,7 @@ int main(int argc, const char** argv)
 	std::string writeFilename = "\\buildingset_1_interior_m=0.1.json";
 	const Shell_explorer& shell = merged_shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
 	std::cout << "writing the result to cityjson file...\n";
-	jwrite.write_json_file(DATA_PATH + writeFilename, shell);
+	jwrite.write_json_file(DATA_PATH + writeFilename, shell, lod);
 
 	return 0;
 }
