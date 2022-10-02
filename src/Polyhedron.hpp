@@ -52,6 +52,9 @@ public:
     static void build_nef_polyhedron(const JsonHandler& jhandle, std::vector<Nef_polyhedron>& Nefs, unsigned long index = 0)
     {
         const auto& solid = jhandle.solids[index]; // get the solid
+
+        std::cout << "build nef for building: " << solid.id << '\n';
+
         if (solid.shells.size() != 1) {
             std::cout << "warning: this solid contains 0 or more than one shells\n";
             std::cout << "please check build_one_polyhedron function and check the following solid:\n";
@@ -107,6 +110,7 @@ public:
                 std::cout << "build nef polyhedron" << '\n';
             }
 
+            std::cout << '\n';
             // visualize a polyhedron?
 
         }
