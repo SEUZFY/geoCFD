@@ -71,9 +71,24 @@ Generator: `Ninja`
 
 ## Attention
 
-Using `CGAL::Polyhedron_3` can be tricky, since `Polyhedron_builder` doesn't like repeated vertices, and even if it works
-with repeatness, the created `Polyhedron_3` is NOT closed(and thus can not be converted to `Nef_polyhedron`).
-Thus extra care needs to be taken when creating `Polyhedron_3`.
+	1. **vertices repeatness**
+
+		Using `CGAL::Polyhedron_3` can be tricky, since `Polyhedron_builder` doesn't like repeated vertices, and even if it works
+		with repeatness, the created `Polyhedron_3` is NOT closed(and thus can not be converted to `Nef_polyhedron`).
+		Thus extra care needs to be taken when creating `Polyhedron_3`.
+
+	2. **geometry error**
+
+		In `lod 2.2` geometries of buildings can get complicated, in our test there can be some geometry errors in the original dataset, for example:
+		```console
+		build nef for building: NL.IMBAG.Pand.0503100000018412-0
+
+		CGAL::Polyhedron_incremental_builder_3<HDS>::
+		lookup_halfedge(): input error: facet 29 has a self intersection at vertex 79.
+		polyhedron closed? 0
+		```
+		A manual fix can be possible towards certain building set but not general, if we take the universality into consideration, using `convex hull`
+		to replace the corresponding building seems to be a good choice, yet this approach may lead to the compromisation of the original building shapes.
 
 ## Benchmark
 
@@ -83,19 +98,6 @@ Thus extra care needs to be taken when creating `Polyhedron_3`.
 | 1           | 23                  | 1.3             | 0.5             | 29.9599s |
 | 1           | 23                  | 1.3             | 0.1             | 34.0587s |
 | 1           | 23                  | 1.2             | 0.1             | 29.8471s |
-
-## Geometry fixing
-
-In `lod 2.2` geometries of buildings can get complicated, in our test there can be some geometry errors in the original dataset, for example:
-```console
-build nef for building: NL.IMBAG.Pand.0503100000018412-0
-
-CGAL::Polyhedron_incremental_builder_3<HDS>::
-lookup_halfedge(): input error: facet 29 has a self intersection at vertex 79.
-polyhedron closed? 0
-```
-A manual fix can be possible towards certain building set but not general, if we take the universality into consideration, using `convex hull`
-to replace the corresponding building seems to be a good choice, yet this approach may lead to the compromisation of the original building shapes.
 
 ## Other platforms
 
