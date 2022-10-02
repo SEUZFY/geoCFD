@@ -65,7 +65,7 @@ int main(int argc, const char** argv)
 	input >> j;
 	input.close();
 
-	double lod = 2.2; // specify the lod level
+	double lod = 1.3; // specify the lod level
 
 	// get ids of adjacent buildings
 	const char* adjacency[] = { "NL.IMBAG.Pand.0503100000019695-0",
@@ -108,7 +108,7 @@ int main(int argc, const char** argv)
 
 	std::cout << "---------------------------------------------------------------------\n";
 
-	// build a vector to store the nef polyhedra(if built successfully)
+	// a vector to store the nef polyhedra(if built successfully)
 	std::vector<Nef_polyhedron> Nefs;
 
 	// build Nef_polyhedron and sotres in Nefs vector
@@ -135,9 +135,12 @@ int main(int argc, const char** argv)
 
 
 	// big Nef
+	std::cout << "building big nef...\n";
 	Nef_polyhedron big_nef;
-	for (const auto& nef : Nefs)
+	for (const auto& nef : Nefs) {
 		big_nef += nef;
+	}	
+	std::cout << "build big nef done\n";
 
 
 	// check if big Nef is simple - simple: no internal rooms, not simple: multiple rooms?

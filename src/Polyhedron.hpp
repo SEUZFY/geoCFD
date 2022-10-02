@@ -53,7 +53,7 @@ public:
     {
         const auto& solid = jhandle.solids[index]; // get the solid
 
-        std::cout << "build nef for building: " << solid.id << '\n';
+        std::cout << "building: " << solid.id << '\n';
 
         if (solid.shells.size() != 1) {
             std::cout << "warning: this solid contains 0 or more than one shells\n";
@@ -76,8 +76,30 @@ public:
 
             // call the delegate function
             polyhedron.delegate(polyhedron_builder);
-            std::cout << "polyhedron closed? " << polyhedron.is_closed() << '\n';
+            //std::cout << "polyhedron closed? " << polyhedron.is_closed() << '\n';
 
+            if (polyhedron.is_closed()) {
+                Nef_polyhedron nef_polyhedron(polyhedron);
+                Nefs.emplace_back();
+                Nefs.back() = nef_polyhedron; // add the built nef_polyhedron to the Nefs vector
+                std::cout << "the polyhedron is closed, build nef polyhedron" << '\n';
+            }
+            else {
+                std::cout << "the polyhedron is not closed, build convex hull to replace it\n";
+                Polyhedron convex_polyhedron;
+                CGAL::convex_hull_3(jhandle.vertices.begin(), jhandle.vertices.end(), convex_polyhedron);
+
+                // now check if we successfully build the convex hull
+                if (convex_polyhedron.is_closed()) {
+                    Nef_polyhedron convex_nef_polyhedron(convex_polyhedron);
+                    Nefs.emplace_back();
+                    Nefs.back() = convex_nef_polyhedron;
+                    std::cout<< "the convex hull is closed, build convex nef polyhedron" << '\n';
+                }
+                else {
+                    std::cerr << "convex hull is not closed, no nef polyhedron built\n";
+                }
+            }
 
             /* test to write the polyhedron to .off file --------------------------------------------------------*/
 
@@ -103,20 +125,21 @@ public:
             /* test to write the polyhedron to .off file --------------------------------------------------------*/
 
 
-            if (polyhedron.is_closed()) {
-                Nef_polyhedron nef_polyhedron(polyhedron);
-                Nefs.emplace_back();
-                Nefs.back() = nef_polyhedron; // add the built nef_polyhedron to the Nefs vector
-                std::cout << "build nef polyhedron" << '\n';
-            }
-
-            std::cout << '\n';
             // visualize a polyhedron?
 
         }
 
     }
 };
+
+
+
+/*
+* ------------------------------------------------------------------------------------------------------------------------------------------
+* now we have finished building nef polyhedron, we need to further process to extract
+* the geometries and prepare for writing to json file.
+* ------------------------------------------------------------------------------------------------------------------------------------------
+*/
 
 
 
