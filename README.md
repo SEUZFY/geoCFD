@@ -13,6 +13,10 @@ that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
 
 - Union `nef polyhedra` into one `big nef polyhedron`.
 
+  <img width="361" alt="set_1_exterior_m=0 1" src="https://user-images.githubusercontent.com/72781910/193796049-6d5e8756-d9ea-48c4-8ee6-4986a45b41a1.png">   <img width="361" alt="set_1_interior_m=0 1" src="https://user-images.githubusercontent.com/72781910/193792636-136b9c7f-17e2-4e27-9a68-c2f879c7e397.PNG">
+  
+  Observe the original `exterior` and `internal faces`(highlighted in yellow).
+
 - Perform [3D Minkowski Sum](https://doc.cgal.org/latest/Minkowski_sum_3/index.html#Chapter_3D_Minkowski_Sum_of_Polyhedra) with different parameters.
 
 - Get the [convex hull](https://en.wikipedia.org/wiki/Convex_hull) of the `big nef polyhedron` and visualise it in [ninja](https://ninja.cityjson.org/), observe its exterior and interior.
