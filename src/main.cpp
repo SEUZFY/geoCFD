@@ -207,8 +207,8 @@ int main(int argc, const char** argv)
 
     // write file
 	JsonWriter jwrite;
-	std::string writeFilename = "\\buildingset_1_exterior_m=0.1.json";
-	const Shell_explorer& shell = merged_shell_explorers[0]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
+	std::string writeFilename = "\\buildingset_1_interior_original.json";
+	const Shell_explorer& shell = shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
 	std::cout << "writing the result to cityjson file...\n";
 	jwrite.write_json_file(DATA_PATH + writeFilename, shell, lod);
 
