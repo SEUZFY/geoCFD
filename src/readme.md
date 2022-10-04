@@ -7,7 +7,7 @@ Responsible for taking care of the input `.cityjson` file and store the necessar
 Responsible for writing the result to a `.cityjson` file so that the result can be visualised in [ninja](https://ninja.cityjson.org/). It should be noted that users can choose to export the **exterior** or **interior** of the result buidling.
 
 ### Polyhedron.hpp
-Responsible for
+Responsible for ->
 
 - **(a)** taking care of `repeatness` in the dataset - `Polyhedron builder` doesn't like repeated vertices.
     
