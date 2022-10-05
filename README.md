@@ -90,6 +90,11 @@ Generator: `Ninja`
 	```
 	A manual fix can be possible towards certain building set but not general, if we take the **universality** and **automation** into consideration, using `convex hull` to replace the corresponding building seems to be a good choice, yet this approach may lead to the compromisation of the original building shapes.
 
+3. **DATA PATH**
+
+	Currently the `absolute path` is used in this program, it should be noted that the path is kinda different on `windows` and `linux`
+	system. This will be improved later.
+
 ## Benchmark
 
 | building set| number of buildings |    lod level    | minkowski param | run time |
