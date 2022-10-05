@@ -21,7 +21,9 @@ It's a cross-platform project (currently tested on `x64-windows10` platform, see
 
 - Perform [3D Minkowski Sum](https://doc.cgal.org/latest/Minkowski_sum_3/index.html#Chapter_3D_Minkowski_Sum_of_Polyhedra) with different parameters.
 
-- Get the [convex hull](https://en.wikipedia.org/wiki/Convex_hull) of the `big nef polyhedron` and visualise it in [ninja](https://ninja.cityjson.org/), observe its exterior and interior.
+	**note**: this step works for `lod 1.2` and `lod 1.3`, but need to do some preprocessing for `lod 2.2`, see [robust](https://github.com/SEUZFY/geoCFD/tree/master#robust) section for details.
+
+- Get the [convex hull](https://en.wikipedia.org/wiki/Convex_hull) of the `big nef polyhedron` and visualise it in [ninja](https://ninja.cityjson.org/), observe its exterior and interior (optional).
 
 - Export the `big nef polyhedron` as `.cityjson` file(with no repeated vertices) and visualise it in [ninja](https://ninja.cityjson.org/), observe its `exterior` and `interior`.
 
@@ -98,6 +100,39 @@ Generator: `Ninja`
 	system. This will be improved later.
 	
 ## Robust
+
+One important aspect is that `CGAL::Nef_polyhedron_3` will complain when the points of surfaces are not planar, which will lead to a `invalid` `Nef_polyhedron`.
+
+A possible solution is demonstrated as below (it has been tested on building set 1):
+```cpp
+typedef CGAL::Simple_cartesian<float> Kernel;
+typedef CGAL::Polyhedron_3<Kernel> Polyhedron_3;
+
+Polyhedron_3 polyhedron = load_my_polyhedron();
+CGAL::Polygon_mesh_processing::triangulate_faces(polyhedron);
+```
+A triangulation process of the surfaces of a polyhedron can make points planar since there's always a plane that passes between any three points, no matter their locations but this is not guaranteed when having four or more points, which is pretty common in `lod 2.2`, among 23 `Nef polyhedra` from 23 buildings, 22 of them are
+`invalid` and only 1 is `valid`.
+
+It should however be noted that, triangulating process will modify the original geometry a bit (tiny change but for now not sure how to visualise / quantify the possible influence) and also have time cost.
+
+Also we need to take the `geometry validity` of `CGAL::Polyhedron_3` into consideration. The `is_valid()` function only checks for `combinatorial validity` (for example in every half-edge should have an opposite oriented twin) but does not check the geometry correctness. In order to check it we can use `CGAL::Polygon_mesh_processing::do_intersect` to check for example if there are any intersections (need to verify and test).
+
+Why do we need to check `geometry validity`? Because this could break the corresponding Nef polyhedron, for example, the corresponding Nef polyhedron is not valid.
+
+possible solutions, allow users to switch on/off different robust check functions by defining different macros, for example:
+```cpp
+#define _POLYHEDRON_3_GEOMETRY_CHECK_
+#define _POLYHEDRON_3_COMBINATORIAL_CHECK_
+...
+```
+Also, since the triangulation process may have some cons, we can apply it on `lod 2.2` but not on `lod 1.2` and `lod 1.3`:
+```cpp
+if lod == 2.2
+	triangulate the surfaces of polyhedron
+	feed Nef with the triangulated polyhedron
+...
+```
 
 ## Benchmark
 
