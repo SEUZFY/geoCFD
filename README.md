@@ -13,12 +13,11 @@ It's a cross-platform project (currently tested on `x64-windows10` platform, see
 
 - Read a building set(containing 23 buildings(buildingparts)), process repeated vertices and build `nef polyhedra`.
 
-- Union `nef polyhedra` into one `big nef polyhedron`.
+- Union `nef polyhedra` into one `big nef polyhedron`, observe the original `exterior` and `internal faces`(highlighted in yellow).
 
-  <img width="361" alt="set_1_exterior_m=0 1" src="https://user-images.githubusercontent.com/72781910/194171368-d22080a7-ec18-4873-bbe1-188d8e4b7a69.PNG">   <img width="361" alt="set_1_interior_m=0 1" src="https://user-images.githubusercontent.com/72781910/194171438-593a9011-e633-42e1-852c-5e4866169cdd.PNG">
-  
-  
-  Observe the original `exterior` and `internal faces`(highlighted in yellow).
+  <img width="361" alt="set_1_exterior_m=0 1" src="https://user-images.githubusercontent.com/72781910/194174341-5d56621c-750a-4f32-b917-1840ff6e4313.png">   <img width="361" alt="set_1_interior_m=0 1" src="https://user-images.githubusercontent.com/72781910/194174083-0251a366-a61b-4357-a61d-042ea0110d1e.PNG">
+
+	The interior of the adjacent buildings - `lod 2.2` (left) and `lod 1.3` (right)
 
 - Perform [3D Minkowski Sum](https://doc.cgal.org/latest/Minkowski_sum_3/index.html#Chapter_3D_Minkowski_Sum_of_Polyhedra) with different parameters.
 
@@ -28,26 +27,23 @@ It's a cross-platform project (currently tested on `x64-windows10` platform, see
 
   <img width="361" alt="set_1_exterior_m=0 1" src="https://user-images.githubusercontent.com/72781910/194171610-b7e8698d-98cb-47e1-a087-bae30da85817.PNG">   <img width="361" alt="set_1_interior_m=0 1" src="https://user-images.githubusercontent.com/72781910/194172354-8a20bc4b-f9f9-4116-9725-06738e7c0747.PNG">
   
-	The interior of `lod 2.2` (left) and the interior of `lod 1.3` (right)
+	The interior of the result - `lod 2.2` (left) and `lod 1.3` (right)
+	
+- validate the result file via: 
 
+	- `val3dity`  - [validate](http://geovalidation.bk.tudelft.nl/val3dity/) the geometry
+  
+  	- `validator` - [validate](https://validator.cityjson.org/) the `cityjson` file
 
 `To do`:
-
-- test more complicated buildings 
 
   - how much will the shape change?
   
   - [3D Minkowski Sum](https://doc.cgal.org/latest/Minkowski_sum_3/index.html#Chapter_3D_Minkowski_Sum_of_Polyhedra) - can we do sum in some specific direction?
 
-  - test different LoD levels - for example `LoD 2.2`
+  - `robust` - see [robust](https://github.com/SEUZFY/geoCFD/tree/master#robust) section.
 
- `long term`
- 
-  - `robust` - see [robust] section
-  
-  - `val3dity`  - [validate](http://geovalidation.bk.tudelft.nl/val3dity/) the geometry
-  
-  - `validator` - [validate](https://validator.cityjson.org/) the `cityjson` file
+ `long term` 
   
   - `#include` - include multiple files, how to avoid possibly messy includings?
 
