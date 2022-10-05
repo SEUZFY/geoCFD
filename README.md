@@ -1,19 +1,22 @@
 # geoCFD
 
-<img width="558" alt="building_set_1_angle1" src="https://user-images.githubusercontent.com/72781910/193407829-c08d1cbf-7cc6-4a71-8a62-010c2e9d73e7.PNG">
+<img width="558" alt="building_set_1_angle1" src="https://user-images.githubusercontent.com/72781910/194170661-8729cccf-e41a-4802-ab51-f71cba5e6d75.PNG">
 
 Process geometry for cfd simulation.
 
-It's a `x64-windows10` version of [geocfd-Ubuntu](https://github.com/SEUZFY/geocfd-Ubuntu). Further development may be performed in this project since a discovery has been found 
-that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
+It's a cross-platform project (currently tested on `x64-windows10` platform, see [geocfd-Ubuntu](https://github.com/SEUZFY/geocfd-Ubuntu) for the basic setting up on 
+`wsl-ubuntu` platform). Further development are performed in this project since a discovery has been found that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
 
 `Now`:
+
+- support for all `LoD` levels (lod 1.2, lod 1.3, lod 2.2) in `cityjson` -> the code for `lod2.2` is currently available on [dev](https://github.com/SEUZFY/geoCFD/tree/dev) branch, not combined with lod1.2 and lod1.3 yet.
 
 - Read a building set(containing 23 buildings(buildingparts)), process repeated vertices and build `nef polyhedra`.
 
 - Union `nef polyhedra` into one `big nef polyhedron`.
 
-  <img width="361" alt="set_1_exterior_m=0 1" src="https://user-images.githubusercontent.com/72781910/193796049-6d5e8756-d9ea-48c4-8ee6-4986a45b41a1.png">   <img width="361" alt="set_1_interior_m=0 1" src="https://user-images.githubusercontent.com/72781910/193792636-136b9c7f-17e2-4e27-9a68-c2f879c7e397.PNG">
+  <img width="361" alt="set_1_exterior_m=0 1" src="https://user-images.githubusercontent.com/72781910/194171368-d22080a7-ec18-4873-bbe1-188d8e4b7a69.PNG">   <img width="361" alt="set_1_interior_m=0 1" src="https://user-images.githubusercontent.com/72781910/194171438-593a9011-e633-42e1-852c-5e4866169cdd.PNG">
+  
   
   Observe the original `exterior` and `internal faces`(highlighted in yellow).
 
@@ -23,7 +26,10 @@ that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
 
 - Export the `big nef polyhedron` as `.cityjson` file(with no repeated vertices) and visualise it in [ninja](https://ninja.cityjson.org/), observe its `exterior` and `interior`.
 
-  <img width="361" alt="set_1_exterior_m=0 1" src="https://user-images.githubusercontent.com/72781910/193407856-042f6d65-5655-44df-bd39-969bf369b5c1.PNG">   <img width="361" alt="set_1_interior_m=0 1" src="https://user-images.githubusercontent.com/72781910/193408048-7be363a3-4067-4819-ae5b-076114c8478f.PNG">
+  <img width="361" alt="set_1_exterior_m=0 1" src="https://user-images.githubusercontent.com/72781910/194171610-b7e8698d-98cb-47e1-a087-bae30da85817.PNG">   <img width="361" alt="set_1_interior_m=0 1" src="https://user-images.githubusercontent.com/72781910/194172354-8a20bc4b-f9f9-4116-9725-06738e7c0747.PNG">
+  
+	The interior of `lod 2.2` (left) and the interior of `lod 1.3` (right)
+
 
 `To do`:
 
@@ -37,7 +43,7 @@ that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
 
  `long term`
  
-  - `robust`
+  - `robust` - see [robust] section
   
   - `val3dity`  - [validate](http://geovalidation.bk.tudelft.nl/val3dity/) the geometry
   
@@ -94,6 +100,8 @@ Generator: `Ninja`
 
 	Currently the `absolute path` is used in this program, it should be noted that the path is kinda different on `windows` and `linux`
 	system. This will be improved later.
+	
+## Robust
 
 ## Benchmark
 
