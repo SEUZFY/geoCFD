@@ -122,7 +122,7 @@ Also we need to take the `geometry validity` of `CGAL::Polyhedron_3` into consid
 
 Why do we need to check `geometry validity`? Because this could break the corresponding Nef polyhedron, for example, the corresponding Nef polyhedron is not valid.
 
-possible solutions, allow users to switch on/off different robust check functions by defining different macros, for example:
+possible solutions: allow users to switch on/off different robust check functions by defining different macros, for example:
 ```cpp
 #define _POLYHEDRON_3_GEOMETRY_CHECK_
 #define _POLYHEDRON_3_COMBINATORIAL_CHECK_
