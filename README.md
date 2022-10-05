@@ -93,6 +93,8 @@ Generator: `Ninja`
 	polyhedron closed? 0
 	```
 	A manual fix can be possible towards certain building set but not general, if we take the **universality** and **automation** into consideration, using `convex hull` to replace the corresponding building seems to be a good choice, yet this approach may lead to the compromisation of the original building shapes.
+	
+	There are also other issues in `lod 2.2`, see [robust](https://github.com/SEUZFY/geoCFD/tree/master#robust) section for details.
 
 3. **DATA PATH**
 
