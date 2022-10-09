@@ -8,11 +8,13 @@
 #include "JsonWriter.hpp"
 
 #include<chrono> //Timer
+#include<future> //async
 
 
 #define DATA_PATH "D:\\SP\\geoCFD\\data" // specify the data path
 //#define _ENABLE_CONVEX_HULL_ // switch on/off convex hull method
-#define _ENABLE_MINKOWSKI_SUM_ // switch on/off minkowski sum method -> active by default
+//#define _ENABLE_MINKOWSKI_SUM_ // switch on/off minkowski sum method -> active by default
+#define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading
 
 
 
@@ -39,6 +41,68 @@ struct Timer //for counting the time
 
 
 
+/* functions to perform multi-threading -------------------------------------------------------------------------------------*/
+
+void build_nefs_subset_1(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs_1, Nef_polyhedron* big_nef_1)
+{
+	for (auto const& jhandler : (*jtr)) {
+		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs_1);
+	}
+
+	/*for (const auto& nef : *Nefs_1) {
+		(*big_nef_1) += nef;
+	}*/
+
+	for (auto& nef : *Nefs_1)
+	{
+		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 0.1); // cube size is 1.0 by default, can be altered
+		(*big_nef_1) += merged_nef;
+	}
+
+}
+
+
+void build_nefs_subset_2(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs_2, Nef_polyhedron* big_nef_2)
+{
+	for (auto const& jhandler : (*jtr)) {
+		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs_2);
+	}
+
+	/*for (const auto& nef : *Nefs_2) {
+		(*big_nef_2) += nef;
+	}*/
+
+	for (auto& nef : *Nefs_2)
+	{
+		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 0.1); // cube size is 1.0 by default, can be altered
+		(*big_nef_2) += merged_nef;
+	}
+}
+/* functions to perform multi-threading -------------------------------------------------------------------------------------*/
+
+
+
+// when multi-threading is not enabled
+void build_nefs(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs, Nef_polyhedron* big_nef)
+{
+	for (auto const& jhandler : (*jtr)) {
+		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs);
+	}
+
+	/*for (const auto& nef : *Nefs) {
+		(*big_nef) += nef;
+	}*/
+
+	for (auto& nef : *Nefs)
+	{
+		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 0.1); // cube size is 1.0 by default, can be altered
+		(*big_nef) += merged_nef;
+	}
+}
+
+
+
+// entry point
 int main(int argc, const char** argv)
 {
 	Timer timer; // count the run time
@@ -65,7 +129,7 @@ int main(int argc, const char** argv)
 	input >> j;
 	input.close();
 
-	double lod = 1.3; // specify the lod level
+	const double lod = 1.3; // specify the lod level
 
 	// get ids of adjacent buildings
 	const char* adjacency[] = { "NL.IMBAG.Pand.0503100000019695-0",
@@ -108,40 +172,68 @@ int main(int argc, const char** argv)
 
 	std::cout << "---------------------------------------------------------------------\n";
 
-	// a vector to store the nef polyhedra(if built successfully)
-	std::vector<Nef_polyhedron> Nefs;
 
-	// build Nef_polyhedron and sotres in Nefs vector
-	for (auto const& jhandler : jhandlers)
-	{
-		BuildPolyhedron::build_nef_polyhedron(jhandler, Nefs);
+#ifdef _ENABLE_MULTI_THREADING_
+	std::cout << "enable multi threading" << '\n';
+	unsigned int size = (unsigned int)jhandlers.size(); // i.e. size = 23
+
+	unsigned int size_1 = size / 2; // i.e. size_1 = 11
+	unsigned int size_2 = size - size_1; // i.e. size_2 = 12
+
+	// now split the jhandlers into two subsets
+
+	std::vector<JsonHandler> jhandlers_subset_1;
+	jhandlers_subset_1.reserve(size_1);
+	std::vector<JsonHandler> jhandlers_subset_2;
+	jhandlers_subset_2.reserve(size_2);
+
+	// get sub_set 1
+	for (unsigned int i = 0; i != size_1; ++i) {
+		jhandlers_subset_1.emplace_back(jhandlers[i]);
 	}
 
-	// prompt Nefs
-	std::cout << "there are " << Nefs.size() << " Nef polyhedra now\n";
+	// get sub_set 2
+	for (unsigned int i = size_1; i != size; ++i) {
+		jhandlers_subset_2.emplace_back(jhandlers[i]);
+	}
 
+	std::cout << "total size: " << jhandlers.size() << '\n';
+	std::cout << "sub_set 1 size: " << jhandlers_subset_1.size() << '\n';
+	std::cout << "sub_set 2 size: " << jhandlers_subset_2.size() << '\n';
 
-	// check if Nef is simple and convert it to polyhedron 3 for visualise
-	// for(const auto& nef : Nefs)
-	// {
-	//    std::cout<<"is nef simple? "<<nef.is_simple()<<'\n';
-	//    if(nef.is_simple())
-	//    {
-	//       Polyhedron p;
-	//       nef.convert_to_Polyhedron(p);
-	//       std::cout<<p;
-	//    }
-	// }
+	//two Nefs subsets, correspond to two jhandlers subsets
+	std::vector<Nef_polyhedron> Nefs_1;
+	Nefs_1.reserve(size_1);
+	std::vector<Nef_polyhedron> Nefs_2;
+	Nefs_2.reserve(size_2);
 
+	//two big nefs
+	Nef_polyhedron big_nef_1;
+	Nef_polyhedron big_nef_2;
 
-	// big Nef
-	std::cout << "building big nef...\n";
+	// get nef, and apply minkowski sum, get big nef
+
+	std::future<void> resultFromSet1 = std::async(std::launch::async, build_nefs_subset_1, &jhandlers_subset_1, &Nefs_1, &big_nef_1);
+
+	build_nefs_subset_2(&jhandlers_subset_2, &Nefs_2, &big_nef_2);
+
+	resultFromSet1.get(); // this is important, we need to wait until func1 finishes
+
+	std::cout << "Nefs subset 1 size: " << Nefs_1.size() << '\n'; // i.e. 11
+	std::cout << "Nefs subset 2 size: " << Nefs_2.size() << '\n'; // i.e. 12
+
+	std::cout << "building big nef ..." << '\n';
 	Nef_polyhedron big_nef;
-	for (const auto& nef : Nefs) {
-		big_nef += nef;
-	}	
-	std::cout << "build big nef done\n";
-
+	big_nef = big_nef_1 + big_nef_2;
+	std::cout << "done" << '\n';
+#else
+	std::cout << "not enable multi-threading" << '\n';
+	std::cout << "building big nef ..." << '\n';
+	std::vector<Nef_polyhedron> Nefs;
+	Nef_polyhedron big_nef;
+	build_nefs(&jhandlers, &Nefs, &big_nef);
+	std::cout << "done" << '\n';
+#endif
 
 	// check if big Nef is simple - simple: no internal rooms, not simple: multiple rooms?
 	std::cout << "is bigNef simple? " << big_nef.is_simple() << '\n';
@@ -151,18 +243,7 @@ int main(int argc, const char** argv)
 	NefProcessing::extract_nef_geometries(big_nef, shell_explorers); // extract geometries of the bignef
 	NefProcessing::process_shells_for_cityjson(shell_explorers); // process shells for writing to cityjson
 
-	// prompt some info after cleaning operation
-	/*std::cout << "info about shells after cleaning operations\n";
-	std::cout << "shell explorers size: " << shell_explorers.size() << '\n';
-	std::cout << "info for each shell\n";
-	for (const auto& se : shell_explorers)
-	{
-		std::cout << "cleaned vertices size of this shell: " << se.cleaned_vertices.size() << '\n';
-		std::cout << "cleaned faces size of this shell: " << se.cleaned_faces.size() << '\n';
-		std::cout << '\n';
-	}*/
-
-
+	
 #ifdef _ENABLE_CONVEX_HULL_
 	/* get the convex hull of the big_nef, use all cleaned vertices of all shells */
 	// get cleaned vertices of shell_explorers[0] - the shell indicating the exterior of the big nef
@@ -187,27 +268,9 @@ int main(int argc, const char** argv)
 #endif
 
 
-#ifdef _ENABLE_MINKOWSKI_SUM_
-	// minkowski_sum_3 -> add a "buffer" for each nef in Nefs
-	std::cout << "performing minkowski sum...\n";
-	Nef_polyhedron merged_big_nef; 
-	for (auto& nef : Nefs)
-	{
-		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 0.1); // cube size is 1.0 by default, can be altered
-		merged_big_nef += merged_nef;
-	}
-	std::cout << "performing minkowski sum done\n";
-	
-	// process the merged big nef to make it available for output
-	std::vector<Shell_explorer> merged_shell_explorers;
-	NefProcessing::extract_nef_geometries(merged_big_nef, merged_shell_explorers);
-	NefProcessing::process_shells_for_cityjson(merged_shell_explorers);
-#endif
-
-
     // write file
 	JsonWriter jwrite;
-	std::string writeFilename = "\\buildingset_1_interior_original.json";
+	std::string writeFilename = "\\buildingset_1_interior_m=0.1_multi_threading.json";
 	const Shell_explorer& shell = shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
 	std::cout << "writing the result to cityjson file...\n";
 	jwrite.write_json_file(DATA_PATH + writeFilename, shell, lod);
