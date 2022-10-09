@@ -147,7 +147,7 @@ if lod == 2.2
 | 1           | 23                  | 2.2             | 0.1             | 256.724s |
 | 1           | 23                  | 2.2             | not activated   | 18.3169s |
 
-`with multi-threading`
+`with multi-threading enabled`
 
 | building set| number of buildings |    lod level    | minkowski param | run time | improvement |
 | :---------: | :-----------------: | :-------------: | :-------------: | :------: |  :------:   |
