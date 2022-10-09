@@ -187,7 +187,6 @@ int main(int argc, const char** argv)
 	unsigned int size_2 = size - size_1; // i.e. size_2 = 12
 
 	// now split the jhandlers into two subsets
-
 	std::vector<JsonHandler> jhandlers_subset_1;
 	jhandlers_subset_1.reserve(size_1);
 	std::vector<JsonHandler> jhandlers_subset_2;
