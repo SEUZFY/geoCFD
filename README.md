@@ -9,7 +9,9 @@ It's a cross-platform project (currently tested on `x64-windows10` platform, see
 
 `Now`:
 
-- support for all `LoD` levels (lod 1.2, lod 1.3, lod 2.2) in `cityjson` -> the code for `lod2.2` is currently available on [dev](https://github.com/SEUZFY/geoCFD/tree/dev) branch, not combined with lod1.2 and lod1.3 yet.
+- support for all `LoD` levels (lod 1.2, lod 1.3, lod 2.2) in `cityjson` 
+
+- support `multi-threading` process
 
 - Read a building set(containing 23 buildings(buildingparts)), process repeated vertices and build `nef polyhedra`.
 
