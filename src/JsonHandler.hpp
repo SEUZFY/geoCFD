@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <cmath>
 
 #include "json.hpp"
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
@@ -127,7 +128,7 @@ public:
 			{
 				std::cout << "CityObject: " << co.key() << std::endl;
 				for (auto& g : co.value()["geometry"]) {
-					if (g["type"] == "Solid" && (abs(g["lod"].get<double>() - lod)) < epsilon) { // geometry type: Solid, use lod1.3
+					if (g["type"] == "Solid" && (std::abs(g["lod"].get<double>() - lod)) < epsilon) { // geometry type: Solid, use lod1.3
 						std::cout << "current lod level: " << g["lod"].get<double>() << '\n';
 						Solid so; // create a solid to store the information
 						so.id = co.key(); // store id

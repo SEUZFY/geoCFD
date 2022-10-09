@@ -17,6 +17,16 @@
 #define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading -> activated by default
 
 
+/* ----------- triangulation -----------------------*/
+// true - activate the triangulation process, false otherwise
+bool _ENABLE_TRIANGULATION_ = false; 
+/* ----------- triangulation -----------------------*/
+
+
+/* ----------------- lod level ---------------------*/
+const double lod = 2.2;
+/* ----------------- lod level ---------------------*/
+
 
 // Timer class -> used for tracking the run time
 struct Timer //for counting the time
@@ -45,10 +55,35 @@ struct Timer //for counting the time
 
 void build_nefs_subset_1(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs_1, Nef_polyhedron* big_nef_1)
 {		
+	/*
+	* for lod 2.2 buildings, activating triangulation process is a must
+	* for lod 1.2 and lod 1.3, users can select whether to activate the triangulation process
+	*/
+	bool triangulation_tag(false);
+	if (std::abs(lod - 2.2) < epsilon) {
+		triangulation_tag = true;
+		std::cout << "current lod level: " << lod << ", the triangulation process is activated" << '\n';
+	}
+	else if (_ENABLE_TRIANGULATION_) {
+		triangulation_tag = true;
+		std::cout << "current lod level: " << lod << '\n';
+		std::cout << "_ENABLE_TRIANGULATION_ is set to true, triangulation process is activated" << '\n';
+	} 
+
+
+	/*
+	* build nef polyhedra
+	*/
 	for (auto const& jhandler : (*jtr)) {
 		//std::cout << "proceed with thread 2" << '\n';
-		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs_1, true);
+		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs_1, triangulation_tag);
 	} // build nefs for each jhandler
+
+
+	/*
+	* if defined _ENABLE_MINKOWSKI_SUM_, firstly applying minkowski sum on the nef and then performing union operation
+	* if not, directly perform the union operation
+	*/
 
 #ifdef _ENABLE_MINKOWSKI_SUM_
 	std::cout << "performing minkowski sum for nefs subset 1..." << '\n';
@@ -69,10 +104,35 @@ void build_nefs_subset_1(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedr
 
 void build_nefs_subset_2(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs_2, Nef_polyhedron* big_nef_2)
 {
+	/*
+	* for lod 2.2 buildings, activating triangulation process is a must
+	* for lod 1.2 and lod 1.3, users can select whether to activate the triangulation process
+	*/
+	bool triangulation_tag(false);
+	if (std::abs(lod - 2.2) < epsilon) {
+		triangulation_tag = true;
+		std::cout << "current lod level: " << lod << ", the triangulation process is activated" << '\n';
+	}
+	else if (_ENABLE_TRIANGULATION_) {
+		triangulation_tag = true;
+		std::cout << "current lod level: " << lod << '\n';
+		std::cout << "_ENABLE_TRIANGULATION_ is set to true, triangulation process is activated" << '\n';
+	}
+	
+
+	/*
+	* build nef polyhedra
+	*/
 	for (auto const& jhandler : (*jtr)) {
 		//std::cout << "proceed with thread 1" << '\n';
-		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs_2, true);
+		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs_2, triangulation_tag);
 	} // build nefs for each jhandler
+
+
+	/*
+	* if defined _ENABLE_MINKOWSKI_SUM_, firstly applying minkowski sum on the nef and then performing union operation
+	* if not, directly perform the union operation
+	*/
 
 #ifdef _ENABLE_MINKOWSKI_SUM_
 	std::cout << "performing minkowski sum for nefs subset 2..." << '\n';
@@ -87,6 +147,7 @@ void build_nefs_subset_2(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedr
 		(*big_nef_2) += nef;
 	}
 #endif
+
 }
 /* functions to perform multi-threading -------------------------------------------------------------------------------------*/
 
@@ -95,9 +156,34 @@ void build_nefs_subset_2(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedr
 // when multi-threading is not enabled
 void build_nefs(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs, Nef_polyhedron* big_nef)
 {
+	/*
+	* for lod 2.2 buildings, activating triangulation process is a must
+	* for lod 1.2 and lod 1.3, users can select whether to activate the triangulation process
+	*/
+	bool triangulation_tag(false);
+	if (std::abs(lod - 2.2) < epsilon) {
+		triangulation_tag = true;
+		std::cout << "current lod level: " << lod << ", the triangulation process is activated" << '\n';
+	}
+	else if (_ENABLE_TRIANGULATION_) {
+		triangulation_tag = true;
+		std::cout << "current lod level: " << lod << '\n';
+		std::cout << "_ENABLE_TRIANGULATION_ is set to true, triangulation process is activated" << '\n';
+	}
+
+
+	/*
+	* build nef polyhedra
+	*/
 	for (auto const& jhandler : (*jtr)) {
-		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs, true);
+		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs, triangulation_tag);
 	} // build nefs for each jhandler
+
+
+	/*
+	* if defined _ENABLE_MINKOWSKI_SUM_, firstly applying minkowski sum on the nef and then performing union operation
+	* if not, directly perform the union operation
+	*/
 	
 #ifdef _ENABLE_MINKOWSKI_SUM_
 	for (auto& nef : *Nefs)
@@ -140,8 +226,6 @@ int main(int argc, const char** argv)
 	json j;
 	input >> j;
 	input.close();
-
-	const double lod = 2.2; // specify the lod level
 
 	// get ids of adjacent buildings
 	const char* adjacency[] = { "NL.IMBAG.Pand.0503100000019695-0",
