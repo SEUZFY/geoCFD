@@ -149,14 +149,14 @@ if lod == 2.2
 
 `with multi-threading`
 
-| building set| number of buildings |    lod level    | minkowski param | run time |improved by|
-| :---------: | :-----------------: | :-------------: | :-------------: | :------: |           |
-| 1           | 23                  | 1.3             | 1.0             |          |           |
-| 1           | 23                  | 1.3             | 0.5             |          |           |
-| 1           | 23                  | 1.3             | 0.1             |          |           |
-| 1           | 23                  | 1.2             | 0.1             |          |           |
-| 1           | 23                  | 2.2             | 0.1             | 173.364s | 32.471%   |
-| 1           | 23                  | 2.2             | not activated   | 13.0047s | 29.002%   |
+| building set| number of buildings |    lod level    | minkowski param | run time | improvement |
+| :---------: | :-----------------: | :-------------: | :-------------: | :------: |  :------:   |
+| 1           | 23                  | 1.3             | 1.0             |          |             |
+| 1           | 23                  | 1.3             | 0.5             |          |             |
+| 1           | 23                  | 1.3             | 0.1             |          |             |
+| 1           | 23                  | 1.2             | 0.1             |          |             |
+| 1           | 23                  | 2.2             | 0.1             | 173.364s | 32.471%     |
+| 1           | 23                  | 2.2             | not activated   | 13.0047s | 29.002%     |
 
 ## Other platforms
 
