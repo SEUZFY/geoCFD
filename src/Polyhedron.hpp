@@ -258,7 +258,7 @@ public:
             std::cout << '\n';
         }*/
 
-        std::cout << "extracting nef geometries done\n";
+        std::cout << "done\n";
     }
 
 
@@ -282,6 +282,8 @@ public:
     */
     static void process_shells_for_cityjson(std::vector<Shell_explorer>& shell_explorers)
     {
+        std::cout << "processing shells for cityjson ..." << '\n';
+
         // step 1
         // get all vertices of all shells and corresponding face indices of each shell ----------------------
         // first store all the vertices in a vector
@@ -325,6 +327,9 @@ public:
             }
         }
         // now we have cleaned_vertices and cleaned_faces to write to cityjson ------------------------------
+        
+        std::cout << "done" << '\n';
+
     }
 
 
