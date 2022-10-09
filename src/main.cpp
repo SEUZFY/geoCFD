@@ -11,21 +11,27 @@
 #include<future> //async
 
 
+
 #define DATA_PATH "D:\\SP\\geoCFD\\data" // specify the data path
 //#define _ENABLE_CONVEX_HULL_ // switch on/off convex hull method
 #define _ENABLE_MINKOWSKI_SUM_ // switch on/off minkowski sum method -> activated by default
 #define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading -> activated by default
 
 
-/* ----------- triangulation -----------------------*/
-// true - activate the triangulation process, false otherwise
-bool _ENABLE_TRIANGULATION_ = false; 
-/* ----------- triangulation -----------------------*/
 
+/* user defined parameters --------------------------------------------------------------------------------------------------*/
 
-/* ----------------- lod level ---------------------*/
-const double lod = 2.2;
-/* ----------------- lod level ---------------------*/
+/* triangulation */
+bool _ENABLE_TRIANGULATION_ = false; // true - activate the triangulation process, false otherwise
+
+/* lod level */
+const double lod = 1.3;
+
+/* minkowski parameter */
+const double minkowski_param = 0.1;
+
+/* user defined parameters --------------------------------------------------------------------------------------------------*/
+
 
 
 // Timer class -> used for tracking the run time
@@ -53,7 +59,11 @@ struct Timer //for counting the time
 
 /* functions to perform multi-threading -------------------------------------------------------------------------------------*/
 
-void build_nefs_subset_1(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs_1, Nef_polyhedron* big_nef_1)
+void build_nefs_subset_1(
+	std::vector<JsonHandler>* jtr, 
+	std::vector<Nef_polyhedron>* Nefs_1, 
+	Nef_polyhedron* big_nef_1,
+	double minkowski_param = 0.1)
 {		
 	/*
 	* for lod 2.2 buildings, activating triangulation process is a must
@@ -89,7 +99,7 @@ void build_nefs_subset_1(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedr
 	std::cout << "performing minkowski sum for nefs subset 1..." << '\n';
 	for (auto& nef : *Nefs_1)
 	{
-		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 0.1); // cube size is 1.0 by default, can be altered
+		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, minkowski_param); // cube size is 0.1 by default, can be altered
 		(*big_nef_1) += merged_nef;
 	}
 	std::cout << "nefs subset 1 finished" << '\n';
@@ -102,7 +112,11 @@ void build_nefs_subset_1(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedr
 }
 
 
-void build_nefs_subset_2(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs_2, Nef_polyhedron* big_nef_2)
+void build_nefs_subset_2(
+	std::vector<JsonHandler>* jtr, 
+	std::vector<Nef_polyhedron>* Nefs_2, 
+	Nef_polyhedron* big_nef_2,
+	double minkowski_param = 0.1)
 {
 	/*
 	* for lod 2.2 buildings, activating triangulation process is a must
@@ -138,7 +152,7 @@ void build_nefs_subset_2(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedr
 	std::cout << "performing minkowski sum for nefs subset 2..." << '\n';
 	for (auto& nef : *Nefs_2)
 	{
-		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 0.1); // cube size is 1.0 by default, can be altered
+		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, minkowski_param); // cube size is 0.1 by default, can be altered
 		(*big_nef_2) += merged_nef;
 	}
 	std::cout << "nefs subset 2 finished" << '\n';
@@ -150,7 +164,6 @@ void build_nefs_subset_2(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedr
 
 }
 /* functions to perform multi-threading -------------------------------------------------------------------------------------*/
-
 
 
 // when multi-threading is not enabled
@@ -306,11 +319,21 @@ int main(int argc, const char** argv)
 	Nef_polyhedron big_nef_1;
 	Nef_polyhedron big_nef_2;
 
-	// get nef, and apply minkowski sum, get big nef
 
-	std::future<void> resultFromSet1 = std::async(std::launch::async, build_nefs_subset_1, &jhandlers_subset_1, &Nefs_1, &big_nef_1);
+	// get nef, and apply minkowski sum, get big nef -----------------------------------------
 
-	build_nefs_subset_2(&jhandlers_subset_2, &Nefs_2, &big_nef_2);
+
+	// std::async for build_nefs_subset_1() function - in a new thread
+	std::future<void> resultFromSet1 = std::async(
+										std::launch::async, 
+										build_nefs_subset_1, 
+										&jhandlers_subset_1, 
+										&Nefs_1, 
+										&big_nef_1,
+										minkowski_param);
+
+	// build_nefs_subset_2() function, in the original thread
+	build_nefs_subset_2(&jhandlers_subset_2, &Nefs_2, &big_nef_2, minkowski_param);
 
 	resultFromSet1.get(); // this is important, we need to wait until func1 finishes
 

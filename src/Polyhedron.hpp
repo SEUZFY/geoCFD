@@ -332,11 +332,11 @@ public:
     /*
     * make a cube (type: Polyhedron) with side length: size
     * @param: 
-    * size -> indicating the side length of the cube, default value is set to 1
+    * size -> indicating the side length of the cube, default value is set to 0.1
     * @return:
     * Nef_polyhedron
     */
-    static Nef_polyhedron make_cube(double size = 1.0)
+    static Nef_polyhedron make_cube(double size = 0.1)
     {
         Polyhedron_builder<Polyhedron::HalfedgeDS> polyhedron_builder;; // used for create a cube
 
@@ -437,7 +437,7 @@ public:
     * nef : the nef polyhedron which needs to be merged
     * size: a cube's side length
     */
-    static Nef_polyhedron minkowski_sum(Nef_polyhedron& nef, double size = 1.0)
+    static Nef_polyhedron minkowski_sum(Nef_polyhedron& nef, double size = 0.1)
     {
         Nef_polyhedron cube = make_cube(size);
         return CGAL::minkowski_sum_3(nef, cube);     
