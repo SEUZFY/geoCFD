@@ -147,6 +147,17 @@ if lod == 2.2
 | 1           | 23                  | 2.2             | 0.1             | 256.724s |
 | 1           | 23                  | 2.2             | not activated   | 18.3169s |
 
+`with multi-threading`
+
+| building set| number of buildings |    lod level    | minkowski param | run time |
+| :---------: | :-----------------: | :-------------: | :-------------: | :------: |
+| 1           | 23                  | 1.3             | 1.0             |  |
+| 1           | 23                  | 1.3             | 0.5             |  |
+| 1           | 23                  | 1.3             | 0.1             |  |
+| 1           | 23                  | 1.2             | 0.1             |  |
+| 1           | 23                  | 2.2             | 0.1             |  |
+| 1           | 23                  | 2.2             | not activated   | 13.0047s |
+
 ## Other platforms
 
 If you use other platforms (such as `Linux` or `MacOS`), you can refer to `CMakeLists.txt` file and use it to build a `CMake` project using `src`, `include` and `data` folder.
