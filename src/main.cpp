@@ -44,8 +44,9 @@ struct Timer //for counting the time
 /* functions to perform multi-threading -------------------------------------------------------------------------------------*/
 
 void build_nefs_subset_1(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs_1, Nef_polyhedron* big_nef_1)
-{
+{		
 	for (auto const& jhandler : (*jtr)) {
+		//std::cout << "proceed with thread 2" << '\n';
 		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs_1);
 	} // build nefs for each jhandler
 
@@ -67,6 +68,7 @@ void build_nefs_subset_1(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedr
 void build_nefs_subset_2(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs_2, Nef_polyhedron* big_nef_2)
 {
 	for (auto const& jhandler : (*jtr)) {
+		//std::cout << "proceed with thread 1" << '\n';
 		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs_2);
 	} // build nefs for each jhandler
 
