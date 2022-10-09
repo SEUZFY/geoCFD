@@ -47,7 +47,7 @@ void build_nefs_subset_1(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedr
 {		
 	for (auto const& jhandler : (*jtr)) {
 		//std::cout << "proceed with thread 2" << '\n';
-		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs_1);
+		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs_1, true);
 	} // build nefs for each jhandler
 
 #ifdef _ENABLE_MINKOWSKI_SUM_
@@ -69,7 +69,7 @@ void build_nefs_subset_2(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedr
 {
 	for (auto const& jhandler : (*jtr)) {
 		//std::cout << "proceed with thread 1" << '\n';
-		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs_2);
+		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs_2, true);
 	} // build nefs for each jhandler
 
 #ifdef _ENABLE_MINKOWSKI_SUM_
@@ -92,7 +92,7 @@ void build_nefs_subset_2(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedr
 void build_nefs(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs, Nef_polyhedron* big_nef)
 {
 	for (auto const& jhandler : (*jtr)) {
-		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs);
+		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs, true);
 	} // build nefs for each jhandler
 	
 #ifdef _ENABLE_MINKOWSKI_SUM_
@@ -137,7 +137,7 @@ int main(int argc, const char** argv)
 	input >> j;
 	input.close();
 
-	const double lod = 1.3; // specify the lod level
+	const double lod = 2.2; // specify the lod level
 
 	// get ids of adjacent buildings
 	const char* adjacency[] = { "NL.IMBAG.Pand.0503100000019695-0",

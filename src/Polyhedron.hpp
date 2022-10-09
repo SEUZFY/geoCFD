@@ -9,12 +9,14 @@
 #include <CGAL/Nef_polyhedron_3.h>
 #include <CGAL/convex_hull_3.h>
 #include <CGAL/minkowski_sum_3.h>
+#include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
 
 // typedefs
 typedef CGAL::Polyhedron_3<Kernel>                   Polyhedron;
 typedef CGAL::Nef_polyhedron_3<Kernel>               Nef_polyhedron;
 typedef Polyhedron::Facet_iterator                   Facet_iterator;
 typedef Polyhedron::Halfedge_around_facet_circulator Halfedge_facet_circulator;
+
 
 
 /*
@@ -49,7 +51,12 @@ public:
     // build one polyhedron using vertices and faces from one shell (one building)
     // jhandle: A JsonHandler instance, contains all vertices and solids
     // index  : index of solids vector, indicating which solid is going to be built - ideally one building just contains one solid
-    static void build_nef_polyhedron(const JsonHandler& jhandle, std::vector<Nef_polyhedron>& Nefs, unsigned long index = 0)
+    // triangulate: if true, triangulation of surfaces will be performed before building nef
+    static void build_nef_polyhedron(
+        const JsonHandler& jhandle, 
+        std::vector<Nef_polyhedron>& Nefs,
+        bool triangulate = false,
+        unsigned long index = 0)
     {
         const auto& solid = jhandle.solids[index]; // get the solid
 
@@ -79,10 +86,17 @@ public:
             //std::cout << "polyhedron closed? " << polyhedron.is_closed() << '\n';
 
             if (polyhedron.is_closed()) {
+
+                // if triangulation is true, triangulate the surfaces first (lod2.2)
+                if (triangulate) {
+                    CGAL::Polygon_mesh_processing::triangulate_faces(polyhedron);
+                }
+
+                // build nef polyhedron
                 Nef_polyhedron nef_polyhedron(polyhedron);
                 Nefs.emplace_back();
                 Nefs.back() = nef_polyhedron; // add the built nef_polyhedron to the Nefs vector
-                std::cout << "the polyhedron is closed, build nef polyhedron" << '\n';
+                std::cout << "build nef polyhedron" << '\n';
             }
             else {
                 std::cout << "the polyhedron is not closed, build convex hull to replace it\n";
@@ -91,6 +105,13 @@ public:
 
                 // now check if we successfully build the convex hull
                 if (convex_polyhedron.is_closed()) {
+
+                    // if triangulation is true, triangulate the surfaces first (lod2.2)
+                    if (triangulate) {
+                        CGAL::Polygon_mesh_processing::triangulate_faces(convex_polyhedron);
+                    }
+
+                    // get nef polyhedron of the convex hull
                     Nef_polyhedron convex_nef_polyhedron(convex_polyhedron);
                     Nefs.emplace_back();
                     Nefs.back() = convex_nef_polyhedron;
