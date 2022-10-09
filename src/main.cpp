@@ -55,7 +55,7 @@ void build_nefs_subset_1(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedr
 
 	for (auto& nef : *Nefs_1)
 	{
-		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 1.0); // cube size is 1.0 by default, can be altered
+		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 0.1); // cube size is 1.0 by default, can be altered
 		(*big_nef_1) += merged_nef;
 	}
 
@@ -74,7 +74,7 @@ void build_nefs_subset_2(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedr
 
 	for (auto& nef : *Nefs_2)
 	{
-		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 1.0); // cube size is 1.0 by default, can be altered
+		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 0.1); // cube size is 1.0 by default, can be altered
 		(*big_nef_2) += merged_nef;
 	}
 }
@@ -95,7 +95,7 @@ void build_nefs(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs
 
 	for (auto& nef : *Nefs)
 	{
-		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 1.0); // cube size is 1.0 by default, can be altered
+		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 0.1); // cube size is 1.0 by default, can be altered
 		(*big_nef) += merged_nef;
 	}
 }
@@ -129,7 +129,7 @@ int main(int argc, const char** argv)
 	input >> j;
 	input.close();
 
-	const double lod = 1.3; // specify the lod level
+	const double lod = 1.2; // specify the lod level
 
 	// get ids of adjacent buildings
 	const char* adjacency[] = { "NL.IMBAG.Pand.0503100000019695-0",

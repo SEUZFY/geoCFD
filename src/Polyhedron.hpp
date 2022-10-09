@@ -53,7 +53,7 @@ public:
     {
         const auto& solid = jhandle.solids[index]; // get the solid
 
-        std::cout << "building: " << solid.id << '\n';
+        std::cout << solid.id << '\n';
 
         if (solid.shells.size() != 1) {
             std::cout << "warning: this solid contains 0 or more than one shells\n";
