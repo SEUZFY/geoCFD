@@ -17,6 +17,8 @@
 //#define _ENABLE_MINKOWSKI_SUM_ // switch on/off minkowski sum method -> activated by default
 //#define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading -> activated by default
 
+#define TAG CGAL::Parallel_if_available_tag
+
 
 
 /* user defined parameters --------------------------------------------------------------------------------------------------*/
@@ -241,7 +243,7 @@ int main(int argc, const char** argv)
 	input.close();
 
 	// get ids of adjacent buildings
-	const char* adjacency[] = { "NL.IMBAG.Pand.0503100000018412-0" };
+	const char* adjacency[] = { "NL.IMBAG.Pand.0503100000018412-0" , "NL.IMBAG.Pand.0503100000018408-0" };
 
 
 	//read certain building, stores in jhandlers vector
@@ -352,6 +354,26 @@ int main(int argc, const char** argv)
 
 
 	/* ------------------------------------------------------------- */
+
+
+	/* ------------------------------------------------------------- */
+	std::cout << "calculating Hausdorff distance ...\n";
+	Polyhedron poly1;
+	Nefs[0].convert_to_polyhedron(poly1);
+	Polyhedron poly2;
+	Nefs[0].convert_to_polyhedron(poly2);
+
+	Mesh mesh_1;
+	Mesh mesh_2;
+
+	CGAL::copy_face_graph(poly1, mesh_1);
+	CGAL::copy_face_graph(poly2, mesh_2);
+
+	double hausdorff_distance = CGAL::Polygon_mesh_processing::approximate_Hausdorff_distance<TAG>(mesh_1, mesh_2);
+	std::cout << "hausdorff distance is: " << hausdorff_distance << '\n';
+
+	/* ------------------------------------------------------------- */
+
 	
 #ifdef _ENABLE_CONVEX_HULL_
 	/* get the convex hull of the big_nef, use all cleaned vertices of all shells */

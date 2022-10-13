@@ -13,6 +13,7 @@
 #include <CGAL/Surface_mesh.h>
 #include <CGAL/boost/graph/IO/OFF.h>
 #include <CGAL/boost/graph/copy_face_graph.h>
+#include <CGAL/Polygon_mesh_processing/distance.h>
 
 // typedefs
 typedef CGAL::Polyhedron_3<Kernel>                   Polyhedron;
