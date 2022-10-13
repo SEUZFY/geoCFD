@@ -10,12 +10,17 @@
 #include <CGAL/convex_hull_3.h>
 #include <CGAL/minkowski_sum_3.h>
 #include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
+#include <CGAL/Surface_mesh.h>
+#include <CGAL/boost/graph/IO/OFF.h>
 
 // typedefs
 typedef CGAL::Polyhedron_3<Kernel>                   Polyhedron;
 typedef CGAL::Nef_polyhedron_3<Kernel>               Nef_polyhedron;
 typedef Polyhedron::Facet_iterator                   Facet_iterator;
 typedef Polyhedron::Halfedge_around_facet_circulator Halfedge_facet_circulator;
+typedef CGAL::Surface_mesh<Kernel::Point_3> Mesh;
+typedef Mesh::Vertex_index vertex_descriptor;
+typedef Mesh::Face_index face_descriptor;
 
 
 
@@ -47,6 +52,46 @@ use CGAL to build polyhedron
 class BuildPolyhedron
 {
 public:
+
+    static void build_surface_mesh(const JsonHandler& jhandle, Mesh& m, unsigned long index = 0) {
+        
+        // vertices to store vertex descriptors
+        std::vector<vertex_descriptor> vertices;
+        vertices.reserve(jhandle.vertices.size());
+        
+
+        // add vertices and faces
+        const auto& solid = jhandle.solids[index];
+        for (auto const& shell : solid.shells) {
+            for (auto const& face : shell.faces) {
+                for (auto const& ring : face.rings) {
+
+                    // for each ring(ideally faces don't have holes)
+                    // use vertices to store all the vertex_descriptors - to use add_face
+                    for (auto const& id : ring.indices) {
+                        const Point_3& v = jhandle.vertices[id];
+                        vertex_descriptor vd = m.add_vertex(v);
+                        vertices.emplace_back(vd);
+                    }
+
+                    // call add_face()
+                    // add_face(const Range& r)
+                    // if possible, adds a new face with vertices from a range with value type `Vertex_index`.
+                    // returns the face index of the added face, or `Surface_mesh::null_face()` if the face could not be added.
+                    face_descriptor f = m.add_face(vertices);
+                    if (f == Mesh::null_face()) {
+                        std::cerr << "The face could not be added because of an orientation error." << std::endl;
+                    }
+
+                    // after adding the face, clear the vertices vector for next use
+                    vertices.clear();
+
+                } // [1,2,3,4]                
+            } // [[1,2,3,4]] - a face with no holes      
+        }
+
+    }
+
 
     // build one polyhedron using vertices and faces from one shell (one building)
     // jhandle: A JsonHandler instance, contains all vertices and solids
@@ -492,5 +537,6 @@ protected:
         return 0;
     }
 
+    friend class BuildPolyhedron;
 
 };

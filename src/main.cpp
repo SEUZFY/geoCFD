@@ -339,6 +339,19 @@ int main(int argc, const char** argv)
 	NefProcessing::extract_nef_geometries(big_nef, shell_explorers); // extract geometries of the bignef
 	NefProcessing::process_shells_for_cityjson(shell_explorers); // process shells for writing to cityjson
 
+
+
+	/* ------------------------------------------------------------- */
+
+	// build surface mesh
+	std::cout << "building mesh ...\n";
+	Mesh mesh;
+	BuildPolyhedron::build_surface_mesh(jhandlers[0], mesh);
+	std::cout << "done\n";
+	std::cout << mesh << std::endl;
+
+
+	/* ------------------------------------------------------------- */
 	
 #ifdef _ENABLE_CONVEX_HULL_
 	/* get the convex hull of the big_nef, use all cleaned vertices of all shells */
