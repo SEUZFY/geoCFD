@@ -357,6 +357,11 @@ int main(int argc, const char** argv)
 
 
 	/* ------------------------------------------------------------- */
+
+	//it is the greatest of all the distances from a point in one set to the closest point in the other set.
+	//the Hausdorff distance is used to measure the difference between two different representations of the same 3D object 
+	//particularly when generating level of detail for efficient display of complex 3D models.
+
 	std::cout << "calculating Hausdorff distance ...\n";
 	Polyhedron poly1;
 	Nefs[0].convert_to_polyhedron(poly1);
