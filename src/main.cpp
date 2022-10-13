@@ -361,15 +361,19 @@ int main(int argc, const char** argv)
 	Polyhedron poly1;
 	Nefs[0].convert_to_polyhedron(poly1);
 	Polyhedron poly2;
-	Nefs[0].convert_to_polyhedron(poly2);
+	Nef_polyhedron N0_merged = NefProcessing::minkowski_sum(Nefs[0], 0.01);
+	N0_merged.convert_to_polyhedron(poly2);
 
-	Mesh mesh_1;
-	Mesh mesh_2;
+	//Mesh mesh_1;
+	//Mesh mesh_2;
 
-	CGAL::copy_face_graph(poly1, mesh_1);
-	CGAL::copy_face_graph(poly2, mesh_2);
+	//CGAL::copy_face_graph(poly1, mesh_1);
+	//CGAL::copy_face_graph(poly2, mesh_2);
 
-	double hausdorff_distance = CGAL::Polygon_mesh_processing::approximate_Hausdorff_distance<TAG>(mesh_1, mesh_2);
+	CGAL::Polygon_mesh_processing::triangulate_faces(poly1);
+	CGAL::Polygon_mesh_processing::triangulate_faces(poly2);
+	double hausdorff_distance = CGAL::Polygon_mesh_processing::approximate_Hausdorff_distance<TAG>(poly1, poly2);
+
 	std::cout << "hausdorff distance is: " << hausdorff_distance << '\n';
 
 	/* ------------------------------------------------------------- */
