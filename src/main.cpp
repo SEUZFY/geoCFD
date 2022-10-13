@@ -348,7 +348,7 @@ int main(int argc, const char** argv)
 	Mesh mesh;
 	BuildPolyhedron::build_surface_mesh(jhandlers[0], mesh);
 	std::cout << "done\n";
-	std::cout << mesh << std::endl;
+	//std::cout << mesh << std::endl;
 
 
 	/* ------------------------------------------------------------- */

@@ -12,6 +12,7 @@
 #include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
 #include <CGAL/Surface_mesh.h>
 #include <CGAL/boost/graph/IO/OFF.h>
+#include <CGAL/boost/graph/copy_face_graph.h>
 
 // typedefs
 typedef CGAL::Polyhedron_3<Kernel>                   Polyhedron;
@@ -51,18 +52,42 @@ use CGAL to build polyhedron
 */
 class BuildPolyhedron
 {
+protected:
+    /*
+    * check if a vertex already exists in a vertices vector
+    * use coordinates to compare whether two vertices are the same
+    * return: False - not exist, True - already exist
+    */
+    static bool vertex_exist_check(std::vector<Point_3>& vertices, const Point_3& vertex) {
+        bool flag(false);
+        for (const auto& v : vertices) {
+            if (
+                abs(CGAL::to_double(vertex.x()) - CGAL::to_double(v.x())) < epsilon &&
+                abs(CGAL::to_double(vertex.y()) - CGAL::to_double(v.y())) < epsilon &&
+                abs(CGAL::to_double(vertex.z()) - CGAL::to_double(v.z())) < epsilon) {
+                flag = true;
+            }
+        }
+        return flag;
+    }
+
 public:
 
-    static void build_surface_mesh(const JsonHandler& jhandle, Mesh& m, unsigned long index = 0) {
+    static void build_surface_mesh(JsonHandler& jhandle, Mesh& m, unsigned long index = 0) {
         
         // vertices to store vertex descriptors
-        std::vector<vertex_descriptor> vertices;
-        vertices.reserve(jhandle.vertices.size());
+        std::vector<vertex_descriptor> vertex_descriptors;
+        vertex_descriptors.reserve(jhandle.vertices.size());
         
+        // no repeated vertices in jhandle.vertices
+        // but repeated vertices in the mesh after the construction
+
+        std::cout << "jhandler vertices size: " << jhandle.vertices.size() << '\n';
 
         // add vertices and faces
         const auto& solid = jhandle.solids[index];
         for (auto const& shell : solid.shells) {
+            std::cout << "jhandler faces size: " << shell.faces.size() << '\n';
             for (auto const& face : shell.faces) {
                 for (auto const& ring : face.rings) {
 
@@ -71,24 +96,39 @@ public:
                     for (auto const& id : ring.indices) {
                         const Point_3& v = jhandle.vertices[id];
                         vertex_descriptor vd = m.add_vertex(v);
-                        vertices.emplace_back(vd);
+                        vertex_descriptors.emplace_back(vd);
                     }
 
                     // call add_face()
                     // add_face(const Range& r)
                     // if possible, adds a new face with vertices from a range with value type `Vertex_index`.
                     // returns the face index of the added face, or `Surface_mesh::null_face()` if the face could not be added.
-                    face_descriptor f = m.add_face(vertices);
+                    face_descriptor f = m.add_face(vertex_descriptors);
                     if (f == Mesh::null_face()) {
                         std::cerr << "The face could not be added because of an orientation error." << std::endl;
                     }
 
                     // after adding the face, clear the vertices vector for next use
-                    vertices.clear();
+                    vertex_descriptors.clear();
 
                 } // [1,2,3,4]                
             } // [[1,2,3,4]] - a face with no holes      
         }
+
+        std::cout << "mesh vertices size: " << m.number_of_vertices() << '\n';
+        std::cout << "mesh faces size: " << m.number_of_faces() << '\n';
+
+        //iterate
+        /*for (vertex_descriptor vd : m.vertices()) {
+            std::cout << vd << std::endl;
+        }*/
+
+        std::cout << "is polygon mesh valid? " << m.is_valid() << '\n';
+
+        Polyhedron polyhedron;
+        CGAL::copy_face_graph(m, polyhedron);
+        std::cout << "is polyhedron closed? " << polyhedron.is_closed() << '\n';
+
 
     }
 
