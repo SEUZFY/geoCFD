@@ -14,8 +14,8 @@
 
 #define DATA_PATH "D:\\SP\\geoCFD\\data" // specify the data path
 //#define _ENABLE_CONVEX_HULL_ // switch on/off convex hull method
-#define _ENABLE_MINKOWSKI_SUM_ // switch on/off minkowski sum method -> activated by default
-#define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading -> activated by default
+//#define _ENABLE_MINKOWSKI_SUM_ // switch on/off minkowski sum method -> activated by default
+//#define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading -> activated by default
 
 
 
@@ -241,29 +241,7 @@ int main(int argc, const char** argv)
 	input.close();
 
 	// get ids of adjacent buildings
-	const char* adjacency[] = { "NL.IMBAG.Pand.0503100000019695-0",
-								"NL.IMBAG.Pand.0503100000018413-0",
-								"NL.IMBAG.Pand.0503100000018423-0",
-								"NL.IMBAG.Pand.0503100000018419-0",
-								"NL.IMBAG.Pand.0503100000018408-0",
-								"NL.IMBAG.Pand.0503100000018412-0",
-								"NL.IMBAG.Pand.0503100000018407-0",
-								"NL.IMBAG.Pand.0503100000018411-0", 
-								"NL.IMBAG.Pand.0503100000018425-0",
-								"NL.IMBAG.Pand.0503100000018422-0",
-								"NL.IMBAG.Pand.0503100000018427-0",
-								"NL.IMBAG.Pand.0503100000018409-0",
-								"NL.IMBAG.Pand.0503100000004564-0",
-								"NL.IMBAG.Pand.0503100000032517-0",
-								"NL.IMBAG.Pand.0503100000019797-0",
-								"NL.IMBAG.Pand.0503100000019796-0",
-								"NL.IMBAG.Pand.0503100000004566-0",
-								"NL.IMBAG.Pand.0503100000004565-0",
-								"NL.IMBAG.Pand.0503100000031928-0",
-								"NL.IMBAG.Pand.0503100000017031-0",
-								"NL.IMBAG.Pand.0503100000027802-0",
-								"NL.IMBAG.Pand.0503100000027801-0",
-								"NL.IMBAG.Pand.0503100000018586-0" };
+	const char* adjacency[] = { "NL.IMBAG.Pand.0503100000018412-0" };
 
 
 	//read certain building, stores in jhandlers vector
@@ -388,8 +366,8 @@ int main(int argc, const char** argv)
 
     // write file
 	JsonWriter jwrite;
-	std::string writeFilename = "\\buildingset_1_interior_m=0.1_multi_threading.json";
-	const Shell_explorer& shell = shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
+	std::string writeFilename = "\\building_18412_0.json";
+	const Shell_explorer& shell = shell_explorers[0]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
 	std::cout << "writing the result to cityjson file...\n";
 	jwrite.write_json_file(DATA_PATH + writeFilename, shell, lod);
 
