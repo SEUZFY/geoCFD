@@ -223,9 +223,6 @@ int main(int argc, const char** argv)
 	std::cout << "-- activated data folder: " << DATA_PATH << '\n';
 	std::cout << "This is: " << argv[0] << '\n';
 
-	//  std::cout<<"newly-added\n";
-	//std::cout<<"data path is: "<<mypath<<'\n';
-
 	//  char buffer[256];
 	//  if (getcwd(buffer, sizeof(buffer)) != NULL) {
 	//     printf("Current working directory : %s\n", buffer);
@@ -233,6 +230,30 @@ int main(int argc, const char** argv)
 	//     perror("getcwd() error");
 	//     return 1;
 	//  }
+
+
+	/* ------------------------------------------------------------- */
+
+	// read from txt to get the adjacency list
+	std::string adjacency_file_name = "\\adjacency.txt";
+	std::ifstream in(DATA_PATH + adjacency_file_name, std::ios::out);
+	if (!in.is_open()) {
+		std::cerr << "Error: Unable to open settings file \"" << adjacency_file_name << "\" for reading!" << std::endl;
+		return false;
+	}
+
+	std::string line;
+	while (std::getline(in, line)) {
+		std::cout << line<<" "<<"type: "<<typeid(line).name()<<std::endl;
+	}
+
+	in.close();
+
+
+
+	/* ------------------------------------------------------------- */
+
+
 
 	//-- reading the (original)file with nlohmann json: https://github.com/nlohmann/json  
 	std::string filename = "\\3dbag_v210908_fd2cee53_5907.json";
