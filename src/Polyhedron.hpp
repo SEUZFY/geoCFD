@@ -343,7 +343,7 @@ public:
     */
     static Nef_polyhedron make_cube(double size = 0.1)
     {
-        Polyhedron_builder<Polyhedron::HalfedgeDS> polyhedron_builder;; // used for create a cube
+        Polyhedron_builder<Polyhedron::HalfedgeDS> polyhedron_builder; // used for create a cube
 
         // construct a cube with side length: size
 

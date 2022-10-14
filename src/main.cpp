@@ -25,7 +25,7 @@
 bool _ENABLE_TRIANGULATION_ = false; // true - activate the triangulation process, false otherwise
 
 /* lod level */
-const double lod = 2.2;
+const double lod = 1.3;
 
 /* minkowski parameter */
 const double minkowski_param = 0.1;
@@ -248,7 +248,7 @@ int main(int argc, const char** argv)
 								"NL.IMBAG.Pand.0503100000018408-0",
 								"NL.IMBAG.Pand.0503100000018412-0",
 								"NL.IMBAG.Pand.0503100000018407-0",
-								"NL.IMBAG.Pand.0503100000018411-0", 
+								"NL.IMBAG.Pand.0503100000018411-0",
 								"NL.IMBAG.Pand.0503100000018425-0",
 								"NL.IMBAG.Pand.0503100000018422-0",
 								"NL.IMBAG.Pand.0503100000018427-0",
