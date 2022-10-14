@@ -34,6 +34,15 @@ const double minkowski_param = 0.1;
 
 
 
+/* optional parameters ------------------------------------------------------------------------------------------------------*/
+
+/* number of adjacent buildings in one block */
+unsigned int adjacency_size = 50;
+
+/* optional parameters ------------------------------------------------------------------------------------------------------*/
+
+
+
 // Timer class -> used for tracking the run time
 struct Timer //for counting the time
 {
@@ -241,7 +250,14 @@ int main(int argc, const char** argv)
 	input.close();
 
 	// get ids of adjacent buildings
-	const char* adjacency[] = { "NL.IMBAG.Pand.0503100000019695-0",
+	std::vector<std::string> adjacency;
+	adjacency.reserve(adjacency_size);
+
+	std::string adjacency_file_name = "\\adjacency.txt";
+	JsonHandler::read_adjacency_from_txt(DATA_PATH + adjacency_file_name, adjacency);
+	
+	// get ids of adjacent buildings
+	/*const char* adjacency[] = { "NL.IMBAG.Pand.0503100000019695-0",
 								"NL.IMBAG.Pand.0503100000018413-0",
 								"NL.IMBAG.Pand.0503100000018423-0",
 								"NL.IMBAG.Pand.0503100000018419-0",
@@ -263,7 +279,7 @@ int main(int argc, const char** argv)
 								"NL.IMBAG.Pand.0503100000017031-0",
 								"NL.IMBAG.Pand.0503100000027802-0",
 								"NL.IMBAG.Pand.0503100000027801-0",
-								"NL.IMBAG.Pand.0503100000018586-0" };
+								"NL.IMBAG.Pand.0503100000018586-0" };*/
 
 
 	//read certain building, stores in jhandlers vector

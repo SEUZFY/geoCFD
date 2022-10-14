@@ -117,12 +117,34 @@ protected:
 
 public:
 	/*
+	* read the adjacency txt file to get the adjacency buildings
+	*/
+	static void read_adjacency_from_txt(std::string& filename, std::vector<std::string>& adjacency) {
+		
+		// read from txt to get the adjacency list
+		std::ifstream in(filename, std::ios::out);
+		if (!in.is_open()) {
+			std::cerr << "Error: Unable to open settings file \"" << filename << "\" for reading!" << std::endl;
+			return;
+		}
+
+		std::string line;
+		while (std::getline(in, line)) {
+			adjacency.emplace_back(line);
+		}
+		in.close();
+
+	}
+
+
+
+	/*
 	* CityJSON files have their vertices compressed : https://www.cityjson.org/specs/1.1.1/#transform-object
 	* this function visits all the surfaces of a certain building
 	* and print the (x,y,z) coordinates of each vertex encountered
 	* lod specified: 1.2 & 1.3 & 2.2
 	*/
-	void read_certain_building(const json& j, const char* building_id, double lod) {
+	void read_certain_building(const json& j, const std::string& building_id, double lod) {
 		for (auto& co : j["CityObjects"].items()) {
 			if (co.key() == building_id)
 			{
