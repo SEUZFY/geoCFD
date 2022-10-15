@@ -228,7 +228,7 @@ void build_nefs(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs
 int main(int argc, char* argv[])
 {
 	// create a parser
-	cmdline::parser a;
+	cmdline::parser p;
 
 	// add specified type of variable.
 	// 1st argument is long name
@@ -236,34 +236,58 @@ int main(int argc, char* argv[])
 	// 3rd argument is description
 	// 4th argument is mandatory (optional. default is false)
 	// 5th argument is default value  (optional. it used when mandatory is false)
-	//a.add<std::string>("host", 'h', "host name", true, "");
+	
+	//p.add<std::string>("host", 'h', "host name", true, "");
 
 	// 6th argument is extra constraint.
 	// Here, port number must be 1 to 65535 by cmdline::range().
-	a.add<std::string>("host", 'h', "host name", true, "local");
-	a.add<int>("port", 'p', "port number", false, 80, cmdline::range(1, 65535));
-	a.add<std::string>("type", 't', "protocol type", false, "http", cmdline::oneof<std::string>("http", "https", "ssh", "ftp"));
-	a.add("help", 0, "print this message");
-	a.footer("this is footer");
+
+	/*
+	* 
+	p.add<std::string>("host", 'h', "host name", true, "local");
+	p.add<int>("port", 'p', "port number", false, 80, cmdline::range(1, 65535));
+	p.add<std::string>("type", 't', "protocol type", false, "http", cmdline::oneof<std::string>("http", "https", "ssh", "ftp"));
+	p.add("help", 0, "print this message");
+	p.footer("this is footer");
+	*
+	*/
 
 	// run parser
 	// It returns only if command line arguments are valid.
 	// If arguments are invalid, a parser output error msgs then exit program.
 	// If help flag ('--help' or '-?') is specified, a parser output usage message then exit program.
-	bool ok = a.parse(argc, argv);
 
-	if (argc == 1 || a.exist("help")) {
-		std::cerr << a.usage();
+	// source file
+	p.add<std::string>("file", 'f', "file name(including path)", true, "");
+
+	// adjacency file
+	p.add<std::string>("adjacency", 'a', "adjacency file name(including path)", true, "");
+
+	// output location
+	p.add<std::string>("output path", 'p', "output path", true, "");
+
+	// help option
+	p.add("help", 0, "print this message");
+
+	// set program name
+	p.set_program_name("geocfd");
+
+	bool ok = p.parse(argc, argv);
+
+	if (argc == 1 || p.exist("help")) {
+		std::cerr << p.usage();
 		return 0;
 	}
 
 	if (!ok) {
-		std::cerr << a.error() << std::endl << a.usage();
+		std::cerr << p.error() << std::endl << p.usage();
 		return 0;
 	}
 
-	std::cout << a.get<std::string>("host") << std::endl;
-	
+	std::cout << p.get<std::string>("file") << std::endl;
+	std::cout << p.get<std::string>("adjacency") << std::endl;
+	std::cout << p.get<std::string>("output path") << std::endl;
+
 	
 	/*for (size_t i = 0; i < a.rest().size(); i++) {
 		std::cout << "- " << a.rest()[i] << std::endl;
