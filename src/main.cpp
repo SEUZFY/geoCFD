@@ -428,5 +428,5 @@ int main(int argc, const char** argv)
 	std::cout << "writing the result to cityjson file...\n";
 	jwrite.write_json_file(DATA_PATH + writeFilename, shell, lod);
 
-	return 0;
+	return EXIT_SUCCESS;
 }
