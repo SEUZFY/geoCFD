@@ -44,7 +44,7 @@ struct Polyhedron_builder : public CGAL::Modifier_base<HDS> {
 /*
 use CGAL to build polyhedron
 */
-class BuildPolyhedron
+class Build
 {
 public:
 

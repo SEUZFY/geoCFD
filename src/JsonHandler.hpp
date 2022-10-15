@@ -119,7 +119,7 @@ public:
 	/*
 	* read the adjacency txt file to get the adjacency buildings
 	*/
-	static void read_adjacency_from_txt(std::string& filename, std::vector<std::string>& adjacency) {
+	static void read_adjacency_from_txt(const std::string& filename, std::vector<std::string>& adjacency) {
 		
 		// read from txt to get the adjacency list
 		std::ifstream in(filename, std::ios::out);

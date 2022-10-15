@@ -12,7 +12,7 @@
 
 
 
-#define DATA_PATH "D:\\SP\\geoCFD\\data" // specify the data path
+//#define DATA_PATH "D:\\SP\\geoCFD\\data" // specify the data path
 //#define _ENABLE_CONVEX_HULL_ // switch on/off convex hull method
 #define _ENABLE_MINKOWSKI_SUM_ // switch on/off minkowski sum method -> activated by default
 #define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading -> activated by default
@@ -95,7 +95,7 @@ void build_nefs_subset_1(
 	*/
 	for (auto const& jhandler : (*jtr)) {
 		//std::cout << "proceed with thread 2" << '\n';
-		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs_1, triangulation_tag);
+		Build::build_nef_polyhedron(jhandler, *Nefs_1, triangulation_tag);
 	} // build nefs for each jhandler
 
 
@@ -148,7 +148,7 @@ void build_nefs_subset_2(
 	*/
 	for (auto const& jhandler : (*jtr)) {
 		//std::cout << "proceed with thread 1" << '\n';
-		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs_2, triangulation_tag);
+		Build::build_nef_polyhedron(jhandler, *Nefs_2, triangulation_tag);
 	} // build nefs for each jhandler
 
 
@@ -198,7 +198,7 @@ void build_nefs(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs
 	* build nef polyhedra
 	*/
 	for (auto const& jhandler : (*jtr)) {
-		BuildPolyhedron::build_nef_polyhedron(jhandler, *Nefs, triangulation_tag);
+		Build::build_nef_polyhedron(jhandler, *Nefs, triangulation_tag);
 	} // build nefs for each jhandler
 
 
@@ -225,9 +225,21 @@ void build_nefs(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs
 // entry point
 int main(int argc, const char** argv)
 {
-	Timer timer; // count the run time
+	if (argc != 2) {
+		std::cout << "This is: " << argv[0] << '\n';
+		std::cout << '\n';
+		std::cout << "Please call this program with 1 data file path as program arguments" << '\n';
+		std::cout << "== argument ==: the path of the data, e.g.:" << '\n';
+		std::cout << "D:\\SP\\geoCFD\\data" << '\n';
+		std::cout << "This folder should contain your data source file, adjacency.txt file, and the output file will also be saved in this folder" << '\n';
+		std::cout << '\n';
+
+		return EXIT_FAILURE;
+	}
 	
-	std::cout << "-- activated data folder: " << DATA_PATH << '\n';
+	
+	
+	//std::cout << "-- activated data folder: " << DATA_PATH << '\n';
 	std::cout << "This is: " << argv[0] << '\n';
 
 	//  std::cout<<"newly-added\n";
@@ -241,10 +253,12 @@ int main(int argc, const char** argv)
 	//     return 1;
 	//  }
 
+	// get the data path
+	const std::string DATA_PATH = argv[1];
+	const std::string srcfile = "\\3dbag_v210908_fd2cee53_5907.json";
+
 	//-- reading the (original)file with nlohmann json: https://github.com/nlohmann/json  
-	std::string filename = "\\3dbag_v210908_fd2cee53_5907.json";
-	std::cout << "current reading file is: " << DATA_PATH + filename << '\n';
-	std::ifstream input(DATA_PATH + filename);
+	std::ifstream input(DATA_PATH + srcfile);
 	json j;
 	input >> j;
 	input.close();
@@ -253,8 +267,8 @@ int main(int argc, const char** argv)
 	std::vector<std::string> adjacency;
 	adjacency.reserve(adjacency_size);
 
-	std::string adjacency_file_name = "\\adjacency.txt";
-	JsonHandler::read_adjacency_from_txt(DATA_PATH + adjacency_file_name, adjacency);
+	const std::string adjacencyfile = "\\adjacency.txt";
+	JsonHandler::read_adjacency_from_txt(DATA_PATH + adjacencyfile, adjacency);
 	
 	// get ids of adjacent buildings
 	/*const char* adjacency[] = { "NL.IMBAG.Pand.0503100000019695-0",
@@ -280,6 +294,11 @@ int main(int argc, const char** argv)
 								"NL.IMBAG.Pand.0503100000027802-0",
 								"NL.IMBAG.Pand.0503100000027801-0",
 								"NL.IMBAG.Pand.0503100000018586-0" };*/
+
+
+
+	/* begin counting */
+	Timer timer; // count the run time
 
 
 	//read certain building, stores in jhandlers vector
