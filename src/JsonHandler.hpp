@@ -116,27 +116,6 @@ protected:
 	}
 
 public:
-	/*
-	* read the adjacency txt file to get the adjacency buildings
-	*/
-	static void read_adjacency_from_txt(const std::string& filename, std::vector<std::string>& adjacency) {
-		
-		// read from txt to get the adjacency list
-		std::ifstream in(filename, std::ios::out);
-		if (!in.is_open()) {
-			std::cerr << "Error: Unable to open settings file \"" << filename << "\" for reading!" << std::endl;
-			return;
-		}
-
-		std::string line;
-		while (std::getline(in, line)) {
-			adjacency.emplace_back(line);
-		}
-		in.close();
-
-	}
-
-
 
 	/*
 	* CityJSON files have their vertices compressed : https://www.cityjson.org/specs/1.1.1/#transform-object
@@ -222,4 +201,29 @@ public:
 	std::vector<Point_3> vertices; // store all vertices of one building
 	std::vector<Solid> solids; // store all solids of one building, ideally one solid for each building
 };
+
+
+
+// read from files
+namespace FileIO {
+	/*
+	* read the adjacency txt file to get the adjacency buildings
+	*/
+	void read_adjacency_from_txt(const std::string& filename, std::vector<std::string>& adjacency) {
+
+		// read from txt to get the adjacency list
+		std::ifstream in(filename, std::ios::out);
+		if (!in.is_open()) {
+			std::cerr << "Error: Unable to open settings file \"" << filename << "\" for reading!" << std::endl;
+			return;
+		}
+
+		std::string line;
+		while (std::getline(in, line)) {
+			adjacency.emplace_back(line);
+		}
+		in.close();
+
+	}
+}
 

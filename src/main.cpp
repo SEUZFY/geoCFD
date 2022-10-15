@@ -225,22 +225,32 @@ void build_nefs(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs
 // entry point
 int main(int argc, const char** argv)
 {
-	if (argc != 2) {
-		std::cout << "This is: " << argv[0] << '\n';
-		std::cout << '\n';
-		std::cout << "Please call this program with 1 data file path as program arguments" << '\n';
-		std::cout << "== argument ==: the path of the data, e.g.:" << '\n';
-		std::cout << "D:\\SP\\geoCFD\\data" << '\n';
-		std::cout << "This folder should contain your data source file, adjacency.txt file, and the output file will also be saved in this folder" << '\n';
-		std::cout << '\n';
+	/*
+	* specify the data folder and name of files
+	*/
 
-		return EXIT_FAILURE;
-	}
-	
-	
-	
-	//std::cout << "-- activated data folder: " << DATA_PATH << '\n';
+	std::string DATA_FOLDER;
+	std::string srcFile;
+	std::string adjacencyFile;
+	std::string delimiter = "\\";
+
 	std::cout << "This is: " << argv[0] << '\n';
+	std::cout << '\n';
+
+	std::cout << "Please call this program with following program arguments" << '\n';
+	std::cout << "== arguments ==" << '\n';
+
+	std::cout << "=> argument 1 - data folder: " << '\n';
+	std::getline(std::cin, DATA_FOLDER);
+	std::cout << "data folder is: " << DATA_FOLDER << std::endl;
+
+	std::cout << "=> argument 2 - source file name: " << '\n';
+	std::getline(std::cin, srcFile);
+	std::cout << "source file is: " << DATA_FOLDER + delimiter + srcFile << std::endl;
+
+	std::cout << "=> argument 3 - adjacency file name: " << '\n';
+	std::getline(std::cin, adjacencyFile);
+	std::cout << "adjacency file is: " << DATA_FOLDER + delimiter + adjacencyFile << std::endl;
 
 	//  std::cout<<"newly-added\n";
 	//std::cout<<"data path is: "<<mypath<<'\n';
@@ -253,12 +263,8 @@ int main(int argc, const char** argv)
 	//     return 1;
 	//  }
 
-	// get the data path
-	const std::string DATA_PATH = argv[1];
-	const std::string srcfile = "\\3dbag_v210908_fd2cee53_5907.json";
-
 	//-- reading the (original)file with nlohmann json: https://github.com/nlohmann/json  
-	std::ifstream input(DATA_PATH + srcfile);
+	std::ifstream input(DATA_FOLDER + delimiter + srcFile);
 	json j;
 	input >> j;
 	input.close();
@@ -268,7 +274,7 @@ int main(int argc, const char** argv)
 	adjacency.reserve(adjacency_size);
 
 	const std::string adjacencyfile = "\\adjacency.txt";
-	JsonHandler::read_adjacency_from_txt(DATA_PATH + adjacencyfile, adjacency);
+	FileIO::read_adjacency_from_txt(DATA_FOLDER + delimiter + adjacencyFile, adjacency);
 	
 	// get ids of adjacent buildings
 	/*const char* adjacency[] = { "NL.IMBAG.Pand.0503100000019695-0",
@@ -423,10 +429,10 @@ int main(int argc, const char** argv)
 
     // write file
 	JsonWriter jwrite;
-	std::string writeFilename = "\\buildingset_1_interior_m=0.1_multi_threading.json";
+	std::string writeFilename = "buildingset_1_interior_m=0.1_multi_threading.json";
 	const Shell_explorer& shell = shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
 	std::cout << "writing the result to cityjson file...\n";
-	jwrite.write_json_file(DATA_PATH + writeFilename, shell, lod);
+	jwrite.write_json_file(DATA_FOLDER + delimiter + writeFilename, shell, lod);
 
 	return EXIT_SUCCESS;
 }
