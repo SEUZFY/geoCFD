@@ -252,6 +252,13 @@ int main(int argc, const char** argv)
 	std::getline(std::cin, adjacencyFile);
 	std::cout << "adjacency file is: " << DATA_FOLDER + delimiter + adjacencyFile << std::endl;
 
+	std::cout << "Proceed ? [y/n]" << '\n';
+	char proceed;
+	std::cin >> proceed;
+	if (proceed == 'n') {
+		std::cout << "Proceeding aborted" << '\n';
+		return EXIT_SUCCESS;
+	}
 	//  std::cout<<"newly-added\n";
 	//std::cout<<"data path is: "<<mypath<<'\n';
 
