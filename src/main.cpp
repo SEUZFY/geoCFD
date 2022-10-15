@@ -10,6 +10,8 @@
 #include<chrono> //Timer
 #include<future> //async
 
+#include "cmdline.h" // for cmd line parser
+
 
 
 //#define DATA_PATH "D:\\SP\\geoCFD\\data" // specify the data path
@@ -223,8 +225,52 @@ void build_nefs(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs
 
 
 // entry point
-int main(int argc, const char** argv)
+int main(int argc, char* argv[])
 {
+	// create a parser
+	cmdline::parser a;
+
+	// add specified type of variable.
+	// 1st argument is long name
+	// 2nd argument is short name (no short name if '\0' specified)
+	// 3rd argument is description
+	// 4th argument is mandatory (optional. default is false)
+	// 5th argument is default value  (optional. it used when mandatory is false)
+	//a.add<std::string>("host", 'h', "host name", true, "");
+
+	// 6th argument is extra constraint.
+	// Here, port number must be 1 to 65535 by cmdline::range().
+	a.add<std::string>("host", 'h', "host name", true, "local");
+	a.add<int>("port", 'p', "port number", false, 80, cmdline::range(1, 65535));
+	a.add<std::string>("type", 't', "protocol type", false, "http", cmdline::oneof<std::string>("http", "https", "ssh", "ftp"));
+	a.add("help", 0, "print this message");
+	a.footer("this is footer");
+
+	// run parser
+	// It returns only if command line arguments are valid.
+	// If arguments are invalid, a parser output error msgs then exit program.
+	// If help flag ('--help' or '-?') is specified, a parser output usage message then exit program.
+	bool ok = a.parse(argc, argv);
+
+	if (argc == 1 || a.exist("help")) {
+		std::cerr << a.usage();
+		return 0;
+	}
+
+	if (!ok) {
+		std::cerr << a.error() << std::endl << a.usage();
+		return 0;
+	}
+
+	std::cout << a.get<std::string>("host") << std::endl;
+	
+	
+	/*for (size_t i = 0; i < a.rest().size(); i++) {
+		std::cout << "- " << a.rest()[i] << std::endl;
+	}*/
+		
+	
+	
 	/*
 	* specify the data folder and name of files
 	*/
@@ -242,14 +288,17 @@ int main(int argc, const char** argv)
 
 	std::cout << "=> argument 1 - data folder: " << '\n';
 	std::getline(std::cin, DATA_FOLDER);
+	if (DATA_FOLDER == "exit" || DATA_FOLDER == "EXIT" || DATA_FOLDER == "Exit")return 0;
 	std::cout << "data folder is: " << DATA_FOLDER << std::endl;
 
 	std::cout << "=> argument 2 - source file name: " << '\n';
 	std::getline(std::cin, srcFile);
+	if (srcFile == "exit" || srcFile == "EXIT" || srcFile == "Exit")return 0;
 	std::cout << "source file is: " << DATA_FOLDER + delimiter + srcFile << std::endl;
 
 	std::cout << "=> argument 3 - adjacency file name: " << '\n';
 	std::getline(std::cin, adjacencyFile);
+	if (adjacencyFile == "exit" || adjacencyFile == "EXIT" || adjacencyFile == "Exit")return 0;
 	std::cout << "adjacency file is: " << DATA_FOLDER + delimiter + adjacencyFile << std::endl;
 
 	std::cout << "Proceed ? [y/n]" << '\n';
