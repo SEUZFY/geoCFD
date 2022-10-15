@@ -284,7 +284,7 @@ int main(int argc, const char** argv)
 
 	//read certain building, stores in jhandlers vector
 	std::vector<JsonHandler> jhandlers;
-	//jhandlers.reserve(size); -> if we know the length of adjacency lsit, we can use reserve()
+	jhandlers.reserve(adjacency_size); // use reserve() to avoid extra copies
 	std::cout << "------------------------ building(part) info ------------------------\n";
 	
 	for (auto const& building_name : adjacency) // get each building
