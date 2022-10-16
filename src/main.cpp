@@ -27,10 +27,10 @@
 bool _ENABLE_TRIANGULATION_ = false; // true - activate the triangulation process, false otherwise
 
 /* lod level */
-const double lod = 1.3;
+double lod = 1.3;
 
 /* minkowski parameter */
-const double minkowski_param = 0.1;
+double minkowski_param = 0.1;
 
 /* user defined parameters --------------------------------------------------------------------------------------------------*/
 
@@ -249,29 +249,38 @@ int main(int argc, char* argv[])
 	p.add<std::string>("type", 't', "protocol type", false, "http", cmdline::oneof<std::string>("http", "https", "ssh", "ftp"));
 	p.add("help", 0, "print this message");
 	p.footer("this is footer");
+	p.add("gzip", '\0', "gzip when transfer"); // boolean flags
+	if (p.exist("gzip")) std::cout << "gzip" << std::endl; // boolean flags are referred by calling exist() method.
 	*
 	*/
+
 
 	// run parser
 	// It returns only if command line arguments are valid.
 	// If arguments are invalid, a parser output error msgs then exit program.
 	// If help flag ('--help' or '-?') is specified, a parser output usage message then exit program.
 
-	// source file and adjacency file
+	// source file and adjacency file - must
 	p.add<std::string>("file", 'f', "file name(including path), \
 the first one is the source file, the second one is the adjacency file", true, "");
 
-	// adjacency file
-	//p.add<std::string>("adjacency", 'a', "adjacency file name(including path)", false, "adjacency");
-
 	// output location
-	p.add<std::string>("path", 'p', "path, where the result file will be saved", false, "D:\\SP\\geoCFD\\data");
+	p.add<std::string>("path", 'p', "data folder path, where the result file will be saved", false, "D:\\SP\\geoCFD\\data");
+
+	// lod level
+	p.add<double>("lod", 'l', "lod level", false, 1.3, cmdline::oneof<double>(1.2, 1.3, 2.2));
+
+	// minkowski sum value
+	p.add<double>("minkowski", 'm', "minkowski value", false, 0.01);
+
+	// adjacency size - for using adjacency vector.reserve()
+	p.add<unsigned int>("number", 'n', "number of adjacent buildings", false, (unsigned int)50);
+
+	// choose to activate triangulation - activated by default when lod is 2.2
+	p.add<bool>("triangulation", 't', "switch on/off triangulating surfaces", false, false);
 
 	// help option
 	p.add("help", 0, "print this message");
-
-	// boolean flags
-	//p.add("gzip", '\0', "gzip when transfer");
 
 	// set program name
 	p.set_program_name("geocfd");
@@ -287,23 +296,7 @@ the first one is the source file, the second one is the adjacency file", true, "
 	if (!ok) {
 		std::cerr << p.error() << std::endl << p.usage();
 		return 0;
-	}
-
-	std::cout << "the input source file is: ";
-	std::cout << p.get<std::string>("file") << std::endl;
-	std::cout << "the input adjacency file is: ";
-	std::cout << p.rest()[0] << std::endl;
-
-	if (p.exist("path")) {
-		std::cout << "the path is: " << p.get<std::string>("path") << std::endl;
-	}
-	else {
-		std::cout << "the path is not specified, will use the default path: "
-			<< p.get<std::string>("path") << std::endl;
-	}
-		
-	// boolean flags are referred by calling exist() method.
-	//if (p.exist("gzip")) std::cout << "gzip" << std::endl;
+	}		
 
 	
 	/*for (size_t i = 0; i < p.rest().size(); i++) {
@@ -311,14 +304,46 @@ the first one is the source file, the second one is the adjacency file", true, "
 	}*/
 		
 	
-	
 	/*
-	* get input
+	* get input files and data folder path
 	*/
 	const std::string& srcFile       = p.get<std::string>("file"); // source file
 	const std::string& adjacencyFile = p.rest()[0]; // adjacency file
 	const std::string& path          = p.get<std::string>("path"); // store the result
 	const std::string& delimiter     = "\\"; 
+
+	/* get user defined parameters */
+
+	/* triangulation */
+	_ENABLE_TRIANGULATION_ = p.get<bool>("triangulation"); // true - activate the triangulation process, false otherwise
+
+	/* lod level */
+	lod = p.get<bool>("lod");
+
+	/* minkowski parameter */
+	minkowski_param = p.get<double>("minkowski");
+
+	/* optional: number of adjacent buildings in one block */
+	adjacency_size = p.get<unsigned int>("number");
+
+	/* user defined parameters */
+
+
+	std::cout << "====== arguments ======" << '\n';
+
+	/* input files and data folder path */
+	std::cout << "=> input source file:    ";
+	std::cout << srcFile << '\n';
+	std::cout << "=> input adjacency file: ";
+	std::cout << adjacencyFile << '\n';
+	std::cout << "=> data folder path:     ";
+
+	/* user defined parameters */
+	std::cout << "=>lod level:             ";
+	std::cout << lod << '\n';
+
+	
+	std::cout << "====== arguments ======" << '\n';
 
 	std::cout << "Proceed ? [y/n]" << '\n';
 	char proceed;
