@@ -257,21 +257,26 @@ int main(int argc, char* argv[])
 	// If arguments are invalid, a parser output error msgs then exit program.
 	// If help flag ('--help' or '-?') is specified, a parser output usage message then exit program.
 
-	// source file
-	p.add<std::string>("file", 'f', "file name(including path)", true, "");
+	// source file and adjacency file
+	p.add<std::string>("file", 'f', "file name(including path), \
+the first one is the source file, the second one is the adjacency file", true, "");
 
 	// adjacency file
-	p.add<std::string>("adjacency", 'a', "adjacency file name(including path)", true, "");
+	//p.add<std::string>("adjacency", 'a', "adjacency file name(including path)", false, "adjacency");
 
 	// output location
-	p.add<std::string>("output path", 'p', "output path", true, "");
+	p.add<std::string>("path", 'p', "path, where the result file will be saved", false, "D:\\SP\\geoCFD\\data");
 
 	// help option
 	p.add("help", 0, "print this message");
 
+	// boolean flags
+	//p.add("gzip", '\0', "gzip when transfer");
+
 	// set program name
 	p.set_program_name("geocfd");
 
+	// run parser
 	bool ok = p.parse(argc, argv);
 
 	if (argc == 1 || p.exist("help")) {
@@ -284,57 +289,45 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
+	std::cout << "the input source file is: ";
 	std::cout << p.get<std::string>("file") << std::endl;
-	std::cout << p.get<std::string>("adjacency") << std::endl;
-	std::cout << p.get<std::string>("output path") << std::endl;
+	std::cout << "the input adjacency file is: ";
+	std::cout << p.rest()[0] << std::endl;
+
+	if (p.exist("path")) {
+		std::cout << "the path is: " << p.get<std::string>("path") << std::endl;
+	}
+	else {
+		std::cout << "the path is not specified, will use the default path: "
+			<< p.get<std::string>("path") << std::endl;
+	}
+		
+	// boolean flags are referred by calling exist() method.
+	//if (p.exist("gzip")) std::cout << "gzip" << std::endl;
 
 	
-	/*for (size_t i = 0; i < a.rest().size(); i++) {
-		std::cout << "- " << a.rest()[i] << std::endl;
+	/*for (size_t i = 0; i < p.rest().size(); i++) {
+		std::cout << "- " << p.rest()[i] << std::endl;
 	}*/
 		
 	
 	
 	/*
-	* specify the data folder and name of files
+	* get input
 	*/
-
-	std::string DATA_FOLDER;
-	std::string srcFile;
-	std::string adjacencyFile;
-	std::string delimiter = "\\";
-
-	std::cout << "This is: " << argv[0] << '\n';
-	std::cout << '\n';
-
-	std::cout << "Please call this program with following program arguments" << '\n';
-	std::cout << "== arguments ==" << '\n';
-
-	std::cout << "=> argument 1 - data folder: " << '\n';
-	std::getline(std::cin, DATA_FOLDER);
-	if (DATA_FOLDER == "exit" || DATA_FOLDER == "EXIT" || DATA_FOLDER == "Exit")return 0;
-	std::cout << "data folder is: " << DATA_FOLDER << std::endl;
-
-	std::cout << "=> argument 2 - source file name: " << '\n';
-	std::getline(std::cin, srcFile);
-	if (srcFile == "exit" || srcFile == "EXIT" || srcFile == "Exit")return 0;
-	std::cout << "source file is: " << DATA_FOLDER + delimiter + srcFile << std::endl;
-
-	std::cout << "=> argument 3 - adjacency file name: " << '\n';
-	std::getline(std::cin, adjacencyFile);
-	if (adjacencyFile == "exit" || adjacencyFile == "EXIT" || adjacencyFile == "Exit")return 0;
-	std::cout << "adjacency file is: " << DATA_FOLDER + delimiter + adjacencyFile << std::endl;
+	const std::string& srcFile       = p.get<std::string>("file"); // source file
+	const std::string& adjacencyFile = p.rest()[0]; // adjacency file
+	const std::string& path          = p.get<std::string>("path"); // store the result
+	const std::string& delimiter     = "\\"; 
 
 	std::cout << "Proceed ? [y/n]" << '\n';
 	char proceed;
 	std::cin >> proceed;
 	if (proceed == 'n') {
 		std::cout << "Proceeding aborted" << '\n';
-		return EXIT_SUCCESS;
+		return 0;
 	}
-	//  std::cout<<"newly-added\n";
-	//std::cout<<"data path is: "<<mypath<<'\n';
-
+	
 	//  char buffer[256];
 	//  if (getcwd(buffer, sizeof(buffer)) != NULL) {
 	//     printf("Current working directory : %s\n", buffer);
@@ -344,7 +337,7 @@ int main(int argc, char* argv[])
 	//  }
 
 	//-- reading the (original)file with nlohmann json: https://github.com/nlohmann/json  
-	std::ifstream input(DATA_FOLDER + delimiter + srcFile);
+	std::ifstream input(srcFile);
 	json j;
 	input >> j;
 	input.close();
@@ -353,8 +346,7 @@ int main(int argc, char* argv[])
 	std::vector<std::string> adjacency;
 	adjacency.reserve(adjacency_size);
 
-	const std::string adjacencyfile = "\\adjacency.txt";
-	FileIO::read_adjacency_from_txt(DATA_FOLDER + delimiter + adjacencyFile, adjacency);
+	FileIO::read_adjacency_from_txt(adjacencyFile, adjacency);
 	
 	// get ids of adjacent buildings
 	/*const char* adjacency[] = { "NL.IMBAG.Pand.0503100000019695-0",
@@ -512,7 +504,7 @@ int main(int argc, char* argv[])
 	std::string writeFilename = "buildingset_1_interior_m=0.1_multi_threading.json";
 	const Shell_explorer& shell = shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
 	std::cout << "writing the result to cityjson file...\n";
-	jwrite.write_json_file(DATA_FOLDER + delimiter + writeFilename, shell, lod);
+	jwrite.write_json_file(path + delimiter + writeFilename, shell, lod);
 
 	return EXIT_SUCCESS;
 }
