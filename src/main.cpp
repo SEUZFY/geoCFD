@@ -11,6 +11,7 @@
 #include<future> //async
 
 #include "cmdline.h" // for cmd line parser
+#include "MultiThread.hpp"
 
 
 
@@ -65,6 +66,22 @@ struct Timer //for counting the time
 		std::cout << "Time: " << duration.count() << "s\n";
 	}
 };
+
+
+
+/* multi-threading ----------------------------------------------------------------------------------------------------------*/
+class MultiNef {
+public:
+	std::vector<Nef_polyhedron> m_Nefs;
+public:
+	MultiNef() {
+	}
+};
+
+/* multi-threading ----------------------------------------------------------------------------------------------------------*/
+
+
+
 
 
 
@@ -227,6 +244,24 @@ void build_nefs(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs
 // entry point
 int main(int argc, char* argv[])
 {
+	std::cout << "test multi threading" << std::endl;
+
+	std::vector<std::string> buildings;
+	for (int i = 0; i != 10; ++i) {
+		buildings.emplace_back("abc");
+	}
+
+	/* begin counting */
+	Timer timer; // count the run time
+	
+	Build_Nefs_Multi::get_nefs_async(buildings);
+	std::cout << "nefs_ptr size: " << Build_Nefs_Multi::m_nef_ptrs.size() << std::endl;
+	Build_Nefs_Multi::clean();
+
+	return 0;
+	
+	
+	
 	// create a parser
 	cmdline::parser p;
 
@@ -397,11 +432,6 @@ the first one is the source file, the second one is the adjacency file", true, "
 								"NL.IMBAG.Pand.0503100000027802-0",
 								"NL.IMBAG.Pand.0503100000027801-0",
 								"NL.IMBAG.Pand.0503100000018586-0" };*/
-
-
-
-	/* begin counting */
-	Timer timer; // count the run time
 
 
 	//read certain building, stores in jhandlers vector
