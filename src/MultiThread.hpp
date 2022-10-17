@@ -44,7 +44,7 @@ namespace MT {
         }
 
         // using a local lock_guard to lock mtx guarantees unlocking on destruction / exception:
-        //std::lock_guard<std::mutex> lock(s_nefs_mutex); // lock the meshes to avoid conflict
+        std::lock_guard<std::mutex> lock(s_nefs_mutex); // lock the meshes to avoid conflict
         m_nef_ptrs.emplace_back(nef_ptr);
 
     }
@@ -61,8 +61,8 @@ namespace MT {
         * to enable the async process
         */
         for (const auto& jhandle : jhandles) {
-            //m_futures.emplace_back(std::async(std::launch::async, get_nefs, &jhandle));
-            get_nefs(&jhandle);
+            m_futures.emplace_back(std::async(std::launch::async, get_nefs, &jhandle));
+            //get_nefs(&jhandle);
         }
 
 

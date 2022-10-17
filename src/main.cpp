@@ -28,7 +28,7 @@
 bool _ENABLE_TRIANGULATION_ = false; // true - activate the triangulation process, false otherwise
 
 /* lod level */
-double lod = 1.3;
+double lod = 2.2;
 
 /* minkowski parameter */
 double minkowski_param = 0.1;
@@ -110,7 +110,7 @@ int main(int argc, char* argv[])
 	// merging nefs into one big nef
 	std::cout << "building big nef ..." << '\n';
 	Nef_polyhedron big_nef;
-	for (const auto nef_ptr : MT::m_nef_ptrs) {
+	for (const auto& nef_ptr : MT::m_nef_ptrs) {
 		big_nef += (*nef_ptr);
 	}
 	std::cout << "done" << '\n';

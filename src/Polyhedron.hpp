@@ -257,7 +257,7 @@ public:
 
     static Nef_polyhedron* build_nef_polyhedron(
         const JsonHandler& jhandle,
-        bool triangulate_tag = false,
+        bool triangulate_tag = true,
         unsigned long solid_index = 0)
     {
         const auto& solid = jhandle.solids[solid_index]; // get the solid
