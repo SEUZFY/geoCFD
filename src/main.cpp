@@ -3,13 +3,7 @@
 * main.cpp
 */
 
-
-#include <CGAL/Polyhedron_3.h>
 #include "JsonWriter.hpp"
-
-#include<chrono> //Timer
-#include<future> //async
-
 #include "cmdline.h" // for cmd line parser
 #include "MultiThread.hpp"
 
@@ -17,8 +11,8 @@
 
 //#define DATA_PATH "D:\\SP\\geoCFD\\data" // specify the data path
 //#define _ENABLE_CONVEX_HULL_ // switch on/off convex hull method
-#define _ENABLE_MINKOWSKI_SUM_ // switch on/off minkowski sum method -> activated by default
-#define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading -> activated by default
+//#define _ENABLE_MINKOWSKI_SUM_ // switch on/off minkowski sum method -> activated by default
+//#define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading -> activated by default
 
 
 
@@ -36,36 +30,12 @@ double minkowski_param = 0.1;
 /* user defined parameters --------------------------------------------------------------------------------------------------*/
 
 
-
 /* optional parameters ------------------------------------------------------------------------------------------------------*/
 
 /* number of adjacent buildings in one block */
 unsigned int adjacency_size = 50;
 
 /* optional parameters ------------------------------------------------------------------------------------------------------*/
-
-
-
-// Timer class -> used for tracking the run time
-struct Timer //for counting the time
-{
-	std::chrono::time_point<std::chrono::steady_clock>start, end;
-	std::chrono::duration<float>duration;
-
-	Timer() //set default value
-	{
-		start = end = std::chrono::high_resolution_clock::now();
-		duration = end - start;
-	}
-
-	~Timer() // get the end value and print the duration time
-	{
-		end = std::chrono::high_resolution_clock::now();
-		duration = end - start;
-
-		std::cout << "Time: " << duration.count() << "s\n";
-	}
-};
 
 
 

@@ -10,7 +10,31 @@
 #include "Polyhedron.hpp"
 #include "JsonHandler.hpp"
 
+
 using namespace std::chrono;
+
+
+// Timer class -> used for tracking the run time
+struct Timer //for counting the time
+{
+    std::chrono::time_point<std::chrono::steady_clock>start, end;
+    std::chrono::duration<float>duration;
+
+    Timer() //set default value
+    {
+        start = end = std::chrono::high_resolution_clock::now();
+        duration = end - start;
+    }
+
+    ~Timer() // get the end value and print the duration time
+    {
+        end = std::chrono::high_resolution_clock::now();
+        duration = end - start;
+
+        std::cout << "Time: " << duration.count() << "s\n";
+    }
+};
+
 
 namespace MT {
 
