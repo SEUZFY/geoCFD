@@ -43,9 +43,17 @@ namespace MT {
             return;
         }
 
+        // perform minkowski operation
+        Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(*nef_ptr);
+
+        Nef_polyhedron* merged_nef_ptr = new(std::nothrow) Nef_polyhedron(merged_nef);
+
         // using a local lock_guard to lock mtx guarantees unlocking on destruction / exception:
         std::lock_guard<std::mutex> lock(s_nefs_mutex); // lock the meshes to avoid conflict
-        m_nef_ptrs.emplace_back(nef_ptr);
+        m_nef_ptrs.emplace_back(merged_nef_ptr);
+
+        delete nef_ptr;
+        nef_ptr = nullptr;
 
     }
 
