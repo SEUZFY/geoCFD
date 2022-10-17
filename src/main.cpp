@@ -28,7 +28,7 @@
 bool _ENABLE_TRIANGULATION_ = false; // true - activate the triangulation process, false otherwise
 
 /* lod level */
-double lod = 2.2;
+double lod = 1.3;
 
 /* minkowski parameter */
 double minkowski_param = 0.1;
