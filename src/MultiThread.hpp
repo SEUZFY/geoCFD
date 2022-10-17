@@ -8,44 +8,43 @@
 #include <thread> // for std::this_thread::sleep_for(seconds(5));
 
 #include "Polyhedron.hpp"
+#include "JsonHandler.hpp"
 
 using namespace std::chrono;
 
-namespace Build_Nefs_Multi {
+namespace MT {
 
 	std::vector<Nef_polyhedron*> m_nef_ptrs; // hold the nefs
 	std::vector<std::future<void>> m_futures; // store the return value of std::async, necessary step to make async work
 	std::mutex s_nefs_mutex; // for thread-safety
 
 
-    Nef_polyhedron* get_one_nef(const std::string& building_id)
+    Nef_polyhedron* build_nef(const JsonHandler* const jtr)
     {
-        std::this_thread::sleep_for(seconds(5));
-
-        // ... get nef, get minkowski-expanded nef
-        Nef_polyhedron* nef_ptr = new(std::nothrow) Nef_polyhedron;
-        if (nef_ptr == nullptr) {
-            std::cerr << "pointer allocation not succeed, please check get_one_nef() function" << std::endl;
-            return nullptr;
-        }
+        //std::this_thread::sleep_for(seconds(5));
 
         // operations ... get polyhedron, get nef, get minkowski nef
+        Nef_polyhedron* nef_ptr = Build::build_nef_polyhedron(*jtr);
+        if (nef_ptr == nullptr) {
+            std::cerr << "nef polyhedron not built, please check build_nef_polyhedron() function" << std::endl;
+            return nullptr;
+        }
 
         return nef_ptr; // further optimization: using pointers
     }
     
     
     
-    void get_nefs(std::string building_id) {
+    void get_nefs(const JsonHandler* const jtr) {
 
-        Nef_polyhedron* nef_ptr = get_one_nef(building_id);
+        Nef_polyhedron* nef_ptr = build_nef(jtr);
         if (nef_ptr == nullptr) {
             std::cerr << "pointer allocation not succeed, please check get_single_nef() function" << std::endl;
             return;
         }
 
         // using a local lock_guard to lock mtx guarantees unlocking on destruction / exception:
-        std::lock_guard<std::mutex> lock(s_nefs_mutex); // lock the meshes to avoid conflict
+        //std::lock_guard<std::mutex> lock(s_nefs_mutex); // lock the meshes to avoid conflict
         m_nef_ptrs.emplace_back(nef_ptr);
 
     }
@@ -53,17 +52,17 @@ namespace Build_Nefs_Multi {
 
 
     // in this function we call std::async() method
-    void get_nefs_async(const std::vector<std::string>& building_ids/* read from a .txt file */) {
+    void get_nefs_async(const std::vector<JsonHandler>& jhandles) {
         
-        std::cout << "size of building_ids: " << building_ids.size() << std::endl;
+        std::cout << "size of buildings: " << jhandles.size() << std::endl;
 
         /*
         * it is important to save the result of std::async()
         * to enable the async process
         */
-        for (const auto& building_id : building_ids) {
-            m_futures.emplace_back(std::async(std::launch::async, get_nefs, building_id));
-            //get_nefs(building_id);
+        for (const auto& jhandle : jhandles) {
+            //m_futures.emplace_back(std::async(std::launch::async, get_nefs, &jhandle));
+            get_nefs(&jhandle);
         }
 
 

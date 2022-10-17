@@ -151,6 +151,194 @@ public:
         }
 
     }
+
+
+
+    static void build_nef_polyhedron_(
+        const JsonHandler& jhandle, 
+        std::vector<Nef_polyhedron>& Nefs,
+        bool triangulate = false,
+        unsigned long index = 0)
+    {
+        const auto& solid = jhandle.solids[index]; // get the solid
+
+        std::cout << solid.id << '\n';
+
+        if (solid.shells.size() != 1) {
+            std::cout << "warning: this solid contains 0 or more than one shells\n";
+            std::cout << "please check build_one_polyhedron function and check the following solid:\n";
+            std::cout << "solid id: " << solid.id << '\n';
+            std::cout << "solid lod: " << solid.lod << '\n';
+            std::cout << "no polyhedron is built with this solid\n";
+        }
+        else {
+            // create a polyhedron and a builder
+            Polyhedron polyhedron;
+            Polyhedron_builder<Polyhedron::HalfedgeDS> polyhedron_builder;
+
+            // add vertices and faces to polyhedron_builder
+            polyhedron_builder.vertices = jhandle.vertices; // now jhandle only handles one building(solid)
+            for (auto const& shell : solid.shells)
+                for (auto const& face : shell.faces)
+                    for (auto const& ring : face.rings)
+                        polyhedron_builder.faces.push_back(ring.indices);
+
+            // call the delegate function
+            polyhedron.delegate(polyhedron_builder);
+            //std::cout << "polyhedron closed? " << polyhedron.is_closed() << '\n';
+
+            if (polyhedron.is_closed()) {
+
+                // if triangulation is true, triangulate the surfaces first (lod2.2)
+                if (triangulate) {
+                    CGAL::Polygon_mesh_processing::triangulate_faces(polyhedron);
+                }
+
+                // build nef polyhedron
+                Nef_polyhedron nef_polyhedron(polyhedron);
+                Nefs.emplace_back();
+                Nefs.back() = nef_polyhedron; // add the built nef_polyhedron to the Nefs vector
+                std::cout << "build nef polyhedron" << '\n';
+            }
+            else {
+                std::cout << "the polyhedron is not closed, build convex hull to replace it\n";
+                Polyhedron convex_polyhedron;
+                CGAL::convex_hull_3(jhandle.vertices.begin(), jhandle.vertices.end(), convex_polyhedron);
+
+                // now check if we successfully build the convex hull
+                if (convex_polyhedron.is_closed()) {
+
+                    // if triangulation is true, triangulate the surfaces first (lod2.2)
+                    if (triangulate) {
+                        CGAL::Polygon_mesh_processing::triangulate_faces(convex_polyhedron);
+                    }
+
+                    // get nef polyhedron of the convex hull
+                    Nef_polyhedron convex_nef_polyhedron(convex_polyhedron);
+                    Nefs.emplace_back();
+                    Nefs.back() = convex_nef_polyhedron;
+                    std::cout<< "the convex hull is closed, build convex nef polyhedron" << '\n';
+                }
+                else {
+                    std::cerr << "convex hull is not closed, no nef polyhedron built\n";
+                }
+            }
+
+            /* test to write the polyhedron to .off file --------------------------------------------------------*/
+
+            // Write polyhedron in Object File Format (OFF).
+            // CGAL::set_ascii_mode(std::cout);
+            // std::cout << "OFF" << std::endl << polyhedron.size_of_vertices() << ' '
+            //     << polyhedron.size_of_facets() << " 0" << std::endl;
+            // std::copy(polyhedron.points_begin(), polyhedron.points_end(),
+            //     std::ostream_iterator<Point_3>( std::cout, "\n"));
+            // for (Facet_iterator i = polyhedron.facets_begin(); i != polyhedron.facets_end(); ++i) 
+            // {
+            //     Halfedge_facet_circulator j = i->facet_begin();
+            //     // Facets in polyhedral surfaces are at least triangles.
+            //     std::cout << CGAL::circulator_size(j) << ' ';
+            //     do {
+            //         std::cout << ' ' << std::distance(polyhedron.vertices_begin(), j->vertex());
+            //     } while ( ++j != i->facet_begin());
+            //     std::cout << std::endl;
+            // }
+
+            // std::cout<<polyhedron<<std::endl;
+
+            /* test to write the polyhedron to .off file --------------------------------------------------------*/
+
+
+            // visualize a polyhedron?
+
+        }
+
+    }
+
+
+    static Nef_polyhedron* build_nef_polyhedron(
+        const JsonHandler& jhandle,
+        bool triangulate_tag = false,
+        unsigned long solid_index = 0)
+    {
+        const auto& solid = jhandle.solids[solid_index]; // get the solid
+
+        std::cout << solid.id << '\n';
+
+        if (solid.shells.size() != 1) {
+            std::cout << "warning: this solid contains 0 or more than one shells\n";
+            std::cout << "please check build_one_polyhedron function and check the following solid:\n";
+            std::cout << "solid id: " << solid.id << '\n';
+            std::cout << "solid lod: " << solid.lod << '\n';
+            std::cout << "no polyhedron is built with this solid\n";
+        }
+        else {
+            // create a polyhedron and a builder
+            Polyhedron polyhedron;
+            Polyhedron_builder<Polyhedron::HalfedgeDS> polyhedron_builder;
+
+            // add vertices and faces to polyhedron_builder
+            polyhedron_builder.vertices = jhandle.vertices; // now jhandle only handles one building(solid)
+            for (auto const& shell : solid.shells)
+                for (auto const& face : shell.faces)
+                    for (auto const& ring : face.rings)
+                        polyhedron_builder.faces.push_back(ring.indices);
+
+            // call the delegate function
+            polyhedron.delegate(polyhedron_builder);
+            //std::cout << "polyhedron closed? " << polyhedron.is_closed() << '\n';
+
+            if (polyhedron.is_closed()) {
+
+                // if triangulation is true, triangulate the surfaces first (lod2.2)
+                if (triangulate_tag) {
+                    CGAL::Polygon_mesh_processing::triangulate_faces(polyhedron);
+                }
+
+                // build nef polyhedron
+                Nef_polyhedron* nef_ptr = new(std::nothrow) Nef_polyhedron(polyhedron);
+                if (nef_ptr == nullptr) {
+                    std::cerr << "pointer allocation not succeed, please check build_nef_polyhedron() function" << std::endl;
+                    return nullptr;
+                }
+                std::cout << "build nef polyhedron" << '\n';
+                return nef_ptr;
+            }
+            else {
+                std::cout << "the polyhedron is not closed, build convex hull to replace it\n";
+                Polyhedron convex_polyhedron;
+                CGAL::convex_hull_3(jhandle.vertices.begin(), jhandle.vertices.end(), convex_polyhedron);
+
+                // now check if we successfully build the convex hull
+                if (convex_polyhedron.is_closed()) {
+
+                    // if triangulation is true, triangulate the surfaces first (lod2.2)
+                    if (triangulate_tag) {
+                        CGAL::Polygon_mesh_processing::triangulate_faces(convex_polyhedron);
+                    }
+
+                    // get nef polyhedron of the convex hull
+                    Nef_polyhedron* convex_nef_ptr = new(std::nothrow) Nef_polyhedron(convex_polyhedron);
+                    if (convex_nef_ptr == nullptr) {
+                        std::cerr << "pointer allocation not succeed, please check build_nef_polyhedron() function" << std::endl;
+                        return nullptr;
+                    }
+                    std::cout << "the convex hull is closed, build convex nef polyhedron" << '\n';
+                    return convex_nef_ptr;
+                    
+                }
+                else {
+                    std::cerr << "convex hull is not closed, no nef polyhedron built\n";
+                }
+
+            }
+
+        }
+
+    }
+
+
+    
+    
 };
 
 

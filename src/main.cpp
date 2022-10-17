@@ -69,466 +69,54 @@ struct Timer //for counting the time
 
 
 
-/* multi-threading ----------------------------------------------------------------------------------------------------------*/
-class MultiNef {
-public:
-	std::vector<Nef_polyhedron> m_Nefs;
-public:
-	MultiNef() {
-	}
-};
-
-/* multi-threading ----------------------------------------------------------------------------------------------------------*/
-
-
-
-
-
-
-/* functions to perform multi-threading -------------------------------------------------------------------------------------*/
-
-void build_nefs_subset_1(
-	std::vector<JsonHandler>* jtr, 
-	std::vector<Nef_polyhedron>* Nefs_1, 
-	Nef_polyhedron* big_nef_1,
-	double minkowski_param = 0.1)
-{		
-	/*
-	* for lod 2.2 buildings, activating triangulation process is a must
-	* for lod 1.2 and lod 1.3, users can select whether to activate the triangulation process
-	*/
-	bool triangulation_tag(false);
-	if (std::abs(lod - 2.2) < epsilon) {
-		triangulation_tag = true;
-		std::cout << "current lod level: " << lod << ", the triangulation process is activated" << '\n';
-	}
-	else if (_ENABLE_TRIANGULATION_) {
-		triangulation_tag = true;
-		std::cout << "current lod level: " << lod << '\n';
-		std::cout << "_ENABLE_TRIANGULATION_ is set to true, triangulation process is activated" << '\n';
-	} 
-
-
-	/*
-	* build nef polyhedra
-	*/
-	for (auto const& jhandler : (*jtr)) {
-		//std::cout << "proceed with thread 2" << '\n';
-		Build::build_nef_polyhedron(jhandler, *Nefs_1, triangulation_tag);
-	} // build nefs for each jhandler
-
-
-	/*
-	* if defined _ENABLE_MINKOWSKI_SUM_, firstly applying minkowski sum on the nef and then performing union operation
-	* if not, directly perform the union operation
-	*/
-
-#ifdef _ENABLE_MINKOWSKI_SUM_
-	std::cout << "performing minkowski sum for nefs subset 1..." << '\n';
-	for (auto& nef : *Nefs_1)
-	{
-		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, minkowski_param); // cube size is 0.1 by default, can be altered
-		(*big_nef_1) += merged_nef;
-	}
-	std::cout << "nefs subset 1 finished" << '\n';
-#else
-	for (auto& nef : *Nefs_1) {
-		(*big_nef_1) += nef;
-	}
-#endif // _ENABLE_MINKOWSKI_SUM_
-
-}
-
-
-void build_nefs_subset_2(
-	std::vector<JsonHandler>* jtr, 
-	std::vector<Nef_polyhedron>* Nefs_2, 
-	Nef_polyhedron* big_nef_2,
-	double minkowski_param = 0.1)
-{
-	/*
-	* for lod 2.2 buildings, activating triangulation process is a must
-	* for lod 1.2 and lod 1.3, users can select whether to activate the triangulation process
-	*/
-	bool triangulation_tag(false);
-	if (std::abs(lod - 2.2) < epsilon) {
-		triangulation_tag = true;
-		std::cout << "current lod level: " << lod << ", the triangulation process is activated" << '\n';
-	}
-	else if (_ENABLE_TRIANGULATION_) {
-		triangulation_tag = true;
-		std::cout << "current lod level: " << lod << '\n';
-		std::cout << "_ENABLE_TRIANGULATION_ is set to true, triangulation process is activated" << '\n';
-	}
-	
-
-	/*
-	* build nef polyhedra
-	*/
-	for (auto const& jhandler : (*jtr)) {
-		//std::cout << "proceed with thread 1" << '\n';
-		Build::build_nef_polyhedron(jhandler, *Nefs_2, triangulation_tag);
-	} // build nefs for each jhandler
-
-
-	/*
-	* if defined _ENABLE_MINKOWSKI_SUM_, firstly applying minkowski sum on the nef and then performing union operation
-	* if not, directly perform the union operation
-	*/
-
-#ifdef _ENABLE_MINKOWSKI_SUM_
-	std::cout << "performing minkowski sum for nefs subset 2..." << '\n';
-	for (auto& nef : *Nefs_2)
-	{
-		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, minkowski_param); // cube size is 0.1 by default, can be altered
-		(*big_nef_2) += merged_nef;
-	}
-	std::cout << "nefs subset 2 finished" << '\n';
-#else
-	for (auto& nef : *Nefs_2) {
-		(*big_nef_2) += nef;
-	}
-#endif
-
-}
-/* functions to perform multi-threading -------------------------------------------------------------------------------------*/
-
-
-// when multi-threading is not enabled
-void build_nefs(std::vector<JsonHandler>* jtr, std::vector<Nef_polyhedron>* Nefs, Nef_polyhedron* big_nef)
-{
-	/*
-	* for lod 2.2 buildings, activating triangulation process is a must
-	* for lod 1.2 and lod 1.3, users can select whether to activate the triangulation process
-	*/
-	bool triangulation_tag(false);
-	if (std::abs(lod - 2.2) < epsilon) {
-		triangulation_tag = true;
-		std::cout << "current lod level: " << lod << ", the triangulation process is activated" << '\n';
-	}
-	else if (_ENABLE_TRIANGULATION_) {
-		triangulation_tag = true;
-		std::cout << "current lod level: " << lod << '\n';
-		std::cout << "_ENABLE_TRIANGULATION_ is set to true, triangulation process is activated" << '\n';
-	}
-
-
-	/*
-	* build nef polyhedra
-	*/
-	for (auto const& jhandler : (*jtr)) {
-		Build::build_nef_polyhedron(jhandler, *Nefs, triangulation_tag);
-	} // build nefs for each jhandler
-
-
-	/*
-	* if defined _ENABLE_MINKOWSKI_SUM_, firstly applying minkowski sum on the nef and then performing union operation
-	* if not, directly perform the union operation
-	*/
-	
-#ifdef _ENABLE_MINKOWSKI_SUM_
-	for (auto& nef : *Nefs)
-	{
-		Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(nef, 0.1); // cube size is 1.0 by default, can be altered
-		(*big_nef) += merged_nef;
-	}
-#else
-	for (auto& nef : *Nefs) {
-		(*big_nef) += nef;
-	}
-#endif
-}
-
-
-
 // entry point
 int main(int argc, char* argv[])
 {
 	std::cout << "test multi threading" << std::endl;
 
-	std::vector<std::string> buildings;
-	for (int i = 0; i != 10; ++i) {
-		buildings.emplace_back("abc");
-	}
-
-	/* begin counting */
-	Timer timer; // count the run time
-	
-	Build_Nefs_Multi::get_nefs_async(buildings);
-	std::cout << "nefs_ptr size: " << Build_Nefs_Multi::m_nef_ptrs.size() << std::endl;
-	Build_Nefs_Multi::clean();
-
-	return 0;
-	
-	
-	
-	// create a parser
-	cmdline::parser p;
-
-	// add specified type of variable.
-	// 1st argument is long name
-	// 2nd argument is short name (no short name if '\0' specified)
-	// 3rd argument is description
-	// 4th argument is mandatory (optional. default is false)
-	// 5th argument is default value  (optional. it used when mandatory is false)
-	
-	//p.add<std::string>("host", 'h', "host name", true, "");
-
-	// 6th argument is extra constraint.
-	// Here, port number must be 1 to 65535 by cmdline::range().
-
-	/*
-	* 
-	p.add<std::string>("host", 'h', "host name", true, "local");
-	p.add<int>("port", 'p', "port number", false, 80, cmdline::range(1, 65535));
-	p.add<std::string>("type", 't', "protocol type", false, "http", cmdline::oneof<std::string>("http", "https", "ssh", "ftp"));
-	p.add("help", 0, "print this message");
-	p.footer("this is footer");
-	p.add("gzip", '\0', "gzip when transfer"); // boolean flags
-	if (p.exist("gzip")) std::cout << "gzip" << std::endl; // boolean flags are referred by calling exist() method.
-	*
-	*/
-
-
-	// run parser
-	// It returns only if command line arguments are valid.
-	// If arguments are invalid, a parser output error msgs then exit program.
-	// If help flag ('--help' or '-?') is specified, a parser output usage message then exit program.
-
-	// source file and adjacency file - must
-	p.add<std::string>("file", 'f', "file name(including path), \
-the first one is the source file, the second one is the adjacency file", true, "");
-
-	// output location
-	p.add<std::string>("path", 'p', "data folder path, where the result file will be saved", false, "D:\\SP\\geoCFD\\data");
-
-	// lod level
-	p.add<double>("lod", 'l', "lod level", false, 1.3, cmdline::oneof<double>(1.2, 1.3, 2.2));
-
-	// minkowski sum value
-	p.add<double>("minkowski", 'm', "minkowski value", false, 0.01);
-
-	// adjacency size - for using adjacency vector.reserve()
-	p.add<unsigned int>("number", 'n', "number of adjacent buildings", false, (unsigned int)50);
-
-	// choose to activate triangulation - activated by default when lod is 2.2
-	p.add<bool>("triangulation", 't', "switch on/off triangulating surfaces", false, false);
-
-	// help option
-	p.add("help", 0, "print this message");
-
-	// set program name
-	p.set_program_name("geocfd");
-
-	// run parser
-	bool ok = p.parse(argc, argv);
-
-	if (argc == 1 || p.exist("help")) {
-		std::cerr << p.usage();
-		return 0;
-	}
-
-	if (!ok) {
-		std::cerr << p.error() << std::endl << p.usage();
-		return 0;
-	}		
-
-	
-	/*for (size_t i = 0; i < p.rest().size(); i++) {
-		std::cout << "- " << p.rest()[i] << std::endl;
-	}*/
-		
-	
-	/*
-	* get input files and data folder path
-	*/
-	const std::string& srcFile       = p.get<std::string>("file"); // source file
-	const std::string& adjacencyFile = p.rest()[0]; // adjacency file
-	const std::string& path          = p.get<std::string>("path"); // store the result
-	const std::string& delimiter     = "\\"; 
-
-	/* get user defined parameters */
-
-	/* triangulation */
-	_ENABLE_TRIANGULATION_ = p.get<bool>("triangulation"); // true - activate the triangulation process, false otherwise
-
-	/* lod level */
-	lod = p.get<bool>("lod");
-
-	/* minkowski parameter */
-	minkowski_param = p.get<double>("minkowski");
-
-	/* optional: number of adjacent buildings in one block */
-	adjacency_size = p.get<unsigned int>("number");
-
-	/* user defined parameters */
-
-
-	std::cout << "====== arguments ======" << '\n';
-
-	/* input files and data folder path */
-	std::cout << "=> input source file:    ";
-	std::cout << srcFile << '\n';
-	std::cout << "=> input adjacency file: ";
-	std::cout << adjacencyFile << '\n';
-	std::cout << "=> data folder path:     ";
-
-	/* user defined parameters */
-	std::cout << "=>lod level:             ";
-	std::cout << lod << '\n';
-
-	
-	std::cout << "====== arguments ======" << '\n';
-
-	std::cout << "Proceed ? [y/n]" << '\n';
-	char proceed;
-	std::cin >> proceed;
-	if (proceed == 'n') {
-		std::cout << "Proceeding aborted" << '\n';
-		return 0;
-	}
-	
-	//  char buffer[256];
-	//  if (getcwd(buffer, sizeof(buffer)) != NULL) {
-	//     printf("Current working directory : %s\n", buffer);
-	//  } else {
-	//     perror("getcwd() error");
-	//     return 1;
-	//  }
-
-	//-- reading the (original)file with nlohmann json: https://github.com/nlohmann/json  
+	std::string srcFile = "D:\\SP\\geoCFD\\data\\3dbag_v210908_fd2cee53_5907.json";
 	std::ifstream input(srcFile);
 	json j;
 	input >> j;
 	input.close();
 
 	// get ids of adjacent buildings
+	std::string adjacencyFile = "D:\\SP\\geoCFD\\data\\adjacency.txt";
 	std::vector<std::string> adjacency;
 	adjacency.reserve(adjacency_size);
-
 	FileIO::read_adjacency_from_txt(adjacencyFile, adjacency);
-	
-	// get ids of adjacent buildings
-	/*const char* adjacency[] = { "NL.IMBAG.Pand.0503100000019695-0",
-								"NL.IMBAG.Pand.0503100000018413-0",
-								"NL.IMBAG.Pand.0503100000018423-0",
-								"NL.IMBAG.Pand.0503100000018419-0",
-								"NL.IMBAG.Pand.0503100000018408-0",
-								"NL.IMBAG.Pand.0503100000018412-0",
-								"NL.IMBAG.Pand.0503100000018407-0",
-								"NL.IMBAG.Pand.0503100000018411-0",
-								"NL.IMBAG.Pand.0503100000018425-0",
-								"NL.IMBAG.Pand.0503100000018422-0",
-								"NL.IMBAG.Pand.0503100000018427-0",
-								"NL.IMBAG.Pand.0503100000018409-0",
-								"NL.IMBAG.Pand.0503100000004564-0",
-								"NL.IMBAG.Pand.0503100000032517-0",
-								"NL.IMBAG.Pand.0503100000019797-0",
-								"NL.IMBAG.Pand.0503100000019796-0",
-								"NL.IMBAG.Pand.0503100000004566-0",
-								"NL.IMBAG.Pand.0503100000004565-0",
-								"NL.IMBAG.Pand.0503100000031928-0",
-								"NL.IMBAG.Pand.0503100000017031-0",
-								"NL.IMBAG.Pand.0503100000027802-0",
-								"NL.IMBAG.Pand.0503100000027801-0",
-								"NL.IMBAG.Pand.0503100000018586-0" };*/
 
-
-	//read certain building, stores in jhandlers vector
-	std::vector<JsonHandler> jhandlers;
-	jhandlers.reserve(adjacency_size); // use reserve() to avoid extra copies
+	// read buildings
+	std::vector<JsonHandler> jhandles;
+	jhandles.reserve(adjacency_size); // use reserve() to avoid extra copies
 	std::cout << "------------------------ building(part) info ------------------------\n";
-	
+
 	for (auto const& building_name : adjacency) // get each building
 	{
-		JsonHandler jhandler;
-		jhandler.read_certain_building(j, building_name, lod); // read in the building
-		jhandler.message();
-		jhandlers.emplace_back(jhandler); // add to the jhandlers vector
+		JsonHandler jhandle;
+		jhandle.read_certain_building(j, building_name, lod); // read in the building
+		jhandle.message();
+		jhandles.emplace_back(jhandle); // add to the jhandlers vector
 	}
 
 	std::cout << "---------------------------------------------------------------------\n";
 
+	/* begin counting */
+	Timer timer; // count the run time
+	
+	MT::get_nefs_async(jhandles);
+	std::cout << "nefs_ptr size: " << MT::m_nef_ptrs.size() << std::endl;
 
-#ifdef _ENABLE_MULTI_THREADING_
-	std::cout << "enable multi threading" << '\n';
-	unsigned int size = (unsigned int)jhandlers.size(); // i.e. size = 23
-
-	unsigned int size_1 = size / 2; // i.e. size_1 = 11
-	unsigned int size_2 = size - size_1; // i.e. size_2 = 12
-
-	// now split the jhandlers into two subsets
-	std::vector<JsonHandler> jhandlers_subset_1;
-	jhandlers_subset_1.reserve(size_1);
-	std::vector<JsonHandler> jhandlers_subset_2;
-	jhandlers_subset_2.reserve(size_2);
-
-	// get sub_set 1
-	for (unsigned int i = 0; i != size_1; ++i) {
-		jhandlers_subset_1.emplace_back(jhandlers[i]);
-	}
-
-	// get sub_set 2
-	for (unsigned int i = size_1; i != size; ++i) {
-		jhandlers_subset_2.emplace_back(jhandlers[i]);
-	}
-
-	std::cout << "total size: " << jhandlers.size() << '\n';
-	std::cout << "sub_set 1 size: " << jhandlers_subset_1.size() << '\n';
-	std::cout << "sub_set 2 size: " << jhandlers_subset_2.size() << '\n';
-
-	//two Nefs subsets, correspond to two jhandlers subsets
-	std::vector<Nef_polyhedron> Nefs_1;
-	Nefs_1.reserve(size_1);
-	std::vector<Nef_polyhedron> Nefs_2;
-	Nefs_2.reserve(size_2);
-
-	//two big nefs
-	Nef_polyhedron big_nef_1;
-	Nef_polyhedron big_nef_2;
-
-
-	// get nef, and apply minkowski sum, get big nef -----------------------------------------
-
-
-	// std::async for build_nefs_subset_1() function - in a new thread
-	std::future<void> resultFromSet1 = std::async(
-										std::launch::async, 
-										build_nefs_subset_1, 
-										&jhandlers_subset_1, 
-										&Nefs_1, 
-										&big_nef_1,
-										minkowski_param);
-
-	// build_nefs_subset_2() function, in the original thread
-	build_nefs_subset_2(&jhandlers_subset_2, &Nefs_2, &big_nef_2, minkowski_param);
-
-	resultFromSet1.get(); // this is important, we need to wait until func1 finishes
-
-	std::cout << "Nefs subset 1 size: " << Nefs_1.size() << '\n'; // i.e. 11
-	std::cout << "Nefs subset 2 size: " << Nefs_2.size() << '\n'; // i.e. 12
-
+	// merging nefs into one big nef
 	std::cout << "building big nef ..." << '\n';
 	Nef_polyhedron big_nef;
-	big_nef = big_nef_1 + big_nef_2;
+	for (const auto nef_ptr : MT::m_nef_ptrs) {
+		big_nef += (*nef_ptr);
+	}
 	std::cout << "done" << '\n';
-#else
-	std::cout << "not enable multi-threading" << '\n';
-	std::cout << "building big nef ..." << '\n';
-	std::vector<Nef_polyhedron> Nefs;
-	Nef_polyhedron big_nef;
-	build_nefs(&jhandlers, &Nefs, &big_nef);
-	std::cout << "done" << '\n';
-#endif
 
-	// check if big Nef is simple - simple: no internal rooms, not simple: multiple rooms?
-	std::cout << "is bigNef simple? " << big_nef.is_simple() << '\n';
-
-	// process the big nef to make it available for output
-	std::vector<Shell_explorer> shell_explorers; // store the extracted geometries
-	NefProcessing::extract_nef_geometries(big_nef, shell_explorers); // extract geometries of the bignef
-	NefProcessing::process_shells_for_cityjson(shell_explorers); // process shells for writing to cityjson
-
+	MT::clean();
+	
 	
 #ifdef _ENABLE_CONVEX_HULL_
 	/* get the convex hull of the big_nef, use all cleaned vertices of all shells */
@@ -554,10 +142,18 @@ the first one is the source file, the second one is the adjacency file", true, "
 #endif
 
 
+	// extracting geometries
+	std::vector<Shell_explorer> shell_explorers; // store the extracted geometries
+	NefProcessing::extract_nef_geometries(big_nef, shell_explorers); // extract geometries of the bignef
+	NefProcessing::process_shells_for_cityjson(shell_explorers); // process shells for writing to cityjson
+
+
     // write file
+	std::string path = "D:\\SP\\geoCFD\\data";
+	std::string delimiter = "\\";
 	JsonWriter jwrite;
-	std::string writeFilename = "buildingset_1_interior_m=0.1_multi_threading.json";
-	const Shell_explorer& shell = shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
+	std::string writeFilename = "buildingset_1_multi.json";
+	const Shell_explorer& shell = shell_explorers[0]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
 	std::cout << "writing the result to cityjson file...\n";
 	jwrite.write_json_file(path + delimiter + writeFilename, shell, lod);
 
