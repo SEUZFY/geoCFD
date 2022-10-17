@@ -39,7 +39,7 @@ namespace MT {
 
         Nef_polyhedron* nef_ptr = build_nef(jtr);
         if (nef_ptr == nullptr) {
-            std::cerr << "pointer allocation not succeed, please check get_single_nef() function" << std::endl;
+            std::cerr << "pointer allocation not succeed, please check build_nef() function" << std::endl;
             return;
         }
 
@@ -47,6 +47,10 @@ namespace MT {
         Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(*nef_ptr);
 
         Nef_polyhedron* merged_nef_ptr = new(std::nothrow) Nef_polyhedron(merged_nef);
+        if (merged_nef_ptr == nullptr) {
+            std::cerr << "pointer allocation not succeed, please check build_nef() function" << std::endl;
+            return;
+        }
 
         // using a local lock_guard to lock mtx guarantees unlocking on destruction / exception:
         std::lock_guard<std::mutex> lock(s_nefs_mutex); // lock the meshes to avoid conflict
