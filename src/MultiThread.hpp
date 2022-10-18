@@ -59,7 +59,7 @@ namespace MT {
     
     
     
-    void get_nefs(const JsonHandler* const jtr) {
+    void get_nefs_async(const JsonHandler* const jtr) {
 
         Nef_polyhedron* nef_ptr = build_nef(jtr);
         if (nef_ptr == nullptr) {
@@ -86,9 +86,8 @@ namespace MT {
     }
 
 
-
     // in this function we call std::async() method
-    void get_nefs_async(const std::vector<JsonHandler>& jhandles) {
+    void load_nefs_async(const std::vector<JsonHandler>& jhandles) {
         
         std::cout << "size of buildings: " << jhandles.size() << std::endl;
 
@@ -97,7 +96,7 @@ namespace MT {
         * to enable the async process
         */
         for (const auto& jhandle : jhandles) {
-            m_futures.emplace_back(std::async(std::launch::async, get_nefs, &jhandle));
+            m_futures.emplace_back(std::async(std::launch::async, get_nefs_async, &jhandle));
             //get_nefs(&jhandle);
         }
 
@@ -109,6 +108,52 @@ namespace MT {
         for (auto& futureObject : m_futures) {
             futureObject.get();
         }
+    }
+
+
+    /* ----------------------------------------------------------------------------------------------------------------*/
+
+
+    void get_nefs_sync(const JsonHandler* const jtr) {
+
+        Nef_polyhedron* nef_ptr = build_nef(jtr);
+        if (nef_ptr == nullptr) {
+            std::cerr << "pointer allocation not succeed, please check build_nef() function" << std::endl;
+            return;
+        }
+
+        // perform minkowski operation
+        std::cout << "performing minkowski sum" << '\n';
+        Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(*nef_ptr);
+        std::cout << "done" << '\n';
+
+        Nef_polyhedron* merged_nef_ptr = new(std::nothrow) Nef_polyhedron(merged_nef);
+        if (merged_nef_ptr == nullptr) {
+            std::cerr << "pointer allocation not succeed, please check build_nef() function" << std::endl;
+            return;
+        }
+
+        m_nef_ptrs.emplace_back(merged_nef_ptr);
+
+        delete nef_ptr;
+        nef_ptr = nullptr;
+
+    }
+
+
+    // in this function we call std::async() method
+    void load_nefs_sync(const std::vector<JsonHandler>& jhandles) {
+
+        std::cout << "size of buildings: " << jhandles.size() << std::endl;
+
+        /*
+        * it is important to save the result of std::async()
+        * to enable the async process
+        */
+        for (const auto& jhandle : jhandles) {
+            get_nefs_sync(&jhandle);
+        }
+
     }
 
 

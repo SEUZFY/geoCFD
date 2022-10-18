@@ -12,7 +12,7 @@
 //#define DATA_PATH "D:\\SP\\geoCFD\\data" // specify the data path
 //#define _ENABLE_CONVEX_HULL_ // switch on/off convex hull method
 //#define _ENABLE_MINKOWSKI_SUM_ // switch on/off minkowski sum method -> activated by default
-//#define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading -> activated by default
+#define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading
 
 
 
@@ -22,7 +22,7 @@
 bool _ENABLE_TRIANGULATION_ = false; // true - activate the triangulation process, false otherwise
 
 /* lod level */
-double lod = 2.2;
+double lod = 1.3;
 
 /* minkowski parameter */
 double minkowski_param = 0.1;
@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
 	input.close();
 
 	// get ids of adjacent buildings
-	std::string adjacencyFile = "D:\\SP\\geoCFD\\data\\adjacency4.txt";
+	std::string adjacencyFile = "D:\\SP\\geoCFD\\data\\adjacency3.txt";
 	std::vector<std::string> adjacency;
 	adjacency.reserve(adjacency_size);
 	FileIO::read_adjacency_from_txt(adjacencyFile, adjacency);
@@ -73,8 +73,16 @@ int main(int argc, char* argv[])
 
 	/* begin counting */
 	Timer timer; // count the run time
-	
-	MT::get_nefs_async(jhandles);
+
+
+#ifdef _ENABLE_MULTI_THREADING_
+	std::cout << "multi threading is enabled" << '\n';
+	MT::load_nefs_async(jhandles);
+#else
+	MT::load_nefs_sync(jhandles);
+#endif // _ENABLE_MULTI_THREADING_
+
+		
 	std::cout << "nefs_ptr size: " << MT::m_nef_ptrs.size() << std::endl;
 
 	// merging nefs into one big nef
@@ -122,8 +130,8 @@ int main(int argc, char* argv[])
 	std::string path = "D:\\SP\\geoCFD\\data";
 	std::string delimiter = "\\";
 	JsonWriter jwrite;
-	std::string writeFilename = "interior_multi_m=0.1.json";
-	const Shell_explorer& shell = shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
+	std::string writeFilename = "exterior_multi_m=0.1.json";
+	const Shell_explorer& shell = shell_explorers[0]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
 	std::cout << "writing the result to cityjson file...\n";
 	jwrite.write_json_file(path + delimiter + writeFilename, shell, lod);
 
