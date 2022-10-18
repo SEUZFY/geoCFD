@@ -27,15 +27,22 @@ Responsible for ->
     
 - **(g)** processing the obtained geometry information -> to write the result to `json` file correctly, the obtained geometry information needs to be further processed.
 
+### MultiThread.hpp
+Responsible for performing multi-threading processing.
+
 ### main.cpp
 
 The entry point of the whole program.
 
-## note:
+### note:
 
-the `(e1)` and `(e2)` are two different approaches, they can be switched on/off by macros in the `main.cpp` file like so:
+Currently the command line tool is not added yet, thus before compiling and running you may need to change your paths here in `main.cpp`:
 
 ```cpp
-//#define _ENABLE_CONVEX_HULL_ // switch on/off convex hull method
-#define _ENABLE_MINKOWSKI_SUM_ // switch on/off minkowski sum method -> active by default
+/* input files and output location ------------------------------------------------------------------------------------------*/
+std::string srcFile = "D:\\SP\\geoCFD\\data\\3dbag_v210908_fd2cee53_5907.json";
+std::string adjacencyFile = "D:\\SP\\geoCFD\\data\\adjacency6.txt";
+std::string path = "D:\\SP\\geoCFD\\data";
+std::string delimiter = "\\";
+/* input files and output location ------------------------------------------------------------------------------------------*/
 ```

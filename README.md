@@ -152,28 +152,11 @@ if lod == 2.2
 ...
 ```
 
+issues related minkowski sum and irregular building:
+
+[CGAL Minkowski sum assertion when performing union operation of Nef_polyhedron_3](https://github.com/CGAL/cgal/issues/6973)
+
 ## Benchmark
-
-| building set| number of buildings |    lod level    | minkowski param | run time |
-| :---------: | :-----------------: | :-------------: | :-------------: | :------: |
-| 1           | 23                  | 1.3             | 1.0             | 29.7634s |
-| 1           | 23                  | 1.3             | 0.5             | 29.9599s |
-| 1           | 23                  | 1.3             | 0.1             | 33.8505s |
-| 1           | 23                  | 1.2             | 0.1             | 29.8471s |
-| 1           | 23                  | 2.2             | 0.1             | 256.724s |
-| 1           | 23                  | 2.2             | not activated   | 18.3169s |
-
-`with multi-threading enabled`
-
-| building set| number of buildings |    lod level    | minkowski param | run time | improvement |
-| :---------: | :-----------------: | :-------------: | :-------------: | :------: |  :------:   |
-| 1           | 23                  | 1.3             | 1.0             | 13.6294s | 54.208%     |
-| 1           | 23                  | 1.3             | 0.5             | 13.762s  | 54.065%     |
-| 1           | 23                  | 1.3             | 0.1             | 15.5355s | 54.106%     |
-| 1           | 23                  | 1.2             | 0.1             | 14.5127s | 51.377%     |
-| 1           | 23                  | 2.2             | 0.1             | 171.516s | 33.191%     |
-| 1           | 23                  | 2.2             | not activated   | 13.0047s | 29.002%     |
-| 1           | 23                  | 2.2             | 0.01            | 173.364s |             |
 
 ## Other platforms
 
