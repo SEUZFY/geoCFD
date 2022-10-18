@@ -19,7 +19,7 @@
 /* user defined parameters --------------------------------------------------------------------------------------------------*/
 
 /* triangulation */
-bool _ENABLE_TRIANGULATION_ = false; // true - activate the triangulation process, false otherwise
+bool _ENABLE_TRIANGULATION_ = true; // true - activate the triangulation process, false otherwise
 
 /* lod level */
 double lod = 2.2;
@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
 	input.close();
 
 	// get ids of adjacent buildings
-	std::string adjacencyFile = "D:\\SP\\geoCFD\\data\\adjacency3.txt";
+	std::string adjacencyFile = "D:\\SP\\geoCFD\\data\\adjacency5.txt";
 	std::vector<std::string> adjacency;
 	adjacency.reserve(adjacency_size);
 	FileIO::read_adjacency_from_txt(adjacencyFile, adjacency);
@@ -84,6 +84,7 @@ int main(int argc, char* argv[])
 
 		
 	std::cout << "nefs_ptr size: " << MT::m_nef_ptrs.size() << std::endl;
+
 
 	// merging nefs into one big nef
 	std::cout << "building big nef ..." << '\n';
