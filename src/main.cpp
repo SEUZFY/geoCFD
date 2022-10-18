@@ -11,7 +11,7 @@
 
 //#define _ENABLE_CONVEX_HULL_ // switch on/off convex hull method
 //#define _ENABLE_MINKOWSKI_SUM_ // switch on/off minkowski sum method -> activated by default
-//#define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading
+#define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading
 
 
 
