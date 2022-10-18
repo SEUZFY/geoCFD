@@ -8,10 +8,10 @@
 #include <cmath>
 
 #include "json.hpp"
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h> // Nef (and Minkowski) requires exact constructions
 
 // typedefs
-typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
+typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel; 
 typedef Kernel::Point_3 Point_3;
 
 // using declaration

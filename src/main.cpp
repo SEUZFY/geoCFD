@@ -11,7 +11,7 @@
 
 //#define _ENABLE_CONVEX_HULL_ // switch on/off convex hull method
 //#define _ENABLE_MINKOWSKI_SUM_ // switch on/off minkowski sum method -> activated by default
-#define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading
+//#define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading
 
 
 
@@ -41,7 +41,7 @@ bool print_building_info = false;
 
 /* input files and output location ------------------------------------------------------------------------------------------*/
 std::string srcFile = "D:\\SP\\geoCFD\\data\\3dbag_v210908_fd2cee53_5907.json";
-std::string adjacencyFile = "D:\\SP\\geoCFD\\data\\adjacency6.txt";
+std::string adjacencyFile = "D:\\SP\\geoCFD\\data\\adjacency2.txt";
 std::string path = "D:\\SP\\geoCFD\\data";
 std::string delimiter = "\\";
 /* input files and output location ------------------------------------------------------------------------------------------*/
@@ -145,8 +145,8 @@ int main(int argc, char* argv[])
 
     // write file
 	JsonWriter jwrite;
-	std::string writeFilename = "interior_multi_m=0.1.json";
-	const Shell_explorer& shell = shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
+	std::string writeFilename = "exterior_multi_m=0.1.json";
+	const Shell_explorer& shell = shell_explorers[0]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
 	std::cout << "writing the result to cityjson file...\n";
 	jwrite.write_json_file(path + delimiter + writeFilename, shell, lod);
 

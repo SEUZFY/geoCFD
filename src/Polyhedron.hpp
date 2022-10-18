@@ -9,13 +9,20 @@
 #include <CGAL/Nef_polyhedron_3.h>
 #include <CGAL/convex_hull_3.h>
 #include <CGAL/minkowski_sum_3.h>
-#include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
+#include <CGAL/boost/graph/graph_traits_Polyhedron_3.h> // for filling holes
+#include <CGAL/Polygon_mesh_processing/triangulate_faces.h> // for triangulating surfaces
+#include <CGAL/Polygon_mesh_processing/triangulate_hole.h> // for filling holes
+#include <boost/foreach.hpp> // for filling holes
+
 
 // typedefs
 typedef CGAL::Polyhedron_3<Kernel>                   Polyhedron;
 typedef CGAL::Nef_polyhedron_3<Kernel>               Nef_polyhedron;
-typedef Polyhedron::Facet_iterator                   Facet_iterator;
-typedef Polyhedron::Halfedge_around_facet_circulator Halfedge_facet_circulator;
+typedef Polyhedron::Facet_iterator                   Facet_iterator; // for extracting geometries
+typedef Polyhedron::Halfedge_around_facet_circulator Halfedge_facet_circulator; // for extracting geometries
+typedef Polyhedron::Halfedge_handle                  Halfedge_handle; // for filling holes
+typedef Polyhedron::Facet_handle                     Facet_handle; // for filling holes
+typedef Polyhedron::Vertex_handle                    Vertex_handle; // for filling holes
 
 
 
@@ -52,7 +59,7 @@ public:
     // jhandle: A JsonHandler instance, contains all vertices and solids
     // index  : index of solids vector, indicating which solid is going to be built - ideally one building just contains one solid
     // triangulate: if true, triangulation of surfaces will be performed before building nef
-    static void build_nef_polyhedron_(
+    static void build_nef_polyhedron_deprecated(
         const JsonHandler& jhandle, 
         std::vector<Nef_polyhedron>& Nefs,
         bool triangulate = false,
@@ -153,10 +160,48 @@ public:
     }
 
 
+    /*
+    * test hole filling package
+    */
+    static void polyhedron_hole_filling(Polyhedron& poly) {
+
+        // output it
+        std::ofstream out("unfilled.off");
+        out.precision(17);
+        out << poly << std::endl;
+        
+        // Incrementally fill the holes
+        std::cout << "filling holes ..." << '\n';
+        unsigned int nb_holes = 0;
+        BOOST_FOREACH(Halfedge_handle h, halfedges(poly))
+        {
+            if (h->is_border())
+            {
+                std::vector<Facet_handle>  patch_facets;
+                std::vector<Vertex_handle> patch_vertices;
+                bool success = CGAL::cpp11::get<0>(
+                    CGAL::Polygon_mesh_processing::triangulate_refine_and_fair_hole(
+                        poly,
+                        h,
+                        std::back_inserter(patch_facets),
+                        std::back_inserter(patch_vertices),
+                        CGAL::Polygon_mesh_processing::parameters::vertex_point_map(get(CGAL::vertex_point, poly)).
+                        geom_traits(Kernel())));
+                std::cout << " Number of facets in constructed patch: " << patch_facets.size() << std::endl;
+                std::cout << " Number of vertices in constructed patch: " << patch_vertices.size() << std::endl;
+                std::cout << " Fairing : " << (success ? "succeeded" : "failed") << std::endl;
+                ++nb_holes;
+            }
+        }
+        std::cout << std::endl;
+        std::cout << nb_holes << " holes have been filled" << std::endl;
+    }
+
 
     static Nef_polyhedron* build_nef_polyhedron(
         const JsonHandler& jhandle,
         bool triangulate_tag = true,
+        bool hole_filling_tag = true,
         unsigned long solid_index = 0)
     {
         const auto& solid = jhandle.solids[solid_index]; // get the solid
@@ -188,6 +233,12 @@ public:
             //std::cout << "polyhedron closed? " << polyhedron.is_closed() << '\n';
 
             if (polyhedron.is_closed()) {
+
+
+                /* filling holes test */
+                polyhedron_hole_filling(polyhedron);
+                
+                
 
                 // if triangulation is true, triangulate the surfaces first (lod2.2)
                 if (triangulate_tag) {
