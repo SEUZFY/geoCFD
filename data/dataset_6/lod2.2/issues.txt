@@ -1,0 +1,16 @@
+->building replaced using convex hull
+
+CGAL::Polyhedron_incremental_builder_3<HDS>::
+lookup_halfedge(): input error: facet 16 has a self intersection at vertex 58.
+the polyhedron is not closed, build convex hull to replace it
+building id is: NL.IMBAG.Pand.0503100000018501-0the convex hull is closed, build convex nef polyhedron
+
+->building errors:
+
+CGAL error: assertion violation!
+Expression :
+File       : D:\dev\vcpkg\installed\x64-windows\include\CGAL/Convex_decomposition_3/Ray_hit_generator2.h
+Line       : build nef polyhedron
+158
+Explanation: ray should hit vertex, edge, or facet
+Refer to the bug-reporting instructions at https://www.cgal.org/bug_report.html

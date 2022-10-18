@@ -127,10 +127,10 @@ public:
 		for (auto& co : j["CityObjects"].items()) {
 			if (co.key() == building_id)
 			{
-				std::cout << "CityObject: " << co.key() << std::endl;
+				std::cout << co.key() << '\n';
 				for (auto& g : co.value()["geometry"]) {
 					if (g["type"] == "Solid" && (std::abs(g["lod"].get<double>() - lod)) < epsilon) { // geometry type: Solid, use lod1.3
-						std::cout << "current lod level: " << g["lod"].get<double>() << '\n';
+						std::cout << "lod level: " << g["lod"].get<double>() << '\n';
 						Solid so; // create a solid to store the information
 						so.id = co.key(); // store id
 						so.lod = g["lod"].get<double>(); // store lod info as std::string type

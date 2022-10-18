@@ -161,7 +161,7 @@ public:
     {
         const auto& solid = jhandle.solids[solid_index]; // get the solid
 
-        std::cout << solid.id << '\n';
+        //std::cout << solid.id << '\n';
 
         if (solid.shells.size() != 1) {
             std::cout << "warning: this solid contains 0 or more than one shells\n";
@@ -205,6 +205,7 @@ public:
             }
             else {
                 std::cout << "the polyhedron is not closed, build convex hull to replace it\n";
+                std::cout << "building id is: " << solid.id;
                 Polyhedron convex_polyhedron;
                 CGAL::convex_hull_3(jhandle.vertices.begin(), jhandle.vertices.end(), convex_polyhedron);
 

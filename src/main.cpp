@@ -9,7 +9,6 @@
 
 
 
-//#define DATA_PATH "D:\\SP\\geoCFD\\data" // specify the data path
 //#define _ENABLE_CONVEX_HULL_ // switch on/off convex hull method
 //#define _ENABLE_MINKOWSKI_SUM_ // switch on/off minkowski sum method -> activated by default
 #define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading
@@ -35,8 +34,17 @@ double minkowski_param = 0.1;
 /* number of adjacent buildings in one block */
 unsigned int adjacency_size = 50;
 
+/* whether to print the building info to the console */
+bool print_building_info = false;
 /* optional parameters ------------------------------------------------------------------------------------------------------*/
 
+
+/* input files and output location ------------------------------------------------------------------------------------------*/
+std::string srcFile = "D:\\SP\\geoCFD\\data\\3dbag_v210908_fd2cee53_5907.json";
+std::string adjacencyFile = "D:\\SP\\geoCFD\\data\\adjacency6.txt";
+std::string path = "D:\\SP\\geoCFD\\data";
+std::string delimiter = "\\";
+/* input files and output location ------------------------------------------------------------------------------------------*/
 
 
 // entry point
@@ -44,14 +52,12 @@ int main(int argc, char* argv[])
 {
 	std::cout << "test multi threading" << std::endl;
 
-	std::string srcFile = "D:\\SP\\geoCFD\\data\\3dbag_v210908_fd2cee53_5907.json";
 	std::ifstream input(srcFile);
 	json j;
 	input >> j;
 	input.close();
 
-	// get ids of adjacent buildings
-	std::string adjacencyFile = "D:\\SP\\geoCFD\\data\\adjacency5.txt";
+	// get ids of adjacent buildings	
 	std::vector<std::string> adjacency;
 	adjacency.reserve(adjacency_size);
 	FileIO::read_adjacency_from_txt(adjacencyFile, adjacency);
@@ -59,21 +65,29 @@ int main(int argc, char* argv[])
 	// read buildings
 	std::vector<JsonHandler> jhandles;
 	jhandles.reserve(adjacency_size); // use reserve() to avoid extra copies
+
+
 	std::cout << "------------------------ building(part) info ------------------------\n";
 
 	for (auto const& building_name : adjacency) // get each building
 	{
 		JsonHandler jhandle;
 		jhandle.read_certain_building(j, building_name, lod); // read in the building
-		jhandle.message();
 		jhandles.emplace_back(jhandle); // add to the jhandlers vector
+
+		if (print_building_info) {
+			jhandle.message();
+		}
 	}
 
 	std::cout << "---------------------------------------------------------------------\n";
 
+
 	/* begin counting */
 	Timer timer; // count the run time
 
+
+	/* building nefs and performing minkowski operations -------------------------------------------------------------------------*/
 
 #ifdef _ENABLE_MULTI_THREADING_
 	std::cout << "multi threading is enabled" << '\n';
@@ -81,6 +95,8 @@ int main(int argc, char* argv[])
 #else
 	MT::load_nefs_sync(jhandles);
 #endif // _ENABLE_MULTI_THREADING_
+
+	/* building nefs and performing minkowski operations -------------------------------------------------------------------------*/
 
 		
 	std::cout << "nefs_ptr size: " << MT::m_nef_ptrs.size() << std::endl;
@@ -128,11 +144,9 @@ int main(int argc, char* argv[])
 
 
     // write file
-	std::string path = "D:\\SP\\geoCFD\\data";
-	std::string delimiter = "\\";
 	JsonWriter jwrite;
-	std::string writeFilename = "interior_multi_m=0.1.json";
-	const Shell_explorer& shell = shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
+	std::string writeFilename = "exterior_multi_m=0.1.json";
+	const Shell_explorer& shell = shell_explorers[0]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
 	std::cout << "writing the result to cityjson file...\n";
 	jwrite.write_json_file(path + delimiter + writeFilename, shell, lod);
 
