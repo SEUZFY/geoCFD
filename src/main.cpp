@@ -145,8 +145,8 @@ int main(int argc, char* argv[])
 
     // write file
 	JsonWriter jwrite;
-	std::string writeFilename = "exterior_multi_m=0.1.json";
-	const Shell_explorer& shell = shell_explorers[0]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
+	std::string writeFilename = "interior_multi_m=0.1.json";
+	const Shell_explorer& shell = shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
 	std::cout << "writing the result to cityjson file...\n";
 	jwrite.write_json_file(path + delimiter + writeFilename, shell, lod);
 

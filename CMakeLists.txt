@@ -10,6 +10,7 @@ find_package(CGAL) # for CGALgeocfd
 if (CGAL_FOUND)
 	include(${CGAL_USE_FILE})
 	message(STATUS "CGAL found")
+	message(STATUS "CGAL VERSION" " " ${CGAL_VERSION})
 else()
 	message(SEND_ERROR "this code requires the CGAL library")
 	return()
