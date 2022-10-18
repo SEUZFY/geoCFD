@@ -16,7 +16,7 @@ else()
 	return()
 endif()
 
-add_executable (geoCFD "src/main.cpp" "src/JsonHandler.hpp" "src/Polyhedron.hpp" "src/JsonWriter.hpp" "src/Evaluation.h" "src/MultiThread.hpp")
+add_executable (geoCFD "src/main.cpp" "src/JsonHandler.hpp" "src/Polyhedron.hpp" "src/JsonWriter.hpp"  "src/MultiThread.hpp")
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

@@ -24,7 +24,7 @@ bool _ENABLE_TRIANGULATION_ = true; // true - activate the triangulation process
 double lod = 2.2;
 
 /* minkowski parameter */
-double minkowski_param = 0.1; // currently use 0.1 by default
+double minkowski_param = 0.1; // currently use 0.1 by default, change the param here will not really change the minkowski param
 
 /* user defined parameters --------------------------------------------------------------------------------------------------*/
 
