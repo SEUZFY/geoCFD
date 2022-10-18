@@ -22,7 +22,7 @@
 bool _ENABLE_TRIANGULATION_ = false; // true - activate the triangulation process, false otherwise
 
 /* lod level */
-double lod = 1.3;
+double lod = 2.2;
 
 /* minkowski parameter */
 double minkowski_param = 0.1;
@@ -130,8 +130,8 @@ int main(int argc, char* argv[])
 	std::string path = "D:\\SP\\geoCFD\\data";
 	std::string delimiter = "\\";
 	JsonWriter jwrite;
-	std::string writeFilename = "exterior_multi_m=0.1.json";
-	const Shell_explorer& shell = shell_explorers[0]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
+	std::string writeFilename = "interior_multi_m=0.1.json";
+	const Shell_explorer& shell = shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
 	std::cout << "writing the result to cityjson file...\n";
 	jwrite.write_json_file(path + delimiter + writeFilename, shell, lod);
 
