@@ -100,6 +100,10 @@ int main(int argc, char* argv[])
 
 		
 	std::cout << "nefs_ptr size: " << MT::m_nef_ptrs.size() << std::endl;
+	if (MT::m_nef_ptrs.size() == 0) {
+		std::cout << "no nef polyhedra built, please check the input or functions in Build class" << '\n';
+		return 1;
+	}
 
 
 	// merging nefs into one big nef
