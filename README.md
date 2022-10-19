@@ -5,9 +5,7 @@
 Process geometry for cfd simulation.
 
 It's a cross-platform project (currently tested on `x64-windows10` platform, see [geocfd-Ubuntu](https://github.com/SEUZFY/geocfd-Ubuntu) for the basic setting up on 
-`wsl-ubuntu` platform). Further development are performed in this project since a discovery has been found that keeping using `WSL-Ubuntu` will occupy more and more space in C drive.
-
-`Now`:
+`wsl-ubuntu` platform). 
 
 - support for all `LoD` levels (lod 1.2, lod 1.3, lod 2.2) in `cityjson` 
 
@@ -15,44 +13,73 @@ It's a cross-platform project (currently tested on `x64-windows10` platform, see
 
 - Read a building set(containing 23 buildings(buildingparts)), process repeated vertices and build `nef polyhedra`.
 
-- Union `nef polyhedra` into one `big nef polyhedron`, observe the original `exterior` and `internal faces`(highlighted in yellow).
+- visualisation:
 
-  <img width="361" alt="set_1_exterior_m=0 1" src="https://user-images.githubusercontent.com/72781910/194174341-5d56621c-750a-4f32-b917-1840ff6e4313.png">   <img width="361" alt="set_1_interior_m=0 1" src="https://user-images.githubusercontent.com/72781910/194174083-0251a366-a61b-4357-a61d-042ea0110d1e.PNG">
+	[ninja](https://ninja.cityjson.org/)
 
-	The interior of the adjacent buildings - `lod 2.2` (left) and `lod 1.3` (right)
-
-- Perform [3D Minkowski Sum](https://doc.cgal.org/latest/Minkowski_sum_3/index.html#Chapter_3D_Minkowski_Sum_of_Polyhedra) with different parameters.
-
-	**note**: this step works for `lod 1.2` and `lod 1.3`, but need to do some preprocessing for `lod 2.2`, see [robust](https://github.com/SEUZFY/geoCFD/tree/master#robust) section for details.
-
-- Get the [convex hull](https://en.wikipedia.org/wiki/Convex_hull) of the `big nef polyhedron` and visualise it in [ninja](https://ninja.cityjson.org/), observe its exterior and interior (optional).
-
-- Export the `big nef polyhedron` as `.cityjson` file(with no repeated vertices) and visualise it in [ninja](https://ninja.cityjson.org/), observe its `exterior` and `interior`.
-
-  <img width="361" alt="set_1_exterior_m=0 1" src="https://user-images.githubusercontent.com/72781910/194171610-b7e8698d-98cb-47e1-a087-bae30da85817.PNG">   <img width="361" alt="set_1_interior_m=0 1" src="https://user-images.githubusercontent.com/72781910/194172354-8a20bc4b-f9f9-4116-9725-06738e7c0747.PNG">
-  
-	The interior of the result - `lod 2.2` (left) and `lod 1.3` (right)
-	
 - validate the result file via: 
 
 	- `val3dity`  - [validate](http://geovalidation.bk.tudelft.nl/val3dity/) the geometry
   
   	- `validator` - [validate](https://validator.cityjson.org/) the `cityjson` file
 
-`To do`:
+## Usage
 
-  - how much will the shape change?
-  
-  - [3D Minkowski Sum](https://doc.cgal.org/latest/Minkowski_sum_3/index.html#Chapter_3D_Minkowski_Sum_of_Polyhedra) - can we do sum in some specific direction?
+Compile and build it, enter into the `out\build\x64-Release` folder (on windows for example) then open the console (e.g. Windows PowerShell)
 
-  - `robust` - see [robust](https://github.com/SEUZFY/geoCFD/tree/master#robust) section.
+```console
+.\geoCFD [path of the adjacency file (.txt)] [multi_thread_tag]
+```
+example:
+```console
+PS D:\SP\geoCFD\out\build\x64-Release> .\geoCFD D:\SP\geoCFD\data\dataset_5\adjacency5.txt t
+this is: D:\SP\geoCFD\out\build\x64-Release\geoCFD.exe
+current lod level: 2.2
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+build nef polyhedron
+there are 21 nef polyhedra in total
+performing minkowski sum ...
+multi threading is enabled
+done
+building big nef ...
+done
+extracting nef geometries ...
+done
+processing shells for cityjson ...
+done
+writing the result to cityjson file...
+file saved at: D:\SP\geoCFD\data\interior_multi_m=0.1.json
+Time: 5.61774s
+```
+### Note
 
- `long term` 
-  
-  - `#include` - include multiple files, how to avoid possibly messy includings?
+* if the program does not exit, you may need to re-open your console again and re-run it. (for example, dataset_2).
 
-  - `precompiled headers` - add `pch.h` file and use [cmake command for precompiled headers](https://cmake.org/cmake/help/latest/command/target_precompile_headers.html)
- 
+    This may be due to the complex geometry of the buildings in `dataset_2`, one of the buildings contain holes.
+
+* the `minkowski param` is set to `0.1` by default.
+
+	The param can be altered, but proceed with caution, too small minkowski param may not fill the holes of the building in `dataset_2`.
+
 ## Prerequisite
 
 [CGAL](https://www.cgal.org/) - The version should be above `5.0` since we can use the `header-only`, which means we don't have to manually compile `CGAL`.
@@ -61,9 +88,9 @@ install `CGAL` via [vcpkg](https://vcpkg.io/en/index.html):
 
 check this -> 
 
-[Download CGAL for Windows](https://www.cgal.org/download/windows.html)
+[install vcpkg](https://www.youtube.com/watch?v=b7SdgK7Y510)
 
-[vcpkg Crash Course | C++ libraries simplified! A Visual Studio must-have!](https://www.youtube.com/watch?v=b7SdgK7Y510)
+[Download CGAL for Windows](https://www.cgal.org/download/windows.html)
 
 ## How to use?
 
@@ -111,11 +138,6 @@ be generated by your IDE automatically.
 	A manual fix can be possible towards certain building set but not general, if we take the **universality** and **automation** into consideration, using `convex hull` to replace the corresponding building seems to be a good choice, yet this approach may lead to the compromisation of the original building shapes.
 	
 	There are also other issues in `lod 2.2`, see [robust](https://github.com/SEUZFY/geoCFD/tree/master#robust) section for details.
-
-3. **DATA PATH**
-
-	Currently the `absolute path` is used in this program, it should be noted that the path is kinda different on `windows` and `linux`
-	system. This will be improved later.
 	
 ## Robust
 
