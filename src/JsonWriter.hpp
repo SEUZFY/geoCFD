@@ -10,7 +10,7 @@
 * 
 * add different LoDs?
 */
-class JsonWriter : public JsonHandler
+class JsonWriter
 {
 public:
 	/*
@@ -19,7 +19,7 @@ public:
 	* this needs to be altered to write the big nef to cityjson
 	*
 	* @param:
-	* all_vertices: contains all vertices from All shells, not just from one shell
+	* filename    : output file name
 	* shell       : shell which is going to be written to the json file
 	* lod         : lod level(1.2 1.3 2.2)
 	*/
