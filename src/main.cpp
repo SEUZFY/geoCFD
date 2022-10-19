@@ -32,7 +32,7 @@ bool print_building_info = false; /* whether to print the building info to the c
 
 /* input files and output location ------------------------------------------------------------------------------------------*/
 std::string srcFile = "D:\\SP\\geoCFD\\data\\3dbag_v210908_fd2cee53_5907.json";
-std::string adjacencyFile = "D:\\SP\\geoCFD\\data\\adjacency7.txt";
+std::string adjacencyFile = "D:\\SP\\geoCFD\\data\\adjacency8.txt";
 std::string path = "D:\\SP\\geoCFD\\data";
 std::string delimiter = "\\";
 /* input files and output location ------------------------------------------------------------------------------------------*/
@@ -153,8 +153,8 @@ int main(int argc, char* argv[])
     // write file
 	// json
 	if (OUTPUT_JSON) {
-		std::string writeFilename = "interior_multi_m=0.1.json";
-		const Shell_explorer& shell = shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
+		std::string writeFilename = "exterior_multi_m=0.1.json";
+		const Shell_explorer& shell = shell_explorers[0]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
 		std::cout << "writing the result to cityjson file...\n";
 		FileIO::write_JSON(path + delimiter + writeFilename, shell, lod);
 	}

@@ -236,7 +236,7 @@ public:
 
 
                 /* filling holes test */
-                polyhedron_hole_filling(polyhedron);
+                //polyhedron_hole_filling(polyhedron);
                 
                 
 
