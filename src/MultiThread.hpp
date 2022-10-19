@@ -36,133 +36,173 @@ struct Timer //for counting the time
 };
 
 
+
+/*
+* namespace MT -> stands for multi threading
+* the functions inside this namespace are for performing
+* multi threading / not multi threading tasks
+* function with "sync" means single thread process
+* function with "async" means multi threading process
+* 
+* CGAL does resources management internally
+* small primitives such as the components of Nef_polyhedron_3 are sotred in 
+* the so-called "Compact_container"
+* the memory address of the small primitives could be changed automatically
+* thus handlers are used for accessing these primitives
+* and pointers should be avoided as much as possible when using CGAL
+* 
+* pass the CGAL object as function parameters with references
+* for std::async(), pass the pointers whenever possible?
+* 
+* since building Nef_polyhedron is relatively fast
+* we build the nefs first and then multi thread the minkowski sum process
+*/
 namespace MT {
 
-	std::vector<Nef_polyhedron*> m_nef_ptrs; // hold the nefs
-	std::vector<std::future<void>> m_futures; // store the return value of std::async, necessary step to make async work
-	std::mutex s_nefs_mutex; // for thread-safety
 
-
-    Nef_polyhedron* build_nef(const JsonHandler* const jtr)
+	std::vector<std::future<void>> futures; // store the return value of std::async, necessary step to make async work
+	std::mutex nef_mutex; // for thread-safety
+        
+    
+    /*
+    * use minkowski sum to expand a nef
+    * add the expanded nef to expanded_nefs vector (via pointer)
+    * 
+    * @ param:
+    * 
+    * @ nef: 
+    * nef which will be expanded, it's a CGAL object, thus we pass it using reference as a parameter
+    * 
+    * @ expanded_nefs: 
+    * a vector to store the expanded nefs, for using std::async(), we pass the pointer of the vector
+    * 
+    * @ minkowski_param:
+    * the "minkowski parameter"
+    * minkowski sums two nefs, we define a small cube with side length = minkowski_param
+    * and we expand the nef with this cube
+    * the minkowski_param is set to 0.1 by default
+    */
+    void expand_nef_async(
+        Nef_polyhedron& nef, 
+        std::vector<Nef_polyhedron>* expanded_nefs_Ptr,
+        double minkowski_param)
     {
-        //std::this_thread::sleep_for(seconds(5));
-
-        // operations ... get polyhedron, get nef, get minkowski nef
-        Nef_polyhedron* nef_ptr = Build::build_nef_polyhedron(*jtr);
-        if (nef_ptr == nullptr) {
-            std::cerr << "nef polyhedron not built, please check build_nef_polyhedron() function" << std::endl;
-            return nullptr;
-        }
-
-        return nef_ptr; // further optimization: using pointers
-    }
-    
-    
-    
-    void get_nefs_async(const JsonHandler* const jtr) {
-
-        Nef_polyhedron* nef_ptr = build_nef(jtr);
-        if (nef_ptr == nullptr) {
-            std::cerr << "pointer allocation not succeed, please check build_nef() function" << std::endl;
+        // check the pointer
+        if (expanded_nefs_Ptr == nullptr) {
+            std::cerr << "pointer of expanded_nefs vector is null, please check " << std::endl;
             return;
         }
 
         // perform minkowski operation
-        Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(*nef_ptr);
-
-        Nef_polyhedron* merged_nef_ptr = new(std::nothrow) Nef_polyhedron(merged_nef);
-        if (merged_nef_ptr == nullptr) {
-            std::cerr << "pointer allocation not succeed, please check build_nef() function" << std::endl;
-            return;
-        }
-
+        Nef_polyhedron expanded_nef = NefProcessing::minkowski_sum(nef, minkowski_param);
+      
         // using a local lock_guard to lock mtx guarantees unlocking on destruction / exception:
-        std::lock_guard<std::mutex> lock(s_nefs_mutex); // lock the meshes to avoid conflict
-        m_nef_ptrs.emplace_back(merged_nef_ptr);
-
-        delete nef_ptr;
-        nef_ptr = nullptr;
+        std::lock_guard<std::mutex> lock(nef_mutex); // lock the meshes to avoid conflict
+        expanded_nefs_Ptr->emplace_back(expanded_nef);
 
     }
 
 
-    // in this function we call std::async() method
-    void load_nefs_async(const std::vector<JsonHandler>& jhandles) {
+    /*
+    * expand nefs asynchronously
+    * will call std::async() and expand_nef_async() function
+    * 
+    * @ param:
+    * 
+    * @ nefs:
+    * a vector containing all the original nef polyhedra
+    * 
+    * @ expanded_nefs:
+    * a vector which contains the expanded nef polyhedra
+    * to use std::async() we need to pass pointers whenever possible
+    * but we need to avoid to use the pointer pointing to CGAL objects
+    * 
+    * @ minkowski_param:
+    * the "minkowski parameter"
+    * minkowski sums two nefs, we define a small cube with side length = minkowski_param
+    * and we expand the nef with this cube
+    * the minkowski_param is set to 0.1 by default
+    */
+    void expand_nefs_async(
+        std::vector<Nef_polyhedron>& nefs,
+        std::vector<Nef_polyhedron>& expanded_nefs,
+        double minkowski_param = 0.1)
+    {
         
-        std::cout << "size of buildings: " << jhandles.size() << std::endl;
-
         /*
+        * call std::async() to enable asynchronous process
         * it is important to save the result of std::async()
         * to enable the async process
+        * 
+        * do not use const qualifier - the nef will be changed
+        * and use reference in the for loop
         */
-        for (const auto& jhandle : jhandles) {
-            m_futures.emplace_back(std::async(std::launch::async, get_nefs_async, &jhandle));
-            //get_nefs(&jhandle);
+        for (auto& nef : nefs) {
+            futures.emplace_back(
+                std::async( 
+                std::launch::async, /* launch policy */
+                expand_nef_async, /* function will be called asynchronously, need to be independent */
+                nef, /* arguments - a nef */
+                &expanded_nefs, /* arguments - pointer to expanded_nefs vector */
+                minkowski_param /* arguments - minkowski_param (default is 0.1)*/
+                ));
         }
-
 
         /*
         * if we wish to get the result value and keep processing
         * we need to use get() of every future object
         */
-        for (auto& futureObject : m_futures) {
+        for (auto& futureObject : futures) {
             futureObject.get();
         }
     }
 
 
+
     /* ----------------------------------------------------------------------------------------------------------------*/
 
 
-    void get_nefs_sync(const JsonHandler* const jtr) {
 
-        Nef_polyhedron* nef_ptr = build_nef(jtr);
-        if (nef_ptr == nullptr) {
-            std::cerr << "pointer allocation not succeed, please check build_nef() function" << std::endl;
+    /*
+    * expand a nef
+    * it's the synchronous version of expand_nef_async()
+    * used for not performing multi threading
+    */
+    void expand_nef(
+        Nef_polyhedron& nef,
+        std::vector<Nef_polyhedron>* expanded_nefs_Ptr,
+        double minkowski_param)
+    {
+        // check the pointer
+        if (expanded_nefs_Ptr == nullptr) {
+            std::cerr << "pointer of expanded_nefs vector is null, please check " << std::endl;
             return;
         }
 
         // perform minkowski operation
-        std::cout << "performing minkowski sum" << '\n';
-        Nef_polyhedron merged_nef = NefProcessing::minkowski_sum(*nef_ptr);
-        std::cout << "done" << '\n';
+        Nef_polyhedron expanded_nef = NefProcessing::minkowski_sum(nef, minkowski_param);
 
-        Nef_polyhedron* merged_nef_ptr = new(std::nothrow) Nef_polyhedron(merged_nef);
-        if (merged_nef_ptr == nullptr) {
-            std::cerr << "pointer allocation not succeed, please check build_nef() function" << std::endl;
-            return;
-        }
-
-        m_nef_ptrs.emplace_back(merged_nef_ptr);
-
-        delete nef_ptr;
-        nef_ptr = nullptr;
+        // using a local lock_guard to lock mtx guarantees unlocking on destruction / exception:
+        // std::lock_guard<std::mutex> lock(nef_mutex); // lock the meshes to avoid conflict
+        expanded_nefs_Ptr->emplace_back(expanded_nef);
 
     }
 
 
-    // in this function we call std::async() method
-    void load_nefs_sync(const std::vector<JsonHandler>& jhandles) {
-
-        std::cout << "size of buildings: " << jhandles.size() << std::endl;
-
-        /*
-        * it is important to save the result of std::async()
-        * to enable the async process
-        */
-        for (const auto& jhandle : jhandles) {
-            get_nefs_sync(&jhandle);
-        }
-
-    }
-
-
-    void clean() {
-        for (unsigned int i = 0; i != m_nef_ptrs.size(); ++i) {
-            delete m_nef_ptrs[i];
-            m_nef_ptrs[i] = nullptr;
+    /*
+    * expand nefs
+    * it's the synchronous version of expand_nefs_async()
+    * used for not performing multi threading
+    */
+    void expand_nefs(
+        std::vector<Nef_polyhedron>& nefs,
+        std::vector<Nef_polyhedron>& expanded_nefs,
+        double minkowski_param = 0.1)
+    {
+        // expand each nef in nefs vector
+        for (auto& nef : nefs) {
+            expand_nef(nef, &expanded_nefs, minkowski_param);
         }
     }
-
-
+ 
 };
