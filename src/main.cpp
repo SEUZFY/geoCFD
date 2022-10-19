@@ -53,6 +53,10 @@ int main(int argc, char* argv[])
 	std::cout << "test multi threading" << std::endl;
 
 	std::ifstream input(srcFile);
+	if (!input.is_open()) {
+		std::cerr << "Error: Unable to open cityjson file \"" << srcFile << "\" for reading!" << std::endl;
+		return 1;
+	}
 	json j;
 	input >> j;
 	input.close();

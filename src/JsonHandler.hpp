@@ -214,7 +214,7 @@ namespace FileIO {
 		// read from txt to get the adjacency list
 		std::ifstream in(filename, std::ios::out);
 		if (!in.is_open()) {
-			std::cerr << "Error: Unable to open settings file \"" << filename << "\" for reading!" << std::endl;
+			std::cerr << "Error: Unable to open adjacency file \"" << filename << "\" for reading!" << std::endl;
 			return;
 		}
 
