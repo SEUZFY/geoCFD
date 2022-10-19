@@ -11,7 +11,7 @@
 
 //#define _ENABLE_CONVEX_HULL_ // switch on/off convex hull method
 //#define _ENABLE_MINKOWSKI_SUM_ // switch on/off minkowski sum method -> activated by default
-#define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading
+//#define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading
 
 
 
@@ -32,7 +32,7 @@ bool print_building_info = false; /* whether to print the building info to the c
 
 /* input files and output location ------------------------------------------------------------------------------------------*/
 std::string srcFile = "D:\\SP\\geoCFD\\data\\3dbag_v210908_fd2cee53_5907.json";
-std::string adjacencyFile = "D:\\SP\\geoCFD\\data\\adjacency8.txt";
+std::string adjacencyFile = "D:\\SP\\geoCFD\\data\\adjacency2.txt";
 std::string path = "D:\\SP\\geoCFD\\data";
 std::string delimiter = "\\";
 /* input files and output location ------------------------------------------------------------------------------------------*/
