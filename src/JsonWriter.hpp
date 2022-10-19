@@ -4,26 +4,25 @@
 #include "JsonHandler.hpp"
 #include "Polyhedron.hpp"
 
+#include <CGAL/boost/graph/IO/STL.h> // for writing STL files
+
 
 /*
 * class for writing big nef_polyhedron to cityjson file
 * 
 * add different LoDs?
 */
-class JsonWriter
-{
-public:
+namespace FileIO {
 	/*
-	* write the selected building to cityjson file
+	* write the selected shell of the big nef to cityjson
 	* index: index of solids, indicating which solid is going to be written to the json file
-	* this needs to be altered to write the big nef to cityjson
-	*
+	* 
 	* @param:
 	* filename    : output file name
 	* shell       : shell which is going to be written to the json file
 	* lod         : lod level(1.2 1.3 2.2)
 	*/
-	void write_json_file(const std::string& filename, const Shell_explorer& shell, double lod)
+	void write_JSON(const std::string& filename, const Shell_explorer& shell, double lod)
 	{
 		// basic info ---------------------------------------------------------------
 		json js;
@@ -90,4 +89,30 @@ public:
 		std::cout << "file saved at: " << filename << '\n';
 	}
 
-};
+
+
+	/*
+	* write the big nef to STL file (STereoLithography File Format)
+	* return true if successful otherwise false
+	* 
+	* @param:
+	* filename  :  output file name
+	* poly      :  the obtained nef to polyhedron as the result ... ?
+	* currently not working
+	*/
+	//bool write_STL(const std::string& filename, const Polyhedron& poly) {
+	//	
+	//	// call CGAL write_STL function
+	//	bool status = CGAL::IO::write_STL(filename, poly);
+
+	//	if (status) {
+	//		std::cout << "STL file saved at: " << filename << '\n';
+	//		return true;
+	//	}
+	//	else {
+	//		std::cerr << "unable to write STL file, please check" << '\n';
+	//		return false;
+	//	}
+	//}
+	
+}

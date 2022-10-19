@@ -16,35 +16,34 @@
 
 
 /* user defined parameters --------------------------------------------------------------------------------------------------*/
-
-/* triangulation */
-bool _ENABLE_TRIANGULATION_ = true; // true - activate the triangulation process, false otherwise
-
-/* lod level */
-double lod = 2.2;
-
-/* minkowski parameter */
-double minkowski_param = 0.1; // currently use 0.1 by default, change the param here will not really change the minkowski param
-
+bool _ENABLE_TRIANGULATION_ = true; // triangulation, true - currently activated by default
+double lod = 2.2; /* lod level */
+double minkowski_param = 0.1; // minkowski parameter, currently use 0.1 by default, change the param here will not really change the minkowski param
 /* user defined parameters --------------------------------------------------------------------------------------------------*/
 
 
+
+/* optional parameters ------------------------------------------------------------------------------------------------------*/
+unsigned int adjacency_size = 50; /* number of adjacent buildings in one block */
+bool print_building_info = false; /* whether to print the building info to the console */
 /* optional parameters ------------------------------------------------------------------------------------------------------*/
 
-/* number of adjacent buildings in one block */
-unsigned int adjacency_size = 50;
-
-/* whether to print the building info to the console */
-bool print_building_info = false;
-/* optional parameters ------------------------------------------------------------------------------------------------------*/
 
 
 /* input files and output location ------------------------------------------------------------------------------------------*/
 std::string srcFile = "D:\\SP\\geoCFD\\data\\3dbag_v210908_fd2cee53_5907.json";
-std::string adjacencyFile = "D:\\SP\\geoCFD\\data\\adjacency2.txt";
+std::string adjacencyFile = "D:\\SP\\geoCFD\\data\\adjacency7.txt";
 std::string path = "D:\\SP\\geoCFD\\data";
 std::string delimiter = "\\";
 /* input files and output location ------------------------------------------------------------------------------------------*/
+
+
+
+/* output files -------------------------------------------------------------------------------------------------------------*/
+bool OUTPUT_JSON = true;
+bool OUTPUT_STL = false; // currently STL output function is not working
+/* output files -------------------------------------------------------------------------------------------------------------*/
+
 
 
 // entry point
@@ -152,11 +151,22 @@ int main(int argc, char* argv[])
 
 
     // write file
-	JsonWriter jwrite;
-	std::string writeFilename = "exterior_multi_m=0.1.json";
-	const Shell_explorer& shell = shell_explorers[0]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
-	std::cout << "writing the result to cityjson file...\n";
-	jwrite.write_json_file(path + delimiter + writeFilename, shell, lod);
+	// json
+	if (OUTPUT_JSON) {
+		std::string writeFilename = "interior_multi_m=0.1.json";
+		const Shell_explorer& shell = shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
+		std::cout << "writing the result to cityjson file...\n";
+		FileIO::write_JSON(path + delimiter + writeFilename, shell, lod);
+	}
+	
+	// STL
+	// not working for now
+	if (OUTPUT_STL) {
+		std::string writeFilename = "exterior_multi_m=0.1.stl";
+		std::cout << "writing the result to STL file...\n";
+		//bool status = FileIO::write_STL(path + delimiter + writeFilename, big_nef);
+		//if (!status)return 1;
+	}
 
 	return EXIT_SUCCESS;
 }
