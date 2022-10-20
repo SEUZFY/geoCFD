@@ -10,58 +10,103 @@
 
 
 //#define _ENABLE_CONVEX_HULL_ // switch on/off convex hull method
-#define _ENABLE_MULTI_THREADING_ // switch on/off multi-threading
-
-
-
-/* user defined parameters --------------------------------------------------------------------------------------------------*/
-double lod = 2.2; /* lod level */
-double minkowski_param = 0.1; /* minkowski parameter */
-/* user defined parameters --------------------------------------------------------------------------------------------------*/
-
-
-
-/* optional parameters ------------------------------------------------------------------------------------------------------*/
-unsigned int adjacency_size = 50; /* number of adjacent buildings in one block */
-bool print_building_info = false; /* whether to print the building info to the console */
-/* optional parameters ------------------------------------------------------------------------------------------------------*/
-
-
-
-/* input files and output location ------------------------------------------------------------------------------------------*/
-std::string srcFile = "D:\\SP\\geoCFD\\data\\3dbag_v210908_fd2cee53_5907.json";
-std::string path = "D:\\SP\\geoCFD\\data";
-std::string delimiter = "\\";
-/* input files and output location ------------------------------------------------------------------------------------------*/
-
-
-
-/* output files -------------------------------------------------------------------------------------------------------------*/
-bool OUTPUT_JSON = true;
-bool OUTPUT_STL = false; // currently STL output function is not working
-bool OUTPUT_OFF = true;
-/* output files -------------------------------------------------------------------------------------------------------------*/
 
 
 
 // entry point
 int main(int argc, char* argv[])
 {
-	std::cout << "this is: " << argv[0] << '\n';
-	std::cout << "current lod level: " << lod << '\n';
+	/* use parsers to add options -------------------------------------------------------------------------------------------*/
+	
 
-	if (argc <= 1) {
-		std::cout << "please provide adjacency file and multi thread tag" << std::endl;
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* 
+	* 1st argument is long name
+	* 2nd argument is short name (no short name if '\0' specified)
+	* 3rd argument is description
+	* 4th argument is mandatory (optional. default is false)
+	* 5th argument is default value  (optional. it is used when mandatory is false)
+	* 6th argument is extra constraint.
+	* 
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+
+	cmdline::parser p;
+
+	p.add<std::string>("adjacency", 'a', "adjacency file (.txt)", true, ""); // adjacency file
+	p.add<double>("lod", 'l', "lod level", false, 2.2, cmdline::oneof<double>(1.2, 1.3, 2.2)); // lod level, 2.2 by default
+	p.add<double>("minkowski", 'm', "minkowski value", false, 0.01); // minkowski value, 0.01 by default
+	p.add("multi", '\0', "activate multi threading process"); // boolean flags
+	p.add("help", 0, "print this message"); // help option
+	p.set_program_name("geocfd"); // set the program name in the console
+
+
+	/* ----------------------------------------------------------------------------------------------------------------------*/
+	
+
+
+	/* run parser -----------------------------------------------------------------------------------------------------------*/
+	bool ok = p.parse(argc, argv);
+
+	if (argc == 1 || p.exist("help")) {
+		std::cerr << p.usage();
 		return 0;
 	}
 
-	// get adjacency file (if any)
-	std::string adjacencyFile = argv[1];
+	if (!ok) {
+		std::cerr << p.error() << std::endl << p.usage();
+		return 0;
+	}
+	/* ----------------------------------------------------------------------------------------------------------------------*/
+	
 
-	// get multi thread tag
-	std::string _ENABLE_MULTITHREAD_ = argv[2];
+
+	/* get parameters -------------------------------------------------------------------------------------------------------*/
+	std::string adjacencyFile = p.get<std::string>("adjacency");
+	double lod = p.get<double>("lod");
+	double minkowski_param = p.get<double>("minkowski");
+	bool enable_multi_threading = p.exist("multi");
+
+	// pre-defined parameters
+	std::string srcFile = "D:\\SP\\geoCFD\\data\\3dbag_v210908_fd2cee53_5907.json";
+	std::string path = "D:\\SP\\geoCFD\\data";
+	std::string delimiter = "\\";
+
+	// optional parameters
+	unsigned int adjacency_size = 50; /* number of adjacent buildings in one block */
+	bool print_building_info = false; /* whether to print the building info to the console */
+
+	// output files
+	bool OUTPUT_JSON = true;
+	bool OUTPUT_OFF = true;
+	/* ----------------------------------------------------------------------------------------------------------------------*/
+	
 
 
+	/* print the parameters -------------------------------------------------------------------------------------------------*/
+	std::string emt_string = enable_multi_threading ? "true" : "false";
+	std::cout << '\n';
+	std::cout << "====== this is: " << argv[0] << " ======" << '\n';
+	std::cout << "=> source file:            " << srcFile << '\n';
+	std::cout << "=> adjacency:              " << adjacencyFile << '\n';
+	std::cout << "=> lod level:              " << lod << '\n';
+	std::cout << "=> minkowksi parameter:    " << minkowski_param << '\n';
+	std::cout << "=> enable multi threading: " << emt_string << '\n';
+	std::cout << "=> result file folder:     " << path << '\n';
+	std::cout << '\n';
+	/* ----------------------------------------------------------------------------------------------------------------------*/
+	
+
+
+	/* ready to go? ---------------------------------------------------------------------------------------------------------*/
+	std::cout << "Proceed ? [y/n]" << '\n';
+	char proceed;
+	std::cin >> proceed;
+	if (proceed == 'n' || proceed == 'N') {
+		std::cout << "Proceeding aborted" << '\n';
+		return 0;
+	}
+	/* ----------------------------------------------------------------------------------------------------------------------*/
 
 
 
@@ -100,8 +145,10 @@ int main(int argc, char* argv[])
 	if (print_building_info)std::cout << "---------------------------------------------------------------------\n";
 
 
+
 	/* begin counting */
 	Timer timer; // count the run time
+
 
 
 	/* build the nef and stored in nefs vector */
@@ -112,6 +159,7 @@ int main(int argc, char* argv[])
 	}std::cout << "there are " << nefs.size() << " " << "nef polyhedra in total" << '\n';
 
 
+
 	/* perform minkowski sum operation and store expanded nefs in nefs_expanded vector */
 	std::vector<Nef_polyhedron> expanded_nefs;
 	expanded_nefs.reserve(adjacency_size); // avoid reallocation, use reserve() whenever possible
@@ -120,7 +168,7 @@ int main(int argc, char* argv[])
 
 	/* performing minkowski operations -------------------------------------------------------------------------*/
 	std::cout << "performing minkowski sum ... " << '\n';
-	if (_ENABLE_MULTITHREAD_ == "t" || _ENABLE_MULTITHREAD_ == "T") {
+	if (enable_multi_threading) {
 		std::cout << "multi threading is enabled" << '\n';
 		MT::expand_nefs_async(nefs, expanded_nefs, minkowski_param);
 	}
@@ -177,7 +225,17 @@ int main(int argc, char* argv[])
     // write file
 	// json
 	if (OUTPUT_JSON) {
-		std::string writeFilename = "interior_multi_m=0.1.json";
+
+		// get lod string
+		std::string lod_string;
+		if (std::abs(lod - 1.2) < epsilon)lod_string = "1.2";
+		if (std::abs(lod - 1.3) < epsilon)lod_string = "1.3";
+		if (std::abs(lod - 2.2) < epsilon)lod_string = "2.2";
+
+		// get minkowski param string
+		std::string minkowski_string = std::to_string(minkowski_param);
+
+		std::string writeFilename = "interior_lod=" + lod_string + "_" + "m=" + minkowski_string + ".json";
 		const Shell_explorer& shell = shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
 		std::cout << "writing the result to cityjson file...\n";
 		FileIO::write_JSON(path + delimiter + writeFilename, shell, lod);
@@ -186,10 +244,23 @@ int main(int argc, char* argv[])
 	// write file
 	// OFF
 	if (OUTPUT_OFF) {
-		std::string writeFilename = "exterior_multi_m=0.1.off";
+		
+		// get lod string
+		std::string lod_string;
+		if (std::abs(lod - 1.2) < epsilon)lod_string = "1.2";
+		if (std::abs(lod - 1.3) < epsilon)lod_string = "1.3";
+		if (std::abs(lod - 2.2) < epsilon)lod_string = "2.2";
+
+		// get minkowski param string
+		std::string minkowski_string = std::to_string(minkowski_param);
+
+		std::string writeFilename = "exterior_lod=" + lod_string + "_" + "m=" + minkowski_string + ".off";
 		std::cout << "writing the result to OFF file...\n";
-		FileIO::write_OFF(path + delimiter + writeFilename, big_nef);
-		//if (!status)return 1;
+		bool status = FileIO::write_OFF(path + delimiter + writeFilename, big_nef);
+		if (!status) {
+			std::cerr << "can not write .off file, please check" << '\n';
+			return 1;
+		}
 	}
 
 	return EXIT_SUCCESS;
