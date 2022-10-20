@@ -39,6 +39,7 @@ std::string delimiter = "\\";
 /* output files -------------------------------------------------------------------------------------------------------------*/
 bool OUTPUT_JSON = true;
 bool OUTPUT_STL = false; // currently STL output function is not working
+bool OUTPUT_OFF = true;
 /* output files -------------------------------------------------------------------------------------------------------------*/
 
 
@@ -177,12 +178,12 @@ int main(int argc, char* argv[])
 		FileIO::write_JSON(path + delimiter + writeFilename, shell, lod);
 	}
 	
-	// STL
-	// not working for now
-	if (OUTPUT_STL) {
-		std::string writeFilename = "exterior_multi_m=0.1.stl";
-		std::cout << "writing the result to STL file...\n";
-		//bool status = FileIO::write_STL(path + delimiter + writeFilename, big_nef);
+	// write file
+	// OFF
+	if (OUTPUT_OFF) {
+		std::string writeFilename = "exterior_multi_m=0.1.off";
+		std::cout << "writing the result to OFF file...\n";
+		FileIO::write_OFF(path + delimiter + writeFilename, big_nef);
 		//if (!status)return 1;
 	}
 

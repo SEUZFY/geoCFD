@@ -92,6 +92,36 @@ namespace FileIO {
 
 
 	/*
+	* write the big nef to OFF file (Object File Format)
+	* pre-condition: the big nef is simple
+	* can choose to triangulate the surfaces or not
+	*/
+	void write_OFF(const std::string& filename, Nef_polyhedron& big_nef, bool triangulate_tag = false) {
+		
+		Polyhedron polyhedron;
+
+		if (!big_nef.is_simple()) {
+			std::cerr << "big nef is not simple, can not convert to polyhedron, please check" << '\n';
+			return;
+		}
+
+		// convert big_nef to polyhedron
+		big_nef.convert_to_polyhedron(polyhedron);
+
+		if (triangulate_tag) { // triangulate surfaces of the result
+			CGAL::Polygon_mesh_processing::triangulate_faces(polyhedron);
+		}
+
+		// output
+		std::ofstream out_stream(filename);
+		CGAL::IO::write_OFF(out_stream, polyhedron);
+		out_stream.close();
+		std::cout << "file saved at: " << filename << '\n';
+	}
+
+
+
+	/*
 	* write the big nef to STL file (STereoLithography File Format)
 	* return true if successful otherwise false
 	* 
