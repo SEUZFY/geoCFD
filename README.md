@@ -28,13 +28,32 @@ It's a cross-platform project (currently tested on `x64-windows10` platform, see
 Compile and build it, enter into the `out\build\x64-Release` folder (on windows for example) then open the console (e.g. Windows PowerShell)
 
 ```console
-.\geoCFD [path of the adjacency file (.txt)] [multi_thread_tag]
+.\geoCFD --adjacency=string [options] ...
+```
+If you type `--help`, the usage infomation will be printed:
+```console
+usage: geocfd --adjacency=string [options] ...
+options:
+  -a, --adjacency    adjacency file (.txt) (string)
+  -l, --lod          lod level (double [=2.2])
+  -m, --minkowski    minkowski value (double [=0.01])
+      --multi        activate multi threading process
+      --help         print this message
 ```
 example:
 ```console
-PS D:\SP\geoCFD\out\build\x64-Release> .\geoCFD D:\SP\geoCFD\data\dataset_5\adjacency5.txt t
-this is: D:\SP\geoCFD\out\build\x64-Release\geoCFD.exe
-current lod level: 2.2
+PS D:\SP\geoCFD\out\build\x64-Release> .\geocfd -a adjacency5.txt --multi
+
+====== this is: D:\SP\geoCFD\out\build\x64-Release\geoCFD.exe ======
+=> source file:            D:\SP\geoCFD\data\3dbag_v210908_fd2cee53_5907.json
+=> adjacency:              adjacency5.txt
+=> lod level:              2.2
+=> minkowksi parameter:    0.01
+=> enable multi threading: true
+=> result file folder:     D:\SP\geoCFD\data
+
+Proceed ? [y/n]
+y
 build nef polyhedron
 build nef polyhedron
 build nef polyhedron
@@ -67,8 +86,10 @@ done
 processing shells for cityjson ...
 done
 writing the result to cityjson file...
-file saved at: D:\SP\geoCFD\data\interior_multi_m=0.1.json
-Time: 5.61774s
+file saved at: D:\SP\geoCFD\data\interior_lod=2.2_m=0.010000.json
+writing the result to OFF file...
+file saved at: D:\SP\geoCFD\data\exterior_lod=2.2_m=0.010000.off
+Time: 5.67766s
 ```
 ### Note
 
