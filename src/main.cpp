@@ -37,6 +37,8 @@ int main(int argc, char* argv[])
 	p.add<double>("lod", 'l', "lod level", false, 2.2, cmdline::oneof<double>(1.2, 1.3, 2.2)); // lod level, 2.2 by default
 	p.add<double>("minkowski", 'm', "minkowski value", false, 0.01); // minkowski value, 0.01 by default
 	p.add("multi", '\0', "activate multi threading process"); // boolean flags
+	p.add("json", '\0', "output as .json file format"); // boolean flags
+	p.add("off", '\0', "output as .off file format"); // boolean flags
 	p.add("help", 0, "print this message"); // help option
 	p.set_program_name("geocfd"); // set the program name in the console
 
@@ -77,8 +79,23 @@ int main(int argc, char* argv[])
 	bool print_building_info = false; /* whether to print the building info to the console */
 
 	// output files
-	bool OUTPUT_JSON = true;
-	bool OUTPUT_OFF = true;
+	bool OUTPUT_JSON = p.exist("json");
+	bool OUTPUT_OFF = p.exist("off");
+	std::string output_format;
+	if (OUTPUT_JSON && OUTPUT_OFF == false) {
+		output_format = ".json";
+	}
+	else if (OUTPUT_OFF && OUTPUT_JSON == false) {
+		output_format = ".off";
+	}
+	else if (OUTPUT_JSON == false && OUTPUT_OFF == false) {
+		OUTPUT_JSON = true;
+		OUTPUT_OFF = true;
+		output_format = ".json and .off"; // if no format specified, output two formats
+	}
+	else {
+		output_format = ".json and .off";
+	}
 	/* ----------------------------------------------------------------------------------------------------------------------*/
 	
 
@@ -92,7 +109,8 @@ int main(int argc, char* argv[])
 	std::cout << "=> lod level:              " << lod << '\n';
 	std::cout << "=> minkowksi parameter:    " << minkowski_param << '\n';
 	std::cout << "=> enable multi threading: " << emt_string << '\n';
-	std::cout << "=> result file folder:     " << path << '\n';
+	std::cout << "=> output file folder:     " << path << '\n';
+	std::cout << "=> output file format:     " << output_format << '\n';
 	std::cout << '\n';
 	/* ----------------------------------------------------------------------------------------------------------------------*/
 	
