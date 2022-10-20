@@ -61,6 +61,10 @@ int main(int argc, char* argv[])
 	// get multi thread tag
 	std::string _ENABLE_MULTITHREAD_ = argv[2];
 
+
+
+
+
 	std::ifstream input(srcFile);
 	if (!input.is_open()) {
 		std::cerr << "Error: Unable to open cityjson file \"" << srcFile << "\" for reading!" << std::endl;
@@ -136,6 +140,13 @@ int main(int argc, char* argv[])
 	}
 	std::cout << "done" << '\n';
 	
+
+
+	// extracting geometries
+	std::vector<Shell_explorer> shell_explorers; // store the extracted geometries
+	NefProcessing::extract_nef_geometries(big_nef, shell_explorers); // extract geometries of the bignef
+	NefProcessing::process_shells_for_cityjson(shell_explorers); // process shells for writing to cityjson
+
 	
 
 #ifdef _ENABLE_CONVEX_HULL_
@@ -161,12 +172,6 @@ int main(int argc, char* argv[])
 	NefProcessing::process_shells_for_cityjson(convex_shell_explorers);
 #endif
 
-
-
-	// extracting geometries
-	std::vector<Shell_explorer> shell_explorers; // store the extracted geometries
-	NefProcessing::extract_nef_geometries(big_nef, shell_explorers); // extract geometries of the bignef
-	NefProcessing::process_shells_for_cityjson(shell_explorers); // process shells for writing to cityjson
 
 
     // write file
