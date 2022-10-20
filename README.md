@@ -2,16 +2,16 @@
 
 <img width="558" alt="building_set_1_angle1" src="https://user-images.githubusercontent.com/72781910/194170661-8729cccf-e41a-4802-ab51-f71cba5e6d75.PNG">
 
-Process geometry for cfd simulation.
+Process geometry for CFD simulation - remove internal faces between adjacent buildings.
 
 It's a cross-platform project (currently tested on `x64-windows10` platform, see [geocfd-Ubuntu](https://github.com/SEUZFY/geocfd-Ubuntu) for the basic setting up on 
 `wsl-ubuntu` platform). 
 
-- support for all `LoD` levels (lod 1.2, lod 1.3, lod 2.2) in `cityjson` 
+- support for all `LoD` levels in `cityjson`(lod 1.2, lod 1.3, lod 2.2).
 
-- support `multi-threading` process
+- support `multithreading` process.
 
-- Read a building set(containing 23 buildings(buildingparts)), process repeated vertices and build `nef polyhedra`.
+- support exporting as `.json` file or `.off` file.
 
 - visualisation:
 
