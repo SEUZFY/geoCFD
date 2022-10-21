@@ -648,4 +648,26 @@ public:
         return nefbbox;
     }
 
+
+
+    /*
+    * erosion of a Nef
+    * (1) get bounding box
+    * (2) get its complement
+    * (3) enlarge the complement -> using minkowski sum
+    * (4) eroded_nef = nef - enlarged_complement? or bbox - enlarged_complement?
+    */
+    static Nef_polyhedron get_eroded_nef(Nef_polyhedron& nef, double minkowski_param = 0.01) {
+
+        Nef_polyhedron nefbbox = get_nef_bbox(nef);
+        Nef_polyhedron complement = nefbbox - nef;
+        Nef_polyhedron tmp = NefProcessing::minkowski_sum(complement, minkowski_param);
+        Nef_polyhedron eroded = nef - tmp;
+
+        // regularization?
+
+        return eroded;
+    }
+
+
 };
