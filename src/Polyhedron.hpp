@@ -597,22 +597,22 @@ public:
         Nef_polyhedron::Vertex_const_iterator v;
         for (v = nef.vertices_begin(); v != nef.vertices_end(); v++)
         {
-            if (std::abs(CGAL::to_double(v->point().x()) - xmin) < epsilon)
+            if (CGAL::to_double(v->point().x()) - xmin < epsilon)
                 xmin = CGAL::to_double(v->point().x());
 
-            if (std::abs(CGAL::to_double(v->point().y()) - ymin) < epsilon)
+            if (CGAL::to_double(v->point().y()) - ymin < epsilon)
                 ymin = CGAL::to_double(v->point().y());
 
-            if (std::abs(CGAL::to_double(v->point().z()) - zmin) < epsilon)
+            if (CGAL::to_double(v->point().z()) - zmin < epsilon)
                 zmin = CGAL::to_double(v->point().z());
 
-            if (std::abs(CGAL::to_double(v->point().x()) - xmax) > epsilon)
+            if (CGAL::to_double(v->point().x()) - xmax > epsilon)
                 xmax = CGAL::to_double(v->point().x());
 
-            if (std::abs(CGAL::to_double(v->point().y()) - ymax) > epsilon)
+            if (CGAL::to_double(v->point().y()) - ymax > epsilon)
                 ymax = CGAL::to_double(v->point().y());
 
-            if (std::abs(CGAL::to_double(v->point().z()) - zmax) > epsilon)
+            if (CGAL::to_double(v->point().z()) - zmax > epsilon)
                 zmax = CGAL::to_double(v->point().z());
         }
 
@@ -662,11 +662,11 @@ public:
         Nef_polyhedron nefbbox = get_nef_bbox(nef);
         Nef_polyhedron complement = nefbbox - nef;
         Nef_polyhedron tmp = NefProcessing::minkowski_sum(complement, minkowski_param);
-        Nef_polyhedron eroded = nef - tmp;
+        Nef_polyhedron eroded_nef = nef - tmp;
 
         // regularization?
 
-        return eroded;
+        return eroded_nef;
     }
 
 

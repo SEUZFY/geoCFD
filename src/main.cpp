@@ -205,6 +205,16 @@ int main(int argc, char* argv[])
 		big_nef += nef;
 	}
 	std::cout << "done" << '\n';
+
+
+
+	// erosion ---------------------------------------------------------------------------------
+	//std::cout << "processing for erosion ..." << '\n';
+	//Nef_polyhedron eroded_big_nef = PostProcesssing::get_eroded_nef(big_nef, minkowski_param);
+	//std::cout << "done" << '\n';
+	// change big_nef to eroded_big_nef in the extract_nef_geometries() function
+	// change big_nef to eroded_big_nef in the output functions
+	// erosion ---------------------------------------------------------------------------------
 	
 
 
@@ -253,6 +263,7 @@ int main(int argc, char* argv[])
 		// get minkowski param string
 		std::string minkowski_string = std::to_string(minkowski_param);
 
+		// output
 		std::string writeFilename = "interior_lod=" + lod_string + "_" + "m=" + minkowski_string + ".json";
 		const Shell_explorer& shell = shell_explorers[1]; // which shell is going to be written to the file, 0 - exterior, 1 - interior
 		std::cout << "writing the result to cityjson file...\n";
@@ -272,6 +283,7 @@ int main(int argc, char* argv[])
 		// get minkowski param string
 		std::string minkowski_string = std::to_string(minkowski_param);
 
+		// output
 		std::string writeFilename = "exterior_lod=" + lod_string + "_" + "m=" + minkowski_string + ".off";
 		std::cout << "writing the result to OFF file...\n";
 		bool status = FileIO::write_OFF(path + delimiter + writeFilename, big_nef);
