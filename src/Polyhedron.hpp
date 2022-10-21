@@ -13,6 +13,7 @@
 #include <CGAL/Polygon_mesh_processing/triangulate_faces.h> // for triangulating surfaces
 #include <CGAL/Polygon_mesh_processing/triangulate_hole.h> // for filling holes
 #include <boost/foreach.hpp> // for filling holes
+#include <CGAL/OFF_to_nef_3.h> // for erosion - constructing bbox
 
 
 // typedefs
@@ -497,6 +498,7 @@ public:
     }
 
 
+
 protected:
     /*
     * The vertex_exist_check() and find_vertex_index() fucntions are also in JsonHandler class
@@ -540,5 +542,110 @@ protected:
         return 0;
     }
 
+
+};
+
+
+
+/*
+* ------------------------------------------------------------------------------------------------------------------------------------------
+* now we have finished building big nef polyhedron
+* there are some possible post processing steps
+* (1) regularization
+* (2) erosion
+* ------------------------------------------------------------------------------------------------------------------------------------------
+*/
+
+
+
+/*
+* class to perform possible post processing steps for Nef polyhedron
+* possible steps for now:
+* (1) regularization
+* (2) erosion 
+*/
+class PostProcesssing {
+public:
+
+    /*
+    * regularization
+    * returns the regularized polyhedron (closure of the interior)
+    */
+    Nef_polyhedron get_regularized_nef(Nef_polyhedron& nef) {
+        Nef_polyhedron regularized_nef = nef.regularization();
+        return regularized_nef;
+    }
+
+
+
+    /*
+    * get bounding box for Nef polyhedron
+    * use a user-defined size (10 units by default)
+    * 
+    * this function is inspired or just small modifications based on val3dity:
+    * see: https://github.com/tudelft3d/val3dity/blob/main/src/geomtools.cpp#L210
+    */
+    static Nef_polyhedron get_nef_bbox(Nef_polyhedron& nef, double size = 10) {
+        
+        double xmin = 1e12;
+        double ymin = 1e12;
+        double zmin = 1e12;
+        double xmax = -1e12;
+        double ymax = -1e12;
+        double zmax = -1e12;
+
+        Nef_polyhedron::Vertex_const_iterator v;
+        for (v = nef.vertices_begin(); v != nef.vertices_end(); v++)
+        {
+            if (std::abs(CGAL::to_double(v->point().x()) - xmin) < epsilon)
+                xmin = CGAL::to_double(v->point().x());
+
+            if (std::abs(CGAL::to_double(v->point().y()) - ymin) < epsilon)
+                ymin = CGAL::to_double(v->point().y());
+
+            if (std::abs(CGAL::to_double(v->point().z()) - zmin) < epsilon)
+                zmin = CGAL::to_double(v->point().z());
+
+            if (std::abs(CGAL::to_double(v->point().x()) - xmax) > epsilon)
+                xmax = CGAL::to_double(v->point().x());
+
+            if (std::abs(CGAL::to_double(v->point().y()) - ymax) > epsilon)
+                ymax = CGAL::to_double(v->point().y());
+
+            if (std::abs(CGAL::to_double(v->point().z()) - zmax) > epsilon)
+                zmax = CGAL::to_double(v->point().z());
+        }
+
+        //-- expand the bbox by size units
+        xmin -= size;
+        ymin -= size;
+        zmin -= size;
+        xmax += size;
+        ymax += size;
+        zmax += size;
+
+        //-- write an OFF file and convert Nef, simplest (and fastest?) solution
+        std::stringstream ss;
+        ss << "OFF" << std::endl
+            << "8 6 0" << std::endl
+            << xmin << " " << ymin << " " << zmin << std::endl
+            << xmax << " " << ymin << " " << zmin << std::endl
+            << xmax << " " << ymax << " " << zmin << std::endl
+            << xmin << " " << ymax << " " << zmin << std::endl
+            << xmin << " " << ymin << " " << zmax << std::endl
+            << xmax << " " << ymin << " " << zmax << std::endl
+            << xmax << " " << ymax << " " << zmax << std::endl
+            << xmin << " " << ymax << " " << zmax << std::endl
+            << "4 0 3 2 1" << std::endl
+            << "4 0 1 5 4" << std::endl
+            << "4 1 2 6 5" << std::endl
+            << "4 2 3 7 6" << std::endl
+            << "4 0 4 7 3" << std::endl
+            << "4 4 5 6 7" << std::endl;
+
+        Nef_polyhedron nefbbox;
+        CGAL::OFF_to_nef_3(ss, nefbbox);
+        return nefbbox;
+    }
 
 };
