@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <cmath>
+#include <tuple>
 
 #include "json.hpp"
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h> // Nef (and Minkowski) requires exact constructions
@@ -117,19 +118,84 @@ protected:
 
 public:
 
+
+
+	/*
+	* shift the coordinates use bounding box
+	* calculate xmin, ymin, zmin
+	* for each vertex in json, do:
+	* x = x - xmin;
+	* y = y - ymin;
+	* z = z - zmin;
+	* 
+	* this function will be called for the whole json tile
+	*/
+	static std::tuple<double, double, double> get_translation_datum(json& j, double lod) {
+
+		double xmin = 1e12;
+		double ymin = 1e12;
+		double zmin = 1e12;
+
+		int count = 0;
+
+		for (auto& co : j["CityObjects"].items()) {
+			for (auto& g : co.value()["geometry"]) {
+				if (g["type"] == "Solid" && (std::abs(g["lod"].get<double>() - lod)) < epsilon) { // geometry type: Solid
+					for (auto& shell : g["boundaries"]) {
+						for (auto& surface : shell) {
+							for (auto& ring : surface) {
+								for (auto& v : ring)
+								{
+									std::vector<int> vi = j["vertices"][v.get<int>()];
+									double x = (vi[0] * j["transform"]["scale"][0].get<double>()) + j["transform"]["translate"][0].get<double>();
+									double y = (vi[1] * j["transform"]["scale"][1].get<double>()) + j["transform"]["translate"][1].get<double>();
+									double z = (vi[2] * j["transform"]["scale"][2].get<double>()) + j["transform"]["translate"][2].get<double>();
+
+									if ((x - xmin) < epsilon)
+										xmin = x;
+									if ((y - ymin) < epsilon)
+										ymin = y;
+									if ((z - zmin) < epsilon)
+										zmin = z;
+
+								} // end for: each indice in one ring	
+							}// end for: each ring in one surface	
+						} // end for: each surface in one shell
+					}// end for: each shell in one solid
+					++count;
+				}// end if: solid 
+			}
+			
+		}
+
+		std::cout << "buildings count: " << count << '\n';
+		std::cout << "xmin: " << xmin << '\n';
+		std::cout << "ymin: " << ymin << '\n';
+		std::cout << "zmin: " << zmin << '\n';
+
+		return std::make_tuple(xmin, ymin, zmin);
+		
+	}
+
+
+
 	/*
 	* CityJSON files have their vertices compressed : https://www.cityjson.org/specs/1.1.1/#transform-object
-	* this function visits all the surfaces of a certain building
-	* and print the (x,y,z) coordinates of each vertex encountered
 	* lod specified: 1.2 & 1.3 & 2.2
+	* datum: contains xmin, ymin, zmin for shifting coordinates
 	*/
-	void read_certain_building(const json& j, const std::string& building_id, double lod) {
+	void read_certain_building(
+		const json& j, 
+		const std::string& building_id, 
+		double lod,
+		std::tuple<double, double, double>& datum) 
+	{
 		for (auto& co : j["CityObjects"].items()) {
 			if (co.key() == building_id)
 			{
 				//std::cout << co.key() << '\n';
 				for (auto& g : co.value()["geometry"]) {
-					if (g["type"] == "Solid" && (std::abs(g["lod"].get<double>() - lod)) < epsilon) { // geometry type: Solid, use lod1.3
+					if (g["type"] == "Solid" && (std::abs(g["lod"].get<double>() - lod)) < epsilon) { // geometry type: Solid
 						//std::cout << "lod level: " << g["lod"].get<double>() << '\n';
 						Solid so; // create a solid to store the information
 						so.id = co.key(); // store id
@@ -147,6 +213,16 @@ public:
 										double x = (vi[0] * j["transform"]["scale"][0].get<double>()) + j["transform"]["translate"][0].get<double>();
 										double y = (vi[1] * j["transform"]["scale"][1].get<double>()) + j["transform"]["translate"][1].get<double>();
 										double z = (vi[2] * j["transform"]["scale"][2].get<double>()) + j["transform"]["translate"][2].get<double>();
+
+										// get the translation datum
+										double xmin = std::get<0>(datum);
+										double ymin = std::get<1>(datum);
+										double zmin = std::get<2>(datum);
+										
+										// shift the coordinates
+										x = x - xmin;
+										y = y - ymin;
+										z = z - zmin;
 
 										// when adding new vertex and adding new index in r.indices, check repeatness
 										Point_3 new_vertex(x, y, z);
@@ -177,7 +253,7 @@ public:
 							so.shells.emplace_back(se);
 						}// end for: each shell in one solid
 						solids.emplace_back(so);
-					}// end if: solid and lod = 1.3
+					}// end if: solid 
 				}
 			}
 		}
@@ -197,9 +273,11 @@ public:
 	}
 
 
-public:
+protected:
 	std::vector<Point_3> vertices; // store all vertices of one building
 	std::vector<Solid> solids; // store all solids of one building, ideally one solid for each building
+
+	friend class Build; // friend class to access the protected members
 };
 
 

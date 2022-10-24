@@ -137,6 +137,10 @@ int main(int argc, char* argv[])
 	input >> j;
 	input.close();
 
+	// shift the coordinates
+	// to maintain the adjacency property after shifting, the shifting process will be done for one tile
+	std::tuple<double, double, double> datum = JsonHandler::get_translation_datum(j, lod);
+
 	// get ids of adjacent buildings	
 	std::vector<std::string> adjacency;
 	adjacency.reserve(adjacency_size);
@@ -152,7 +156,7 @@ int main(int argc, char* argv[])
 	for (auto const& building_name : adjacency) // get each building
 	{
 		JsonHandler jhandle;
-		jhandle.read_certain_building(j, building_name, lod); // read in the building
+		jhandle.read_certain_building(j, building_name, lod, datum); // read in the building
 		jhandles.emplace_back(jhandle); // add to the jhandlers vector
 
 		if (print_building_info) {
