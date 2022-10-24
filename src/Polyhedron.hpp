@@ -27,6 +27,10 @@ typedef Polyhedron::Vertex_handle                    Vertex_handle; // for filli
 
 
 
+namespace PMP = CGAL::Polygon_mesh_processing;
+
+
+
 /*
 load each building(or solid) into a CGAL Polyhedron_3 using the Polyhedron_incremental_builder_3.
 In order to use the Polyhedron_incremental_builder_3, you need to create a custom struct or class.
@@ -95,6 +99,9 @@ public:
 
             if (polyhedron.is_closed()) {
 
+                // filling holes?
+                // polyhedron_hole_filling(polyhedron);
+
                 // if triangulation is true, triangulate the surfaces first (lod2.2)
                 if (triangulate) {
                     CGAL::Polygon_mesh_processing::triangulate_faces(polyhedron);
@@ -105,6 +112,7 @@ public:
                 Nefs.emplace_back();
                 Nefs.back() = nef_polyhedron; // add the built nef_polyhedron to the Nefs vector
                 std::cout << "build nef polyhedron" << '\n';
+                std::cout << "is valid? => " << (nef_polyhedron.is_valid() ? "valid" : "invalid") << '\n';
             }
             else {
                 std::cout << "the polyhedron is not closed, build convex hull to replace it" << '\n';
@@ -152,10 +160,6 @@ public:
 
             // std::cout<<polyhedron<<std::endl;
 
-            /* test to write the polyhedron to .off file --------------------------------------------------------*/
-
-
-            // visualize a polyhedron?
 
         }
 
@@ -164,6 +168,10 @@ public:
 
     /*
     * test hole filling package
+    * not working for holes in dataset_2
+    * building id: NL.IMBAG.Pand.0503100000029345-0
+    * maybe because the holes are not reachable from the border?
+    * since for each Halfedge_handle h h->is_border() is false
     */
     static void polyhedron_hole_filling(Polyhedron& poly) {
 
@@ -171,9 +179,38 @@ public:
         std::ofstream out("unfilled.off");
         out.precision(17);
         out << poly << std::endl;
+
+        // Incrementally fill the holes
+        unsigned int nb_holes = 0;
+        for (Halfedge_handle h : halfedges(poly))
+        {
+            if (h->is_border())
+            {
+                std::vector<Facet_handle>  patch_facets;
+                std::vector<Vertex_handle> patch_vertices;
+                bool success = std::get<0>(PMP::triangulate_refine_and_fair_hole(poly,
+                    h,
+                    std::back_inserter(patch_facets),
+                    std::back_inserter(patch_vertices),
+                    CGAL::parameters::vertex_point_map(get(CGAL::vertex_point, poly))
+                    .geom_traits(Kernel())));
+                std::cout << " Number of facets in constructed patch: " << patch_facets.size() << std::endl;
+                std::cout << " Number of vertices in constructed patch: " << patch_vertices.size() << std::endl;
+                std::cout << " Fairing : " << (success ? "succeeded" : "failed") << std::endl;
+                ++nb_holes;
+            }
+        }
+        std::cout << std::endl;
+        std::cout << nb_holes << " holes have been filled" << std::endl;
+        std::ofstream out_filled("filled.off");
+        out_filled.precision(17);
+        out_filled << poly << std::endl;
         
         // Incrementally fill the holes
-        std::cout << "filling holes ..." << '\n';
+        // using border is not suitable in this case
+        // since the holes are not reachable from the border?
+
+        /*std::cout << "filling holes ..." << '\n';
         unsigned int nb_holes = 0;
         BOOST_FOREACH(Halfedge_handle h, halfedges(poly))
         {
@@ -196,7 +233,7 @@ public:
             }
         }
         std::cout << std::endl;
-        std::cout << nb_holes << " holes have been filled" << std::endl;
+        std::cout << nb_holes << " holes have been filled" << std::endl;*/
     }
 
     

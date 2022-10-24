@@ -168,7 +168,7 @@ public:
 			
 		}
 
-		std::cout << "buildings count: " << count << '\n';
+		std::cout << "buildings count in the input json file: " << count << '\n';
 		std::cout << "xmin: " << xmin << '\n';
 		std::cout << "ymin: " << ymin << '\n';
 		std::cout << "zmin: " << zmin << '\n';

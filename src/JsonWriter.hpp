@@ -114,6 +114,7 @@ namespace FileIO {
 
 		// output
 		std::ofstream out_stream(filename);
+		out_stream.precision(17); // why use 17? from CGAL docs setting precisions can reduce the self-intersection errors in the output
 		bool status = CGAL::IO::write_OFF(out_stream, polyhedron);
 		out_stream.close();
 		if(status)std::cout << "file saved at: " << filename << '\n';
