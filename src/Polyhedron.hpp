@@ -112,7 +112,7 @@ public:
                 Nefs.emplace_back();
                 Nefs.back() = nef_polyhedron; // add the built nef_polyhedron to the Nefs vector
                 std::cout << "build nef polyhedron" << " ";
-                std::cout << "is valid ? " << (nef_polyhedron.is_valid() ? "valid" : "invalid") << '\n';
+                std::cout << "-> " << (nef_polyhedron.is_valid() ? "valid" : "invalid") << '\n';
             }
             else {
                 std::cout << "the polyhedron is not closed, build convex hull to replace it" << '\n';
