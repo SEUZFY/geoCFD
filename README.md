@@ -1,7 +1,5 @@
 # geoCFD
 
-<img width="558" alt="building_set_1_angle1" src="https://user-images.githubusercontent.com/72781910/194170661-8729cccf-e41a-4802-ab51-f71cba5e6d75.PNG">
-
 Process geometry for CFD simulation - remove internal faces between adjacent buildings.
 
 It's a cross-platform project (currently tested on `x64-windows10` platform, see [geocfd-Ubuntu](https://github.com/SEUZFY/geocfd-Ubuntu) for the basic setting up on 
@@ -51,45 +49,7 @@ PS D:\SP\geoCFD\out\build\x64-Release> .\geocfd -a adjacency5.txt --multi
 => minkowksi parameter:    0.01
 => enable multi threading: true
 => result file folder:     D:\SP\geoCFD\data
-
-Proceed ? [y/n]
-y
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-build nef polyhedron
-there are 21 nef polyhedra in total
-performing minkowski sum ...
-multi threading is enabled
-done
-building big nef ...
-done
-extracting nef geometries ...
-done
-processing shells for cityjson ...
-done
-writing the result to cityjson file...
-file saved at: D:\SP\geoCFD\data\interior_lod=2.2_m=0.010000.json
-writing the result to OFF file...
-file saved at: D:\SP\geoCFD\data\exterior_lod=2.2_m=0.010000.off
-Time: 5.67766s
+...
 ```
 ### Note
 
@@ -187,19 +147,10 @@ possible solutions: allow users to switch on/off different robust check function
 #define _POLYHEDRON_3_COMBINATORIAL_CHECK_
 ...
 ```
-Also, since the triangulation process may have some cons, we can apply it on `lod 2.2` but not on `lod 1.2` and `lod 1.3`:
-```cpp
-if lod == 2.2
-	triangulate the surfaces of polyhedron
-	feed Nef with the triangulated polyhedron
-...
-```
 
 issues related minkowski sum and irregular building:
 
 [CGAL Minkowski sum assertion when performing union operation of Nef_polyhedron_3](https://github.com/CGAL/cgal/issues/6973)
-
-## Benchmark
 
 ## Other platforms
 

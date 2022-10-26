@@ -34,6 +34,8 @@ int main(int argc, char* argv[])
 	p.add<std::string>("adjacency", 'a', "adjacency file (.txt)", true, ""); // adjacency file
 	p.add<double>("lod", 'l', "lod level", false, 2.2, cmdline::oneof<double>(1.2, 1.3, 2.2)); // lod level, 2.2 by default
 	p.add<double>("minkowski", 'm', "minkowski value", false, 0.01); // minkowski value, 0.01 by default
+	p.add<double>("target edge length", 'e', "target edge length for remeshing", false, 3);
+	p.add("remesh", '\0', "activate remeshing processing (warning: time consuming)");
 	p.add("multi", '\0', "activate multi threading process"); // boolean flags
 	p.add("json", '\0', "output as .json file format"); // boolean flags
 	p.add("off", '\0', "output as .off file format"); // boolean flags
@@ -70,6 +72,8 @@ int main(int argc, char* argv[])
 	std::string adjacencyFile = p.get<std::string>("adjacency");
 	double lod = p.get<double>("lod");
 	double minkowski_param = p.get<double>("minkowski");
+	double target_edge_length = p.get<double>("target edge length");
+	bool enable_remeshing = p.exist("remesh");
 	bool enable_multi_threading = p.exist("multi");
 	bool all_adjacency_tag = p.exist("all");
 
@@ -111,14 +115,16 @@ int main(int argc, char* argv[])
 	std::string emt_string = enable_multi_threading ? "true" : "false";
 	std::cout << '\n';
 	std::cout << "====== this is: " << argv[0] << " ======" << '\n';
-	std::cout << "=> source file:            " << srcFile << '\n';
-	std::cout << "=> adjacency:              " << adjacencyFile << '\n';
-	std::cout << "=> all adjacency tag:      " << (all_adjacency_tag ? "true" : "false") << '\n';
-	std::cout << "=> lod level:              " << lod << '\n';
-	std::cout << "=> minkowksi parameter:    " << minkowski_param << '\n';
+	std::cout << "=> source file:			 " << srcFile << '\n';
+	std::cout << "=> adjacency:				 " << adjacencyFile << '\n';
+	std::cout << "=> all adjacency tag:		 " << (all_adjacency_tag ? "true" : "false") << '\n';
+	std::cout << "=> lod level:				 " << lod << '\n';
+	std::cout << "=> minkowksi parameter:	 " << minkowski_param << '\n';
+	std::cout << "=> enable remeshing:		 " << (enable_remeshing ? "true" : "false") << '\n';
+	std::cout << "=> target edge length:     " << target_edge_length << '\n';
 	std::cout << "=> enable multi threading: " << emt_string << '\n';
-	std::cout << "=> output file folder:     " << path << '\n';
-	std::cout << "=> output file format:     " << output_format << '\n';
+	std::cout << "=> output file folder:	 " << path << '\n';
+	std::cout << "=> output file format:	 " << output_format << '\n';
 	std::cout << '\n';
 	/* ----------------------------------------------------------------------------------------------------------------------*/
 	
@@ -262,6 +268,16 @@ int main(int argc, char* argv[])
 		std::vector<Shell_explorer> shell_explorers; // store the extracted geometries
 		NefProcessing::extract_nef_geometries(big_nef, shell_explorers); // extract geometries of the bignef
 		NefProcessing::process_shells_for_cityjson(shell_explorers); // process shells for writing to cityjson
+
+
+
+		// remeshing
+		if (enable_remeshing) {
+			std::cout << "remeshing ...\n";
+			std::string file = "remeshed.off";
+			PostProcesssing::remeshing(big_nef, path + delimiter + file, target_edge_length);
+			std::cout << "done\n";
+		}	
 
 
 

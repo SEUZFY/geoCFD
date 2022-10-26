@@ -15,6 +15,14 @@
 #include <boost/foreach.hpp> // for filling holes
 #include <CGAL/OFF_to_nef_3.h> // for erosion - constructing bbox
 
+// for remeshing
+#include <CGAL/Surface_mesh.h> // for surface_mesh
+#include <CGAL/boost/graph/copy_face_graph.h> // for converting to surface mesh
+#include <CGAL/Polygon_mesh_processing/remesh.h>
+#include <CGAL/Polygon_mesh_processing/border.h>
+#include <CGAL/Polygon_mesh_processing/IO/polygon_mesh_io.h>
+#include <boost/iterator/function_output_iterator.hpp>
+
 
 // typedefs
 typedef CGAL::Polyhedron_3<Kernel>                   Polyhedron;
@@ -24,6 +32,11 @@ typedef Polyhedron::Halfedge_around_facet_circulator Halfedge_facet_circulator; 
 typedef Polyhedron::Halfedge_handle                  Halfedge_handle; // for filling holes
 typedef Polyhedron::Facet_handle                     Facet_handle; // for filling holes
 typedef Polyhedron::Vertex_handle                    Vertex_handle; // for filling holes
+
+// for remeshing
+typedef CGAL::Surface_mesh<Kernel::Point_3>                   Mesh;
+typedef boost::graph_traits<Mesh>::halfedge_descriptor        halfedge_descriptor;
+typedef boost::graph_traits<Mesh>::edge_descriptor            edge_descriptor;
 
 
 
@@ -596,6 +609,24 @@ protected:
 
 
 /*
+* remeshing helper
+*/
+struct halfedge2edge
+{
+    halfedge2edge(const Mesh& m, std::vector<edge_descriptor>& edges)
+        : m_mesh(m), m_edges(edges)
+    {}
+    void operator()(const halfedge_descriptor& h) const
+    {
+        m_edges.push_back(edge(h, m_mesh));
+    }
+    const Mesh& m_mesh;
+    std::vector<edge_descriptor>& m_edges;
+};
+
+
+
+/*
 * class to perform possible post processing steps for Nef polyhedron
 * possible steps for now:
 * (1) regularization
@@ -704,6 +735,50 @@ public:
         // regularization?
 
         return eroded_nef;
+    }
+
+
+
+    /*
+    * remeshing
+    */
+    static void remeshing(Nef_polyhedron& big_nef, const std::string& file, double target_edge_length) {
+        Polyhedron polyhedron;
+
+        if (!big_nef.is_simple()) {
+            std::cerr << "big nef is not simple, can not convert to polyhedron, please check" << '\n';
+            return;
+        }
+
+        // convert big_nef to polyhedron
+        big_nef.convert_to_polyhedron(polyhedron);
+
+        // convert to surface mesh
+        Mesh mesh;
+        CGAL::copy_face_graph(polyhedron, mesh);
+        std::cout << "is polygon mesh valid? " << mesh.is_valid() << '\n';
+
+        // remeshing
+        unsigned int nb_iter = 3;
+        std::cout << "target edge length: " << target_edge_length << '\n';
+        std::cout << "Split border...";
+        std::vector<edge_descriptor> border;
+        PMP::border_halfedges(faces(mesh), mesh, boost::make_function_output_iterator(halfedge2edge(mesh, border)));
+        PMP::split_long_edges(border, target_edge_length, mesh);
+        std::cout << "done." << '\n';
+        std::cout << "Start remeshing of " << " (" << num_faces(mesh) << " faces)..." << '\n';
+        PMP::isotropic_remeshing(faces(mesh), target_edge_length, mesh,
+            CGAL::parameters::number_of_iterations(nb_iter)
+            .protect_constraints(true)); //i.e. protect border, here
+        std::cout << "Remeshing done." << '\n';
+
+        // output
+        std::ofstream out_stream(file);
+        out_stream.precision(17); // why use 17? from CGAL docs setting precisions can reduce the self-intersection errors in the output
+        bool status = CGAL::IO::write_OFF(out_stream, mesh);
+        out_stream.close();
+        if (status)std::cout << "file saved at: " << file << '\n';
+        
     }
 
 
