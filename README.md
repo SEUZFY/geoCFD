@@ -26,13 +26,15 @@ It's a cross-platform project (currently tested on `x64-windows10` platform, see
 Compile and build it, enter into the `out\build\x64-Release` folder (on windows for example) then open the console (e.g. Windows PowerShell)
 
 ```console
-.\geoCFD --adjacency=string [options] ...
+usage: geocfd --dataset=string --adjacency=string --path_result=string [options] ...
 ```
 If you type `--help`, the usage infomation will be printed:
 ```console
-usage: geocfd --adjacency=string [options] ...
+usage: geocfd --dataset=string --adjacency=string --path_result=string [options] ...
 options:
+  -d, --dataset               dataset (.json) (string)
   -a, --adjacency             adjacency file (.txt) (string)
+  -p, --path_result           where the results will be saved (string)
   -l, --lod                   lod level (double [=2.2])
   -m, --minkowski             minkowski value (double [=0.01])
   -e, --target edge length    target edge length for remeshing (double [=3])
@@ -51,7 +53,7 @@ The reason is multi threading didn't work as desired when reading all adjacencie
 
 **example 1 - read in one adjacency file**:
 ```console
-.\geocfd -a adjacency5.txt --multi --off
+.\geocfd -d 3dbag_v210908_fd2cee53_5907.json -a adjacency5.txt -p D:\SP\geoCFD\data --multi --off
 
 ====== this is: D:\SP\geoCFD\out\build\x64-Release\geoCFD.exe ======
 => source file                   D:\SP\geoCFD\data\3dbag_v210908_fd2cee53_5907.json
@@ -69,7 +71,7 @@ The reason is multi threading didn't work as desired when reading all adjacencie
 
 **example 2 - read in all adjacencies file**:
 ```console
- .\geocfd -a adjacencies.txt --all --off
+ .\geocfd -d 3dbag_v210908_fd2cee53_5907.json -a adjacency5.txt -p D:\SP\geoCFD\data --all --off
 
  ====== this is: D:\SP\geoCFD\out\build\x64-Release\geoCFD.exe ======
 => source file                   D:\SP\geoCFD\data\3dbag_v210908_fd2cee53_5907.json
@@ -133,13 +135,6 @@ If you use other platforms (such as `Linux` or `MacOS`), you can refer to `CMake
 
 ## TO DO
 
+- [x] for now the `source file path` and `data folder path` are coded inside the program, need to change to allow users to input specific files.
+
 - [ ] use lambda function in `main.cpp` and add return value -> if one/multiple adjacency/adjacencies cause(s) unknown exits
-
-- [ ] for now the `source file path` and `data folder path` are coded inside the program, need to change to allow users to input specific files.
-
-    ```cpp
-    // pre-defined parameters
-	std::string srcFile = "D:\\SP\\geoCFD\\data\\3dbag_v210908_fd2cee53_5907.json";
-	std::string path = "D:\\SP\\geoCFD\\data";
-	std::string delimiter = "\\";
-    ```

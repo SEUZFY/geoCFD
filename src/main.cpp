@@ -31,10 +31,14 @@ int main(int argc, char* argv[])
 
 	cmdline::parser p;
 
+	p.add<std::string>("dataset", 'd', "dataset (.json)", true, ""); // dataset file
 	p.add<std::string>("adjacency", 'a', "adjacency file (.txt)", true, ""); // adjacency file
+	p.add<std::string>("path_result", 'p', "where the results will be saved", true, ""); // dataset file
+
 	p.add<double>("lod", 'l', "lod level", false, 2.2, cmdline::oneof<double>(1.2, 1.3, 2.2)); // lod level, 2.2 by default
 	p.add<double>("minkowski", 'm', "minkowski value", false, 0.01); // minkowski value, 0.01 by default
 	p.add<double>("target edge length", 'e', "target edge length for remeshing", false, 3);
+
 	p.add("remesh", '\0', "activate remeshing processing (warning: time consuming)");
 	p.add("multi", '\0', "activate multi threading process"); // boolean flags
 	p.add("json", '\0', "output as .json file format"); // boolean flags
@@ -69,7 +73,9 @@ int main(int argc, char* argv[])
 
 
 	/* get parameters -------------------------------------------------------------------------------------------------------*/
+	std::string srcFile = p.get<std::string>("dataset");
 	std::string adjacencyFile = p.get<std::string>("adjacency");
+	std::string path = p.get<std::string>("path_result");
 	double lod = p.get<double>("lod");
 	double minkowski_param = p.get<double>("minkowski");
 	double target_edge_length = p.get<double>("target edge length");
@@ -78,8 +84,8 @@ int main(int argc, char* argv[])
 	bool all_adjacency_tag = p.exist("all");
 
 	// pre-defined parameters
-	std::string srcFile = "D:\\SP\\geoCFD\\data\\3dbag_v210908_fd2cee53_5907.json";
-	std::string path = "D:\\SP\\geoCFD\\data";
+	//std::string srcFile = "D:\\SP\\geoCFD\\data\\3dbag_v210908_fd2cee53_5907.json";
+	//std::string path = "D:\\SP\\geoCFD\\data";
 	std::string delimiter = "\\";
 
 	// optional parameters
