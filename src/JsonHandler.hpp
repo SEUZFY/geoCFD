@@ -322,12 +322,26 @@ namespace FileIO {
 			return;
 		}
 
+		// read line by line, add building names to adjacency
+		// an empty line indicates another adjacency
+		vector<string> adjacency;
 		std::string line;
 		while (std::getline(in, line)) {
-			std::cout << (line == "") << '\n';
-			//adjacencies.emplace_back(line);
+			if (line != "") {
+				adjacency.emplace_back(line);
+			}else {
+				adjacencies.emplace_back(adjacency);
+				adjacency.clear();
+			}
 		}
 		in.close();
+
+		// prompt info
+		std::cout << "adjacencies size: " << adjacencies.size() << '\n';
+		/*for (const auto& adjacency : adjacencies) {
+			for (const auto& name : adjacency)std::cout << name << '\n';
+			std::cout << '\n';
+		}*/
 	}
 }
 
