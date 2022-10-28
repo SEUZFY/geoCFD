@@ -362,6 +362,7 @@ int main(int argc, char* argv[])
 		for (const auto& adjacency : adjacencies) {
 
 			// track the adjacency - 1-based index, e.g. adjacency 1, adjacency 2, ...
+			std::cout << '\n';
 			std::cout << "processing adjacency " << num_adjacency << " ...\n";
 
 
@@ -494,18 +495,18 @@ int main(int argc, char* argv[])
 
 
 
+			std::cout << "adjacency " << num_adjacency << " done\n";
+			std::cout << '\n';
+			++num_adjacency;
+
+
+
 			// vector cleaning for next use -------------------------------------------------------------------------------------			
 			jhandles.clear();  // hold jhandles, one jhandle for one building
 			nefs.clear(); // hold the nefs
 			expanded_nefs.clear(); // hold expanded nefs
 			shell_explorers.clear(); // hold shells for big nef
 			// ------------------------------------------------------------------------------------------------------------------ 
-
-
-
-			std::cout << "adjacency " << num_adjacency << " done\n";
-			std::cout << '\n';
-			++num_adjacency;
 			
 
 		} // end for: adjacencies
