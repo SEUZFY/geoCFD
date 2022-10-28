@@ -137,9 +137,9 @@ If you use other platforms (such as `Linux` or `MacOS`), you can refer to `CMake
 
 - [ ] for now the `source file path` and `data folder path` are coded inside the program, need to change to allow users to input specific files.
 
-        ```cpp
-        // pre-defined parameters
-	    std::string srcFile = "D:\\SP\\geoCFD\\data\\3dbag_v210908_fd2cee53_5907.json";
-	    std::string path = "D:\\SP\\geoCFD\\data";
-	    std::string delimiter = "\\";
-        ```
+    ```cpp
+    // pre-defined parameters
+	std::string srcFile = "D:\\SP\\geoCFD\\data\\3dbag_v210908_fd2cee53_5907.json";
+	std::string path = "D:\\SP\\geoCFD\\data";
+	std::string delimiter = "\\";
+    ```
