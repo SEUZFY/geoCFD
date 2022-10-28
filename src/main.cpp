@@ -322,6 +322,9 @@ int main(int argc, char* argv[])
 	
 	if (all_adjacency_tag) {
 
+		enable_multi_threading = false;
+		std::cout << "multi threading process should not be enabled with all adjacencies\n";
+
 		// declarations for convenient use
 		using std::vector;
 		using std::string;
@@ -336,27 +339,26 @@ int main(int argc, char* argv[])
 		// some optimization can be done (e.g. via lambda function to avoid code repeatness) if having time
 
 
-		// needed vectors 
-		// after the usage for each adjacency, call clear() method for next use
-		// avoid repeated creation whenever possible
-
-		//vector<JsonHandler> jhandles;  // hold jhandles, one jhandle for one building
-		//vector<Nef_polyhedron> nefs; // hold the nefs
-		//vector<Nef_polyhedron> expanded_nefs; // hold expanded nefs
-		//vector<Shell_explorer> shell_explorers; // hold shells for big nef
-		//
-		//
-		//jhandles.reserve(adjacency_size);
-		//nefs.reserve(adjacency_size); // avoid reallocation, use reserve() whenever possible
-		//expanded_nefs.reserve(adjacency_size);
-
-
 		// for mark the output files
 		unsigned int num_off = 1;
 		unsigned int num_json = 1;
 
 		// for tracking which adjacency is currently being processed
 		unsigned int num_adjacency = 1;
+
+		// needed vectors 
+		// after the usage for each adjacency, call clear() method for next use
+		// avoid repeated creation whenever possible
+		vector<JsonHandler> jhandles;  // hold jhandles, one jhandle for one building
+		vector<Nef_polyhedron> nefs; // hold the nefs
+		vector<Nef_polyhedron> expanded_nefs; // hold expanded nefs
+		vector<Shell_explorer> shell_explorers; // hold shells for big nef
+
+		jhandles.reserve(adjacency_size); // avoid reallocation, use reserve() whenever possible
+		nefs.reserve(adjacency_size);
+		expanded_nefs.reserve(adjacency_size);
+
+		// process each adjacency
 		for (const auto& adjacency : adjacencies) {
 
 			// track the adjacency - 1-based index, e.g. adjacency 1, adjacency 2, ...
@@ -365,11 +367,7 @@ int main(int argc, char* argv[])
 
 			// create big nef
 			// ------------------------------------------------------------------------------------------------------------------		
-			// read buildings
-			std::vector<JsonHandler> jhandles;
-			jhandles.reserve(adjacency_size); // use reserve() to avoid extra copies
-
-			// get jhandles, one jhandle for each building
+			// read buildings, get jhandles, one jhandle for each building
 			if (print_building_info)std::cout << "------------------------ building(part) info ------------------------\n";
 			for (const auto& building_name : adjacency) // get each building
 			{
@@ -383,20 +381,18 @@ int main(int argc, char* argv[])
 			}
 			if (print_building_info)std::cout << "---------------------------------------------------------------------\n";
 
+
 			/* begin counting */
 			Timer timer; // count the run time
 
+
 			/* build the nef and stored in nefs vector */
-			std::vector<Nef_polyhedron> nefs; // hold the nefs
-			nefs.reserve(adjacency_size); // avoid reallocation, use reserve() whenever possible
 			for (const auto& jhdl : jhandles) {
 				Build::build_nef_polyhedron(jhdl, nefs); // triangulation tag can be passed as parameters, set to true by default
 			}std::cout << "there are " << nefs.size() << " " << "nef polyhedra in total" << '\n';
 
-			/* perform minkowski sum operation and store expanded nefs in nefs_expanded vector */
-			std::vector<Nef_polyhedron> expanded_nefs;
-			expanded_nefs.reserve(adjacency_size); // avoid reallocation, use reserve() whenever possible
 
+			/* perform minkowski sum operation and store expanded nefs in nefs_expanded vector */
 			/* performing minkowski operations -------------------------------------------------------------------------*/
 			std::cout << "performing minkowski sum ... " << '\n';
 			if (enable_multi_threading) {
@@ -408,6 +404,7 @@ int main(int argc, char* argv[])
 			}
 			std::cout << "done" << '\n';
 			/* building nefs and performing minkowski operations -------------------------------------------------------------------------*/
+
 
 			// merging nefs into one big nef
 			std::cout << "building big nef ..." << '\n';
@@ -423,9 +420,9 @@ int main(int argc, char* argv[])
 			// ------------------------------------------------------------------------------------------------------------------
 			// extract geometries and possible post-processing
 			// extracting geometries
-			std::vector<Shell_explorer> shell_explorers; // store the extracted geometries
 			NefProcessing::extract_nef_geometries(big_nef, shell_explorers); // extract geometries of the bignef
 			NefProcessing::process_shells_for_cityjson(shell_explorers); // process shells for writing to cityjson
+
 
 			// remeshing
 			if (enable_remeshing) {
@@ -497,14 +494,20 @@ int main(int argc, char* argv[])
 
 
 
-			// vector cleaning for next use -------------------------------------------------------------------------------------
-
-
+			// vector cleaning for next use -------------------------------------------------------------------------------------			
+			jhandles.clear();  // hold jhandles, one jhandle for one building
+			nefs.clear(); // hold the nefs
+			expanded_nefs.clear(); // hold expanded nefs
+			shell_explorers.clear(); // hold shells for big nef
 			// ------------------------------------------------------------------------------------------------------------------ 
+
+
 
 			std::cout << "adjacency " << num_adjacency << " done\n";
 			std::cout << '\n';
 			++num_adjacency;
+			
+
 		} // end for: adjacencies
 
 
