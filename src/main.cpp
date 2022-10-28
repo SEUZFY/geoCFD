@@ -84,6 +84,7 @@ int main(int argc, char* argv[])
 
 	// optional parameters
 	unsigned int adjacency_size = 50; /* number of adjacent buildings in one block */
+	unsigned int adjacencies_size = 100; /* number of adjacencies in one tile */
 	bool print_building_info = false; /* whether to print the building info to the console */
 
 	// output files
@@ -115,16 +116,16 @@ int main(int argc, char* argv[])
 	std::string emt_string = enable_multi_threading ? "true" : "false";
 	std::cout << '\n';
 	std::cout << "====== this is: " << argv[0] << " ======" << '\n';
-	std::cout << "=> source file:			 " << srcFile << '\n';
-	std::cout << "=> adjacency:				 " << adjacencyFile << '\n';
-	std::cout << "=> all adjacency tag:		 " << (all_adjacency_tag ? "true" : "false") << '\n';
-	std::cout << "=> lod level:				 " << lod << '\n';
-	std::cout << "=> minkowksi parameter:	 " << minkowski_param << '\n';
-	std::cout << "=> enable remeshing:		 " << (enable_remeshing ? "true" : "false") << '\n';
-	std::cout << "=> target edge length:     " << target_edge_length << '\n';
-	std::cout << "=> enable multi threading: " << emt_string << '\n';
-	std::cout << "=> output file folder:	 " << path << '\n';
-	std::cout << "=> output file format:	 " << output_format << '\n';
+	std::cout << "=> source file\t\t\t " << srcFile << '\n';
+	std::cout << "=> adjacency\t\t\t " << adjacencyFile << '\n';
+	std::cout << "=> all adjacency tag\t\t " << (all_adjacency_tag ? "true" : "false") << '\n';
+	std::cout << "=> lod level\t\t\t " << lod << '\n';
+	std::cout << "=> minkowksi parameter\t\t " << minkowski_param << '\n';
+	std::cout << "=> enable remeshing\t\t " << (enable_remeshing ? "true" : "false") << '\n';
+	std::cout << "=> target edge length\t\t " << target_edge_length << '\n';
+	std::cout << "=> enable multi threading\t " << emt_string << '\n';
+	std::cout << "=> output file folder\t\t " << path << '\n';
+	std::cout << "=> output file format\t\t " << output_format << '\n';
 	std::cout << '\n';
 	/* ----------------------------------------------------------------------------------------------------------------------*/
 	
@@ -179,24 +180,18 @@ int main(int argc, char* argv[])
 	/* one block -----------------------------------------------------------------------------------------------------------*/
 	if (!all_adjacency_tag){
 
-
-
 		// get ids of adjacent buildings	
 		std::vector<std::string> adjacency;
 		adjacency.reserve(adjacency_size);
 		FileIO::read_adjacency_from_txt(adjacencyFile, adjacency);
 
-
-
 		// read buildings
 		std::vector<JsonHandler> jhandles;
 		jhandles.reserve(adjacency_size); // use reserve() to avoid extra copies
 
-
-
 		// get jhandles, one jhandle for each building
 		if (print_building_info)std::cout << "------------------------ building(part) info ------------------------\n";
-		for (auto const& building_name : adjacency) // get each building
+		for (const auto& building_name : adjacency) // get each building
 		{
 			JsonHandler jhandle;
 			jhandle.read_certain_building(j, building_name, lod, datum); // read in the building
@@ -208,12 +203,8 @@ int main(int argc, char* argv[])
 		}
 		if (print_building_info)std::cout << "---------------------------------------------------------------------\n";
 
-
-
 		/* begin counting */
 		Timer timer; // count the run time
-
-
 
 		/* build the nef and stored in nefs vector */
 		std::vector<Nef_polyhedron> nefs; // hold the nefs
@@ -222,13 +213,9 @@ int main(int argc, char* argv[])
 			Build::build_nef_polyhedron(jhdl, nefs); // triangulation tag can be passed as parameters, set to true by default
 		}std::cout << "there are " << nefs.size() << " " << "nef polyhedra in total" << '\n';
 
-
-
 		/* perform minkowski sum operation and store expanded nefs in nefs_expanded vector */
 		std::vector<Nef_polyhedron> expanded_nefs;
 		expanded_nefs.reserve(adjacency_size); // avoid reallocation, use reserve() whenever possible
-
-
 
 		/* performing minkowski operations -------------------------------------------------------------------------*/
 		std::cout << "performing minkowski sum ... " << '\n';
@@ -242,8 +229,6 @@ int main(int argc, char* argv[])
 		std::cout << "done" << '\n';
 		/* building nefs and performing minkowski operations -------------------------------------------------------------------------*/
 
-
-
 		// merging nefs into one big nef
 		std::cout << "building big nef ..." << '\n';
 		Nef_polyhedron big_nef;
@@ -251,8 +236,6 @@ int main(int argc, char* argv[])
 			big_nef += nef;
 		}
 		std::cout << "done" << '\n';
-
-
 
 		// erosion ---------------------------------------------------------------------------------
 		//std::cout << "processing for erosion ..." << '\n';
@@ -262,14 +245,10 @@ int main(int argc, char* argv[])
 		// change big_nef to eroded_big_nef in the output functions
 		// erosion ---------------------------------------------------------------------------------
 
-
-
 		// extracting geometries
 		std::vector<Shell_explorer> shell_explorers; // store the extracted geometries
 		NefProcessing::extract_nef_geometries(big_nef, shell_explorers); // extract geometries of the bignef
 		NefProcessing::process_shells_for_cityjson(shell_explorers); // process shells for writing to cityjson
-
-
 
 		// remeshing
 		if (enable_remeshing) {
@@ -278,8 +257,6 @@ int main(int argc, char* argv[])
 			PostProcesssing::remeshing(big_nef, path + delimiter + file, target_edge_length);
 			std::cout << "done\n";
 		}	
-
-
 
 		// write file
 		// json
@@ -332,11 +309,38 @@ int main(int argc, char* argv[])
 
 
 
-	std::cout << "test all adjacency file" << '\n';
 
 
 
-		
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* if all_adjacency_tag is marked as true, that means the input adjacency file contains multiple blocks
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	
+	
+	
+	
+	
+	if (all_adjacency_tag) {
 
+		// declarations for convenient use
+		using std::vector;
+		using std::string;
+
+		// store multiple adjacencies
+		vector<vector<string>> adjacencies;
+		adjacencies.reserve(adjacencies_size);
+		FileIO::read_all_adjacencies_from_txt(adjacencyFile, adjacencies);
+
+
+
+
+		return EXIT_SUCCESS;
+
+	}
+	
+	
+	
+	std::cout << "no process performed, exit" << '\n';
 	return EXIT_SUCCESS;
+
 }

@@ -32,11 +32,16 @@ If you type `--help`, the usage infomation will be printed:
 ```console
 usage: geocfd --adjacency=string [options] ...
 options:
-  -a, --adjacency    adjacency file (.txt) (string)
-  -l, --lod          lod level (double [=2.2])
-  -m, --minkowski    minkowski value (double [=0.01])
-      --multi        activate multi threading process
-      --help         print this message
+  -a, --adjacency             adjacency file (.txt) (string)
+  -l, --lod                   lod level (double [=2.2])
+  -m, --minkowski             minkowski value (double [=0.01])
+  -e, --target edge length    target edge length for remeshing (double [=3])
+      --remesh                activate remeshing processing (warning: time consuming)
+      --multi                 activate multi threading process
+      --json                  output as .json file format
+      --off                   output as .off file format
+      --all                   adjacency file contains all adjacent blocks
+      --help                  print this message
 ```
 example:
 ```console

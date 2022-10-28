@@ -284,10 +284,15 @@ protected:
 
 // read from files
 namespace FileIO {
+
+	// declaration for convenient use - whenever use specify the scope
+	using std::vector;
+	using std::string;
+
 	/*
 	* read the adjacency txt file to get the adjacency buildings
 	*/
-	void read_adjacency_from_txt(const std::string& filename, std::vector<std::string>& adjacency) {
+	void read_adjacency_from_txt(const std::string& filename, vector<string>& adjacency) {
 
 		// read from txt to get the adjacency list
 		std::ifstream in(filename, std::ios::out);
@@ -302,6 +307,27 @@ namespace FileIO {
 		}
 		in.close();
 
+	}
+
+
+
+	/*
+	* read the all_adjacency txt file to get all adjacent buildings
+	*/
+	void read_all_adjacencies_from_txt(const std::string& filename, vector<vector<string>>& adjacencies) {
+		// read from txt to get the adjacency list
+		std::ifstream in(filename, std::ios::out);
+		if (!in.is_open()) {
+			std::cerr << "Error: Unable to open adjacency file \"" << filename << "\" for reading!" << std::endl;
+			return;
+		}
+
+		std::string line;
+		while (std::getline(in, line)) {
+			std::cout << (line == "") << '\n';
+			//adjacencies.emplace_back(line);
+		}
+		in.close();
 	}
 }
 
