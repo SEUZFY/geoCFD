@@ -1,0 +1,264 @@
+PS D:\geoCFD\build> ./geocfd -d dataset.json -a adjacency5.txt -p D:\geoCFD\data --off --multi
+
+====== this is: D:\geoCFD\build\geoCFD.exe ======
+=> source file                   dataset.json
+=> adjacency                     adjacency5.txt
+=> all adjacency tag             false
+=> lod level                     2.2
+=> minkowksi parameter           0.01
+=> enable remeshing              false
+=> target edge length            3
+=> enable multi threading        true
+=> output file folder            D:\geoCFD\data
+=> output file format            .off
+
+Proceed ? [y/n]
+y
+buildings count in the input json file: 1300
+xmin: 84372.9
+ymin: 446340
+zmin: -1.62
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+there are 21 nef polyhedra in total
+performing minkowski sum ...
+multi threading is enabled
+done
+building big nef ...
+done
+extracting nef geometries ...
+done
+processing shells for cityjson ...
+done
+writing the result to OFF file...
+file saved at: D:\geoCFD\data\exterior_lod=2.2_m=0.010000.off
+Time: 5.99045s
+
+PS D:\geoCFD\build> ./geocfd -d dataset.json -a aissues.txt -p D:\geoCFD\data --off
+
+====== this is: D:\geoCFD\build\geoCFD.exe ======
+=> source file                   dataset.json
+=> adjacency                     aissues.txt
+=> all adjacency tag             false
+=> lod level                     2.2
+=> minkowksi parameter           0.01
+=> enable remeshing              false
+=> target edge length            3
+=> enable multi threading        false
+=> output file folder            D:\geoCFD\data
+=> output file format            .off
+
+Proceed ? [y/n]
+y
+buildings count in the input json file: 1300
+xmin: 84372.9
+ymin: 446340
+zmin: -1.62
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+
+CGAL::Polyhedron_incremental_builder_3<HDS>::
+lookup_halfedge(): input error: facet 16 has a self intersection at vertex 58.
+the polyhedron is not closed, build convex hull to replace it
+building id: NL.IMBAG.Pand.0503100000018501-0
+the convex hull is closed, build convex nef polyhedron
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+there are 39 nef polyhedra in total
+performing minkowski sum ...
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+CGAL error: assertion violation!
+Expression :
+File       : D:\dev\vcpkg\installed\x64-windows\share\cgal\..\..\include\CGAL/Convex_decomposition_3/Ray_hit_generator2.h
+Line       : 158
+Explanation: ray should hit vertex, edge, or facet
+Refer to the bug-reporting instructions at https://www.cgal.org/bug_report.html
+CGAL error
+the nef will be skipped
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+expand_nef
+done
+building big nef ...
+done
+extracting nef geometries ...
+done
+processing shells for cityjson ...
+done
+writing the result to OFF file...
+file saved at: D:\geoCFD\data\exterior_lod=2.2_m=0.010000.off
+Time: 296.264s
+
+PS D:\geoCFD\build> ./geocfd -d dataset.json -a aissues.txt -p D:\geoCFD\data --off --multi
+
+====== this is: D:\geoCFD\build\geoCFD.exe ======
+=> source file                   dataset.json
+=> adjacency                     aissues.txt
+=> all adjacency tag             false
+=> lod level                     2.2
+=> minkowksi parameter           0.01
+=> enable remeshing              false
+=> target edge length            3
+=> enable multi threading        true
+=> output file folder            D:\geoCFD\data
+=> output file format            .off
+
+Proceed ? [y/n]
+y
+buildings count in the input json file: 1300
+xmin: 84372.9
+ymin: 446340
+zmin: -1.62
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+
+CGAL::Polyhedron_incremental_builder_3<HDS>::
+lookup_halfedge(): input error: facet 16 has a self intersection at vertex 58.
+the polyhedron is not closed, build convex hull to replace it
+building id: NL.IMBAG.Pand.0503100000018501-0
+the convex hull is closed, build convex nef polyhedron
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+build nef polyhedron -> valid
+there are 39 nef polyhedra in total
+performing minkowski sum ...
+multi threading is enabled
+CGAL error: assertion violation!
+Expression :
+File       : D:\dev\vcpkg\installed\x64-windows\share\cgal\..\..\include\CGAL/Convex_decomposition_3/Ray_hit_generator2.h
+Line       : 158
+Explanation: ray should hit vertex, edge, or facet
+Refer to the bug-reporting instructions at https://www.cgal.org/bug_report.html
+CGAL error
+the nef will be skipped
+done
+building big nef ...
+done
+extracting nef geometries ...
+done
+processing shells for cityjson ...
+done
+writing the result to OFF file...
+file saved at: D:\geoCFD\data\exterior_lod=2.2_m=0.010000.off
+Time: 93.2807s
