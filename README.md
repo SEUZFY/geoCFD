@@ -24,7 +24,7 @@ It's a cross-platform project (currently tested on `x64-windows10` platform, see
 ## Usage
 
 Compile and build it, run the command `./geocfd --help` to print the usage information:
-```console
+```powershell
 usage: geocfd --dataset=string --adjacency=string --path_result=string [options] ...
 options:
   -d, --dataset               dataset (.json) (string)
@@ -44,18 +44,18 @@ options:
 
 - for **all adjacency** mode, multi threading should not be enabled (if enabled from the console, it will be switched off). 
 
-The reason is multi threading didn't work as desired when reading all adjacencies.
+	The reason is multi threading didn't work as desired when reading all adjacencies.
 
 - for **all adjacency** mode, flag `--all` must be provided.
 
-### examples
+## examples
 **example 1** - read in **one adjacency** file, enable **multi threading**, output as **.off** file:
-```console
+```powershell
 ./geocfd -d 3dbag_v210908_fd2cee53_5907.json -a adjacency5.txt -p D:\SP\geoCFD\data --multi --off
 ```
 
 **example 2** - read in all adjacencies file, in combination with `--all` flag:
-```bash
+```powershell
 ./geocfd -d dataset.json -a adjacencies.txt -p D:\geoCFD\data --all --off
 ```
 
@@ -114,6 +114,4 @@ If you use other platforms (such as `Linux` or `MacOS`), you can refer to `CMake
 - `remeshing` is sort of `beta` version, it should be warned that `remeshing` will be time-consuming, thus it is not recommended to activate.
 - it may take time for multiple adjacent blocks.
 
-## todo
-- [ ] merge all big_nefs before exporting.
 
