@@ -141,3 +141,6 @@ If you use other platforms (such as `Linux` or `MacOS`), you can refer to `CMake
 - `remeshing` is sort of `beta` version, it should be warned that `remeshing` will be time-consuming, thus it is not recommended to activate.
 - it may take time for multiple adjacent blocks.
 
+## todo
+- [ ] merge all big_nefs before exporting.
+
