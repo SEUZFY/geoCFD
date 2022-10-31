@@ -7,7 +7,7 @@ It's a cross-platform project (currently tested on `x64-windows10` platform, see
 
 - support for all `LoD` levels in `cityjson`(lod 1.2, lod 1.3, lod 2.2).
 
-- support `multithreading` process.
+- support `multithreading` process (for one adjacent block).
 
 - support exporting as `.json` file or `.off` file.
 
@@ -23,12 +23,7 @@ It's a cross-platform project (currently tested on `x64-windows10` platform, see
 
 ## Usage
 
-Compile and build it, enter into the `out\build\x64-Release` folder (on windows for example) then open the console (e.g. Windows PowerShell)
-
-```console
-usage: geocfd --dataset=string --adjacency=string --path_result=string [options] ...
-```
-If you type `--help`, the usage infomation will be printed:
+Compile and build it, run the command `./geocfd --help` to print the usage information:
 ```console
 usage: geocfd --dataset=string --adjacency=string --path_result=string [options] ...
 options:
@@ -47,45 +42,23 @@ options:
 ```
 **Note**
 
-for `all adjacency` mode, multi threading should not be enabled (if enabled from the console, it will be switched off). 
+- for **all adjacency** mode, multi threading should not be enabled (if enabled from the console, it will be switched off). 
 
 The reason is multi threading didn't work as desired when reading all adjacencies.
 
-**example 1 - read in one adjacency file**:
-```console
-.\geocfd -d 3dbag_v210908_fd2cee53_5907.json -a adjacency5.txt -p D:\SP\geoCFD\data --multi --off
+- for **all adjacency** mode, flag `--all` must be provided.
 
-====== this is: D:\SP\geoCFD\out\build\x64-Release\geoCFD.exe ======
-=> source file                   D:\SP\geoCFD\data\3dbag_v210908_fd2cee53_5907.json
-=> adjacency                     adjacency5.txt
-=> all adjacency tag             false
-=> lod level                     2.2
-=> minkowksi parameter           0.01
-=> enable remeshing              false
-=> target edge length            3
-=> enable multi threading        true
-=> output file folder            D:\SP\geoCFD\data
-=> output file format            .off
-...
+### examples
+**example 1** - read in **one adjacency** file, enable **multi threading**, output as **.off** file:
+```console
+./geocfd -d 3dbag_v210908_fd2cee53_5907.json -a adjacency5.txt -p D:\SP\geoCFD\data --multi --off
 ```
 
-**example 2 - read in all adjacencies file**:
-please be sure to pass `--all` flag when inputting all adjacencies file
-```console
- .\geocfd -d 3dbag_v210908_fd2cee53_5907.json -a adjacency5.txt -p D:\SP\geoCFD\data --all --off
-
- ====== this is: D:\SP\geoCFD\out\build\x64-Release\geoCFD.exe ======
-=> source file                   D:\SP\geoCFD\data\3dbag_v210908_fd2cee53_5907.json
-=> adjacency                     adjacencies.txt
-=> all adjacency tag             true
-=> lod level                     2.2
-=> minkowksi parameter           0.01
-=> enable remeshing              false
-=> target edge length            3
-=> enable multi threading        false
-=> output file folder            D:\SP\geoCFD\data
-=> output file format            .off
+**example 2** - read in all adjacencies file, in combination with `--all` flag:
+```bash
+./geocfd -d dataset.json -a adjacencies.txt -p D:\geoCFD\data --all --off
 ```
+
 ### Note
 
 * if the program does not exit, you may need to re-open your console again and re-run it. (for example, dataset_2).
