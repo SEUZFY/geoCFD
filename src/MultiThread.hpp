@@ -199,13 +199,14 @@ void expand_nef(
 
   // before peroforming minkowski operation, make a copy of nef
   // since if an exception was shrown, it is not possible to use nef in the catch block
-  Nef_polyhedron nef_copy = nef;
+  Nef_polyhedron nef_copy(nef);
+  std::cout << "make copy\n";
 
   // perform minkowski operation
   try{
 	Nef_polyhedron expanded_nef = NefProcessing::minkowski_sum(nef, minkowski_param);
 	expanded_nefs_Ptr->emplace_back(expanded_nef);
-  }catch(CGAL::Assertion_exception e){
+  }catch(...){
 
 	// inside catch can not process the nef
 	std::cerr << "CGAL error" << '\n';
@@ -228,6 +229,8 @@ void expand_nef(
 	}
   }
 
+  std::cout << "done\n";
+
 }
 
 
@@ -243,7 +246,13 @@ void expand_nefs(
 {
   // expand each nef in nefs vector
   for (auto& nef : nefs) {
-	expand_nef(nef, &expanded_nefs, minkowski_param);
+	try{
+	  expand_nef(nef, &expanded_nefs, minkowski_param);
+	}catch(...){
+	  std::cerr << "expand nef error\n";
+	  continue;
+	}
+
   }
 }
 
