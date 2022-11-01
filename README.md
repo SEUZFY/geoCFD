@@ -24,7 +24,7 @@ It's a cross-platform project (currently tested on `x64-windows10` platform, see
 ## Usage
 
 Compile and build it, run the command `./geocfd --help` to print the usage information:
-```powershell
+```bash
 usage: geocfd --dataset=string --adjacency=string --path_result=string [options] ...
 options:
   -d, --dataset               dataset (.json) (string)
@@ -50,12 +50,12 @@ options:
 
 ## examples
 **example 1** - read in **one adjacency** file, enable **multi threading**, output as **.off** file:
-```powershell
+```bash
 ./geocfd -d 3dbag_v210908_fd2cee53_5907.json -a adjacency5.txt -p D:\SP\geoCFD\data --multi --off
 ```
 
 **example 2** - read in all adjacencies file, in combination with `--all` flag:
-```powershell
+```bash
 ./geocfd -d dataset.json -a adjacencies.txt -p D:\geoCFD\data --all --off
 ```
 
@@ -90,7 +90,7 @@ Compiler: `MSVC`
 Generator: `Ninja`
 
 Commands:
-```console
+```bash
 "..\MICROSOFTVISUALSTUDIO\2019\COMMUNITY\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\CMake\bin\cmake.exe"  
 -G "Ninja"  
 -DCMAKE_BUILD_TYPE:STRING="RelWithDebInfo" 
