@@ -15,6 +15,9 @@ using namespace std::chrono;
 
 
 // Timer class -> used for tracking the run time
+//TODO
+//gcc compiler doesn't have overloading of "=" for std::chrono::high_resolution_clock::now()
+//if compiled using gcc/g++ this might need to be changed
 struct Timer //for counting the time
 {
   std::chrono::time_point<std::chrono::steady_clock>start, end;
@@ -22,7 +25,8 @@ struct Timer //for counting the time
 
   Timer() //set default value
   {
-	start = end = std::chrono::high_resolution_clock::now();
+	start = std::chrono::high_resolution_clock::now();
+	end = std::chrono::high_resolution_clock::now();
 	duration = end - start;
   }
 
@@ -150,10 +154,11 @@ void expand_nefs_async(
   * and use reference in the for loop
   */
   for (auto& nef : nefs) {
+	//auto futureobj = std::async(std::launch::async, expand_nef_async, nef, &expanded_nefs, minkowski_param);
 	futures.emplace_back(
 		std::async(
 			std::launch::async, /* launch policy */
-			expand_nef_async, /* function will be called asynchronously, need to be independent */
+			expand_nef_async, /* function will be called asynchronously */
 			nef, /* arguments - a nef */
 			&expanded_nefs, /* arguments - pointer to expanded_nefs vector */
 			minkowski_param /* arguments - minkowski_param (default is 0.1)*/
@@ -192,6 +197,10 @@ void expand_nef(
 	return;
   }
 
+  // before peroforming minkowski operation, make a copy of nef
+  // since if an exception was shrown, it is not possible to use nef in the catch block
+  Nef_polyhedron nef_copy = nef;
+
   // perform minkowski operation
   try{
 	Nef_polyhedron expanded_nef = NefProcessing::minkowski_sum(nef, minkowski_param);
@@ -200,7 +209,23 @@ void expand_nef(
 
 	// inside catch can not process the nef
 	std::cerr << "CGAL error" << '\n';
-	std::cout << "the nef will be skipped\n";
+
+	// first get the geometry
+	std::vector<Shell_explorer> shell_explorers;
+	NefProcessing::extract_nef_geometries(nef_copy, shell_explorers);
+
+	Shell_explorer se = shell_explorers[0]; // shell representing for exterior
+	Polyhedron convex_polyhedron;
+	CGAL::convex_hull_3(se.vertices.begin(), se.vertices.end(), convex_polyhedron);
+
+	if(convex_polyhedron.is_closed()){
+	  Nef_polyhedron convex_nef(convex_polyhedron);
+	  Nef_polyhedron expanded_convex_nef = NefProcessing::minkowski_sum(convex_nef, minkowski_param);
+	  expanded_nefs_Ptr->emplace_back(expanded_convex_nef);
+	  std::cout << "build the convex hull of the nef and then expand\n";
+	}else{
+	  std::cout << "the nef will be skipped\n";
+	}
   }
 
 }
