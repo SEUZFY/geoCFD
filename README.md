@@ -113,5 +113,6 @@ If you use other platforms (such as `Linux` or `MacOS`), you can refer to `CMake
 - there is one possibility that `minkowski sum` will be in executing status for unkown time, if so restart geoCFD.
 - `remeshing` is sort of `beta` version, it should be warned that `remeshing` will be time-consuming, thus it is not recommended to activate.
 - it may take time for multiple adjacent blocks.
+- all adjacencies file need to meet some specific "format".
 
 
