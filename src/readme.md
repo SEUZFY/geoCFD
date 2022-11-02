@@ -1,4 +1,49 @@
 ## Logic
+The code mainly follows the logic as written below:
+
+**input**: cityjson file
+
+**output**: cityjson file / .off file
+
+
+* **Read**
+
+	**read** from the `cityjson` file and store the geometries.
+	- handle the repeatness in the original file.
+
+	**read** from the `adjacency` file to get the adjacency list.
+	- `adjacency` file can have multiple adjacent blocks or just one adjacent block, different adjacency file corresponds to different executing `mode`.
+
+	**coordinates translation**
+	- the original coordinates are quite large, for precision reasons the coordinates are translated.
+
+
+* **Build**
+	
+	**build** **Polyhedron_3** from the stored geometries. 
+
+	- extra care need to be taken since repeated vertices will cause problems when using `Polyhedron_incremental_builder`.
+    - `self-intersection` will cause problems, thus **convex hull** is used if `Polyhedron_incremental_builder` yields errors.
+    - about holes - handling holes can be a bit tricky, [CGAL](https://www.cgal.org/) has some related fucntions for that. Buildings with holes are stored in different manners in `cityjson` file and there are not many such buildings. Thus currently buidlings with holes are not properly handled (but there are some code usage [examples](https://github.com/zfengyan/geoCFD/blob/v1/src/Polyhedron.hpp#L189) in the file -> [Polyhedron.hpp](https://github.com/zfengyan/geoCFD/blob/v1/src/Polyhedron.hpp).
+  
+	**build** **Nef_polyhedron_3** from the **Polyhedron_3**.
+
+	- only if **Polyhedron_3** is closed
+    - **Nef_polyhedron_3** will complain when the points of surfaces are not **planar**, which will lead to a **invalid Nef_polyhedron_3**, thus `triangulation` is required (the surfaces of **Polyhedron_3** will firstly be triangulated and then converted to **Nef_polyhedron_3**).
+
+
+* **Minkowski sum**
+
+	- expand each **Nef_polyhedron_3** with a cube, the side length of the cube can be decided by user (`0.01` by default).
+    - **minkowski sum** sometimes can be a bit picky, it will probably complain about complicated buildings. The buildings causing CGAL assertions are handled (replaced by its convex hull). However, it should be noted that some buildings may cause segfault, which is hard to handle. So the code is not that robust.
+
+
+* **Post processing**
+
+	- merge all the expanded **Nef_polyhedron_3** into one **big Nef_polyhedron_3**.
+	- extract geometries from the **big Nef_polyhedron_3**.
+    - remeshing - since triangulation is applied before building **Nef_polyhedron_3**, some skinny triangles can result in self-intersection faces. [Remeshing](https://doc.cgal.org/latest/Polygon_mesh_processing/index.html) can more or less refactors the triangulated mesh, but in the practice good result requires very long execution time and high computational resources. This [function](https://github.com/zfengyan/geoCFD/blob/v1/src/Polyhedron.hpp#L745) can be activated if user wants to (a super computer will help).
+    - erosion - erosion can be used to make expanded **Nef_polyhedron_3** get back to its original shape, but usually erosion will introduce more irregular faces at the same time, thus this function is not used. The example is [here](https://github.com/zfengyan/geoCFD/blob/v1/src/Polyhedron.hpp#L728).
 
 ### JsonHandler.hpp
 Responsible for taking care of the input `.cityjson` file and store the necessary information(i.e., `Solid`, `Shell`, `Face`, `Vertices` of one building(part)).
@@ -33,19 +78,6 @@ Responsible for performing multi-threading processing.
 ### main.cpp
 
 The entry point of the whole program.
-
-### note:
-
-Currently the command line tool is not added yet, thus before compiling and running you may need to change your paths here in `main.cpp`:
-
-```cpp
-/* input files and output location ------------------------------------------------------------------------------------------*/
-std::string srcFile = "D:\\SP\\geoCFD\\data\\3dbag_v210908_fd2cee53_5907.json";
-std::string adjacencyFile = "D:\\SP\\geoCFD\\data\\adjacency6.txt";
-std::string path = "D:\\SP\\geoCFD\\data";
-std::string delimiter = "\\";
-/* input files and output location ------------------------------------------------------------------------------------------*/
-```
 
 ## Attention
 1. **vertices repeatness**
