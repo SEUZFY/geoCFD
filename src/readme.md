@@ -36,6 +36,7 @@ The code mainly follows the logic as written below:
 
 	- expand each **Nef_polyhedron_3** with a cube, the side length of the cube can be decided by user (`0.01` by default).
     - **minkowski sum** sometimes can be a bit picky, it will probably complain about complicated buildings. The buildings causing CGAL assertions are handled (replaced by its convex hull). However, it should be noted that some buildings may cause segfault, which is hard to handle. So the code is not that robust.
+    - robust - use TetGen to decompose the buildings into convex parts first, expand the convex parts and then merge them to get the expanded **Nef_polyhedron_3** [ possible solultion, not implemented yet ]
 
 
 * **Post processing**
