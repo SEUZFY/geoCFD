@@ -49,21 +49,21 @@ options:
 - for **all adjacency** mode, flag `--all` must be provided.
 
 ## examples
-**example 1** - read in **one adjacency** file, enable **multi threading**, output as **.off** file:
+#### example 1 - read in one adjacency file, enable multi threading, output as .off file:
 ```bash
 ./geocfd -d 3dbag_v210908_fd2cee53_5907.json -a adjacency5.txt -p D:\SP\geoCFD\data --multi --off
 ```
-**example1 dataset**: [dataset](https://github.com/zfengyan/geoCFD/blob/v1/data/3dbag_v210908_fd2cee53_5907.json)
+dataset: [dataset](https://github.com/zfengyan/geoCFD/blob/v1/data/3dbag_v210908_fd2cee53_5907.json)
 
-**example1 adjacency file**: [adjacency5.txt](https://github.com/zfengyan/geoCFD/blob/v1/data/dataset_5/adjacency5.txt)
+adjacency file: [adjacency5.txt](https://github.com/zfengyan/geoCFD/blob/v1/data/dataset_5/adjacency5.txt)
 
-**example 2** - read in all adjacencies file, in combination with `--all` flag:
+#### example 2 - read in all adjacencies file, in combination with --all flag:
 ```bash
 ./geocfd -d dataset.json -a adjacencies.txt -p D:\geoCFD\data --all --off
 ```
-**example2 dataset**: [dataset](https://github.com/zfengyan/geoCFD/blob/v1/data/3dbag_v210908_fd2cee53_5907.json)
+dataset: [dataset](https://github.com/zfengyan/geoCFD/blob/v1/data/3dbag_v210908_fd2cee53_5907.json)
 
-**example2 adjacencies file**: [adjacencies.txt](https://github.com/zfengyan/geoCFD/blob/v1/data/all_adjacencies/all_adjacency_example.txt)
+adjacencies file: [adjacencies.txt](https://github.com/zfengyan/geoCFD/blob/v1/data/all_adjacencies/all_adjacency_example.txt)
 
 ### Note
 
